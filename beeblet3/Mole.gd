@@ -1,8 +1,9 @@
 extends KinematicBody2D
 
-var speed = 400
+var speed = 200
 
 var Bean = preload("res://Bean.tscn")
+var BeanPod = preload("res://BeanPod.tscn")
 
 var gravity2 = 9.8
 var velocity = Vector2()
@@ -38,6 +39,15 @@ func get_input():
 		add_child(timer)
 		can_fire = false
 	#	print("mouse clicked")
+	if Input.is_mouse_button_pressed(BUTTON_RIGHT) && can_fire:
+		pull_big_og()
+		timer = Timer.new()
+		timer.set_one_shot(true)
+		timer.start(bullet_delay)
+		timer.connect("timeout", self, "on_timeout_complete")
+		add_child(timer)
+		can_fire = false
+	#	print("mouse clicked")
 
 func on_timeout_complete():
 	can_fire = true
@@ -54,7 +64,14 @@ func pull_og():
 	#creates and fires bean bullet. the expression which represents angle to mouse is finicky. trust it
 	var beenis = Bean.instance()
 #	print("fired")
-	beenis.fire(get_child(0).global_position, 80, get_global_mouse_position().angle_to_point(get_child(0).global_position))
+	beenis.fire(get_child(0).global_position, get_child(0).get_shape().get_radius() * 1.1, get_global_mouse_position().angle_to_point(get_child(0).global_position))
+	get_parent().add_child(beenis)
+
+func pull_big_og():
+	#creates and fires bean bullet. the expression which represents angle to mouse is finicky. trust it
+	var beenis = BeanPod.instance()
+#	print("fired")
+	beenis.fire(get_child(0).global_position, get_child(0).get_shape().get_radius() * 1.1, get_global_mouse_position().angle_to_point(get_child(0).global_position))
 	get_parent().add_child(beenis)
 	
 func _physics_process(delta):
@@ -73,7 +90,7 @@ func _physics_process(delta):
 		velocity = Vector2()
 		gravity2 = 0
 	else:
-		gravity2 += 9.8
+		gravity2 += speed / 40
 	
 #	print(position)
 	

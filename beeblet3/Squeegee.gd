@@ -1,6 +1,6 @@
 extends KinematicBody2D
 
-var speed = 400
+var speed = 200
 
 var Toe = preload("res://Toe.tscn")
 
@@ -43,7 +43,7 @@ func on_timeout_complete():
 
 func extend_toe():
 	var toe = Toe.instance()
-	toe.fire(get_child(0).global_position, 80, facing)
+	toe.fire(get_child(0).global_position, get_child(0).get_shape().get_radius() * 1.1, facing)
 	get_parent().add_child(toe)
 	
 func hit(dam):
@@ -73,7 +73,7 @@ func _physics_process(delta):
 		velocity = Vector2()
 		gravity2 = 0
 	else:
-		gravity2 += 9.8
+		gravity2 += speed / 40
 	
 	get_input()
 

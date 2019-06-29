@@ -1,6 +1,5 @@
 extends KinematicBody2D
 
-const damage = 20
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
@@ -39,11 +38,16 @@ func fire(center, radius, dir):
 #	gravity = 10 / cannon_offset
 	
 	position = center + Vector2(radius, 0.0).rotated(dir)
-	velocity = Vector2(400, 0).rotated(dir)
+	velocity = Vector2(800, 0).rotated(dir)
 #	velocity = Vector2(1200 * cannon_offset, 0).rotated(dir)
 	fired = true
 
-	
+#func normalize(a):
+#	if a >= 0:
+#		return a
+#	else:
+#		return 2 * PI - abs(a)
+
 func _physics_process(delta):
 	var collision = move_and_collide(velocity * delta)
 	
@@ -51,10 +55,14 @@ func _physics_process(delta):
 		velocity.y += gravity
 	if collision:
 		if collision.collider.has_method("hit"):
-			var dam = 20 + (bullet_life - timer.get_time_left()) * 20
+			var dam = 60 + (bullet_life - timer.get_time_left()) * 60
 			print("dam is: ", dam)
 			collision.collider.hit(dam)
 		queue_free()
+		
+	rotation = velocity.angle()
+	
+	print(rotation)
 
 func _on_VisibilityNotifier2D_screen_exited():
 #	queue_free()
