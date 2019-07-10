@@ -10,7 +10,7 @@ var velocity = Vector2()
 var rot_angle = -(PI / 2)
 var rot_speed = 15
 var health = 200
-var bullet_delay = 0.5
+var bullet_delay = 2
 var timer = null
 var can_fire = true
 

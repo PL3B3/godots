@@ -6,7 +6,7 @@ extends KinematicBody2D
 
 var velocity = Vector2()
 var timer = null
-var bullet_life = 3.6
+var bullet_life = 3
 var fired = false
 var gravity = 0
 
@@ -38,7 +38,7 @@ func fire(center, radius, dir):
 #	gravity = 10 / cannon_offset
 	
 	position = center + Vector2(radius, 0.0).rotated(dir)
-	velocity = Vector2(800, 0).rotated(dir)
+	velocity = Vector2(400, 0).rotated(dir)
 #	velocity = Vector2(1200 * cannon_offset, 0).rotated(dir)
 	fired = true
 
@@ -55,14 +55,12 @@ func _physics_process(delta):
 		velocity.y += gravity
 	if collision:
 		if collision.collider.has_method("hit"):
-			var dam = 60 + (bullet_life - timer.get_time_left()) * 60
+			var dam = 60 + ((bullet_life - timer.get_time_left()) * (bullet_life - timer.get_time_left())) * 90
 			print("dam is: ", dam)
 			collision.collider.hit(dam)
 		queue_free()
 		
 	rotation = velocity.angle()
-	
-	print(rotation)
 
 func _on_VisibilityNotifier2D_screen_exited():
 #	queue_free()

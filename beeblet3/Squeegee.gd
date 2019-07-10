@@ -8,7 +8,7 @@ var gravity2 = 9.8
 var velocity = Vector2()
 var rot_angle = -(PI / 2)
 var rot_speed = 15
-var health = 2000
+var health = 200
 var facing = 0
 var toe_delay = 0.5
 var timer = null
@@ -48,16 +48,14 @@ func extend_toe():
 	
 func hit(dam):
 	health -= dam
-	if health > 0:
-		print("OWO! OWO! My Hewfh Points Is At: ", health)
-	else:
-		print("I am DIE!")
+	if not health > 0:
 		queue_free()
 		
 	print(Vector2(1,1).angle())
 
 	
 func _physics_process(delta):
+	get_node("Label").set_text(str(health as int))
 	get_child(1).position = get_child(0).position
 	
 	velocity.x = 0

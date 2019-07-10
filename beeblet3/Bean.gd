@@ -7,7 +7,7 @@ const damage = 20
 
 var velocity = Vector2()
 var timer = null
-var bullet_life = 3.6
+var bullet_life = 3
 var fired = false
 var gravity = 0
 
@@ -51,10 +51,12 @@ func _physics_process(delta):
 		velocity.y += gravity
 	if collision:
 		if collision.collider.has_method("hit"):
-			var dam = 20 + (bullet_life - timer.get_time_left()) * 20
+			var dam = 20 + (bullet_life - timer.get_time_left()) * 35
 			print("dam is: ", dam)
 			collision.collider.hit(dam)
 		queue_free()
+	
+	rotation = velocity.angle()
 
 func _on_VisibilityNotifier2D_screen_exited():
 #	queue_free()

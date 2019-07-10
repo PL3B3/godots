@@ -4,7 +4,7 @@ var damage
 var velocity = Vector2()
 var timer = null
 var bullet_life = 10
-var gravity
+var gravity = 10
 var fired = false
 
 func _ready():

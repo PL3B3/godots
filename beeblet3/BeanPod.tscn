@@ -10,30 +10,30 @@
 script = ExtResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="."]
-position = Vector2( 0.418121, 0 )
-scale = Vector2( 0.2, 0.1 )
+position = Vector2( 7.83829, -0.0794973 )
+scale = Vector2( 0.05, 0.025 )
 texture = ExtResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2( 10.0349, 0 )
 rotation = -1.5708
-scale = Vector2( 2, 3.2 )
+scale = Vector2( 0.5, 0.8 )
 shape = SubResource( 1 )
 
 [node name="Sprite2" type="Sprite" parent="."]
-position = Vector2( -17.5234, 5.60464 )
+position = Vector2( 3.73203, 1.44802 )
 rotation = -0.523599
-scale = Vector2( 0.11, 0.11 )
+scale = Vector2( 0.028, 0.028 )
 texture = ExtResource( 3 )
 
 [node name="Sprite3" type="Sprite" parent="."]
-position = Vector2( 10.4907, 6.02276 )
+position = Vector2( 11.152, 1.96061 )
 rotation = -0.523599
-scale = Vector2( 0.11, 0.11 )
+scale = Vector2( 0.028, 0.028 )
 texture = ExtResource( 3 )
 
 [node name="Sprite4" type="Sprite" parent="."]
-position = Vector2( 38.5049, 7.69525 )
+position = Vector2( 18.2396, 2.09528 )
 rotation = -0.523599
-scale = Vector2( 0.11, 0.11 )
+scale = Vector2( 0.028, 0.028 )
 texture = ExtResource( 3 )
