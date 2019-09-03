@@ -13,10 +13,15 @@ var facing = 0
 var toe_delay = 0.5
 var timer = null
 var can_toe = true
+var regen_timer = null
 
 func _ready():
 	print("Destroy this little BOI whomst health at: ", health)
-
+	regen_timer = Timer.new()
+	regen_timer.start(1)
+	regen_timer.connect("timeout", self, "on_regen_timeout_complete")
+	add_child(regen_timer)
+	
 func get_input():
 	# Detect up/down/left/right keystate and only move when pressed.
 
@@ -41,6 +46,13 @@ func get_input():
 func on_timeout_complete():
 	can_toe = true
 
+func on_regen_timeout_complete():
+	if health < 200:
+		if health == 199:
+			health += 1
+		else:
+			health +=2
+
 func extend_toe():
 	var toe = Toe.instance()
 	toe.fire(get_child(0).global_position, get_child(0).get_shape().get_radius() * 1.1, facing)
@@ -52,7 +64,6 @@ func hit(dam):
 		queue_free()
 		
 	print(Vector2(1,1).angle())
-
 	
 func _physics_process(delta):
 	get_node("Label").set_text(str(health as int))
