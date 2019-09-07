@@ -51,7 +51,6 @@ func physics_single_execute(delta):
 		gravity2 += 9.8
 
 	move_and_slide(velocity.rotated(rot_angle + (PI / 2)) + Vector2(0.0, gravity2), Vector2(0.0, -1.0), false, 4, 0.9)
-	print(position)
 
 
 

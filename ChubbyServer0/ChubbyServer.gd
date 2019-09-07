@@ -11,20 +11,30 @@ var physics_processing = false
 var server
 
 func _ready():
-	start_server()
+	
 	get_tree().connect("network_peer_connected", self, "_player_connected")
 	get_tree().connect("network_peer_disconnected", self, "_player_disconnected")
 	get_tree().connect("connected_to_server", self, "_connected_ok")
 	get_tree().connect("connection_failed", self, "_connected_fail")
 	get_tree().connect("server_disconnected", self, "_server_disconnected")
 	var server_map = map.instance()
+	
+	start_server()
+	
 	add_child(server_map)
 	
+#	var client_0 = NetworkedMultiplayerENet.new()
+#	client_0.create_client('127.0.0.1', DEFAULT_PORT)
+#	get_tree().set_network_peer(client_0)
+
+remote func print_thing():
+	print("i printed a boi")
+
 func start_server():
 	server = NetworkedMultiplayerENet.new()
 	
 	# compressing data packets -> big speed
-	server.set_compression_mode(NetworkedMultiplayerENet.COMPRESS_ZLIB)
+	# server.set_compression_mode(NetworkedMultiplayerENet.COMPRESS_ZLIB)
 	
 	var err = server.create_server(DEFAULT_PORT, MAX_PLAYERS)
 	if not err == OK:
@@ -34,6 +44,7 @@ func start_server():
 		return
 	
 	get_tree().set_network_peer(server)
+	print(get_tree())
 	print("Server started, waiting for players")
 
 func _player_connected(id):

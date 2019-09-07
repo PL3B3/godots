@@ -18,6 +18,10 @@ func _ready():
 	add_child(my_map)
 	add_child(my_chubby_character)
 	
+	rpc_id(1, "print_thing")
+	
+#	print(get_tree())
+	
 	
 
 func start_client():
