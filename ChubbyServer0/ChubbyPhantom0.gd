@@ -6,7 +6,7 @@ func _ready():
 
 # this is the shooty ability
 #@param arg_array[0] is get_child(0).global_position, arg_array[1] is get_child(0).get_shape().get_radius() * 1.1, arg_array[2] is get_global_mouse_position().angle_to_point(get_child(0).global_position)
-remote func ability0(arg_array):
+func ability0(arg_array):
 	var bullet_baby = FiredProjectile.instance()
 #	print("fired")
 	bullet_baby.fire(arg_array[0], arg_array[1], arg_array[2])

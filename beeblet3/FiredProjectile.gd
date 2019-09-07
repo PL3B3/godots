@@ -3,8 +3,8 @@ extends KinematicBody2D
 var damage
 var velocity = Vector2()
 var timer = null
-var bullet_life = 10
-var gravity = 10
+var bullet_life
+var gravity
 var fired = false
 
 func _ready():

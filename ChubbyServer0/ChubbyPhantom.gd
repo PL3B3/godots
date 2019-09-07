@@ -35,8 +35,6 @@ func add_and_return_timed_effect(time, effect, args, ps):
 	timed_effect.init_timer(time, effect, args, ps)
 	return timed_effect
 
-remote func cooldown(ability_num):
-	ability_usable[ability_num] = true
 
 #func _physics_process(delta):
 #	physics_single_execute(delta)
@@ -55,47 +53,58 @@ func physics_single_execute(delta):
 	move_and_slide(velocity.rotated(rot_angle + (PI / 2)) + Vector2(0.0, gravity2), Vector2(0.0, -1.0), false, 4, 0.9)
 	print(position)
 
-remote func up():
+
+
+func cooldown(ability_num):
+	ability_usable[ability_num] = true
+
+func up():
 	velocity.y -= 1.5 * speed
 	
-remote func down():
+func down():
 	velocity.y += 0.1 * speed
 	
-remote func left():
-	velocity.x -= speed
-	
-remote func right():
-	velocity.x += speed
+func left():
+	if velocity.x >= -200:
+		velocity.x -= min(speed, velocity.x + 200)
+	else:
+		velocity.x = -200
 
-remote func hit(dam):
+func right():
+	if velocity.x <= 200:
+		velocity.x += min(speed, 200 - velocity.x)
+	else:
+		velocity.x = 200
+
+func hit(dam):
 	health -= dam
 	print("Was hit")
 	if not health > 0:
 		die()
 
-remote func sayhi():
+func sayhi():
 	print("hi, it's ", self)
 	
-remote func reset_timers():
+func reset_timers():
 	for effect in timed_effects:
 		effect.reset_timer()
 
-remote func accelerate_timers():
+func accelerate_timers():
 	for effect in timed_effects:
 		effect.accelerate_timer()
 
-remote func die():
+func die():
 	# I should expand this function to incorporate respawns, etc.. Don't want to have to reload resources every time
 	print("I died")
 
-remote func ability0(arg_array):
+func ability0(arg_array):
 	print("ability0 activated")
 
-remote func ability1(arg_array):
+func ability1(arg_array):
 	print("ability1 activated")
 	
-remote func ability2(arg_array):
+func ability2(arg_array):
 	print("ability2 activated")
 	
-remote func ability3(arg_array):
+func ability3(arg_array):
 	print("ability3 activated")

@@ -89,3 +89,12 @@ func _physics_process(delta):
 	
 	if velocity.x != 0 || velocity.y != 0:
 		facing = velocity.angle()
+
+
+#
+class StatusEffect:
+	var type
+	var time
+	
+	func _init(t, tm):
+		pass

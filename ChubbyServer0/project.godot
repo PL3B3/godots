@@ -16,12 +16,8 @@ _global_script_class_icons={
 [application]
 
 config/name="ChubbyServer0"
-run/main_scene="res://Game0.tscn"
+run/main_scene="res://ChubbyServer.tscn"
 config/icon="res://icon.png"
-
-[autoload]
-
-ChubbyServer="*res://ChubbyServer.gd"
 
 [rendering]
 

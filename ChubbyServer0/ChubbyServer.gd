@@ -5,6 +5,8 @@ const MAX_PLAYERS = 8
 
 var players = {}
 var ChubbyPhantom = preload("res://ChubbyPhantom.tscn")
+var ChubbyPhantom0 = preload("res://ChubbyPhantom0.tscn")
+var map = preload("res://maps/Map0.tscn")
 var physics_processing = false
 var server
 
@@ -15,7 +17,9 @@ func _ready():
 	get_tree().connect("connected_to_server", self, "_connected_ok")
 	get_tree().connect("connection_failed", self, "_connected_fail")
 	get_tree().connect("server_disconnected", self, "_server_disconnected")
-
+	var server_map = map.instance()
+	add_child(server_map)
+	
 func start_server():
 	server = NetworkedMultiplayerENet.new()
 	
@@ -31,12 +35,7 @@ func start_server():
 	
 	get_tree().set_network_peer(server)
 	print("Server started, waiting for players")
-	
-func start_client():
-	var client = NetworkedMultiplayerENet.new()
-	client.create_client("127.0.0.1", DEFAULT_PORT)
-	get_tree().set_network_peer(client)
-	
+
 func _player_connected(id):
 	print("Player with id ", id, " connected")
 	
@@ -47,7 +46,7 @@ func _player_disconnected(id):
 	players.erase(id)
 	
 func _connected_ok():
-	pass
+	print("got a connection")
 	
 func _connected_fail():
 	pass
@@ -76,13 +75,21 @@ remote func add_player(id, type):
 	match type:
 		"base":
 			player_phantom = ChubbyPhantom.instance()
+		"0":
+			player_phantom = ChubbyPhantom0.instance()
 		_:
 			player_phantom = ChubbyPhantom.instance()
 	
 	player_phantom.set_name(str(id))
 	players[id] = player_phantom
-	
+
 	get_node("/root/ChubbyServer").add_child(player_phantom)
+	
+	physics_processing = true
+
+# function called by client rpc, which executes a method of that client's representative ChubbyPhantom here on the server
+remote func parse_client_rpc(id, command, args):
+	players[id].callv(command, args)
 
 # TODO: do multithreading later for efficiency. players should be a dict of id: {ChubbyPhantom, thread}
 func _physics_process(delta):
