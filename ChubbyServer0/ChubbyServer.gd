@@ -13,7 +13,7 @@ func _ready():
 	
 	
 	var server_map = map.instance()
-	
+#	var nai = ChubbyPhantom.instance()
 	start_server()
 
 	get_tree().connect("network_peer_connected", self, "_player_connected")
@@ -23,6 +23,7 @@ func _ready():
 	get_tree().connect("server_disconnected", self, "_server_disconnected")
 	
 	add_child(server_map)
+#	get_node("/root/ChubbyServer").add_child(nai)
 	
 #	var client_0 = NetworkedMultiplayerENet.new()
 #	client_0.create_client('127.0.0.1', DEFAULT_PORT)
@@ -83,13 +84,17 @@ func quit_game():
 remote func add_player(id, type):
 	var player_phantom
 	
+	print("Constructing player with id ", id, " and type ", type)
+
 	# construct an instance of a ChubbyPhantom or heir scene using the type provided 
 	match type:
 		"base":
+			print("creating base character")
 			player_phantom = ChubbyPhantom.instance()
 		"0":
 			player_phantom = ChubbyPhantom0.instance()
 		_:
+			print("creating other character")
 			player_phantom = ChubbyPhantom.instance()
 	
 	player_phantom.set_name(str(id))

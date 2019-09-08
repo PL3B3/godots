@@ -42,10 +42,6 @@ func set_stats(speed, health_cap, regen, xy, player_id):
 func _ready():
 	print("This is the character base class. Prepare muffin.")
 
-remote func send_blueprint():
-	rpc_id(1, "add_player", player_id, type)
-	print("sending blueprint for ", player_id)
-
 func add_and_return_timed_effect(time, effect, args, ps):
 	var timed_effect = TimedEffect.instance()
 	add_child(timed_effect)

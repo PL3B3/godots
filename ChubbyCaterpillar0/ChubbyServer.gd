@@ -10,6 +10,7 @@ var map = preload("res://maps/Map0.tscn")
 
 var client_id
 var players = {}
+var my_type = "base"
 
 func _ready():
 	start_client()
@@ -29,6 +30,10 @@ func _ready():
 
 remote func say_zx():
 	print("I said zx ok?? My name a ", client_id)
+	
+remote func send_blueprint():
+	rpc_id(1, "add_player", client_id, my_type)
+	print("sending blueprint for ", client_id)
 
 func start_client():
 	var client = NetworkedMultiplayerENet.new()
