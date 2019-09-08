@@ -31,7 +31,7 @@ func connect_client():
 
 	
 func _player_connected(id):
-	print("Player connected")
+	print("Player connected with id ", id)
 
 func _on_ButtonServer_pressed():
 	var server = NetworkedMultiplayerENet.new()

@@ -44,6 +44,7 @@ func _ready():
 
 remote func send_blueprint():
 	rpc_id(1, "add_player", player_id, type)
+	print("sending blueprint for ", player_id)
 
 func add_and_return_timed_effect(time, effect, args, ps):
 	var timed_effect = TimedEffect.instance()

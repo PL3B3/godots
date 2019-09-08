@@ -8,18 +8,19 @@ var ChubbyPhantom = preload("res://ChubbyPhantom.tscn")
 var ChubbyPhantom0 = preload("res://ChubbyPhantom0.tscn")
 var map = preload("res://maps/Map0.tscn")
 var physics_processing = false
-var server
 
 func _ready():
 	
+	
+	var server_map = map.instance()
+	
+	start_server()
+
 	get_tree().connect("network_peer_connected", self, "_player_connected")
 	get_tree().connect("network_peer_disconnected", self, "_player_disconnected")
 	get_tree().connect("connected_to_server", self, "_connected_ok")
 	get_tree().connect("connection_failed", self, "_connected_fail")
 	get_tree().connect("server_disconnected", self, "_server_disconnected")
-	var server_map = map.instance()
-	
-	start_server()
 	
 	add_child(server_map)
 	
@@ -31,20 +32,18 @@ remote func print_thing():
 	print("i printed a boi")
 
 func start_server():
-	server = NetworkedMultiplayerENet.new()
+	var server = NetworkedMultiplayerENet.new()
 	
 	# compressing data packets -> big speed
 	# server.set_compression_mode(NetworkedMultiplayerENet.COMPRESS_ZLIB)
-	
 	var err = server.create_server(DEFAULT_PORT, MAX_PLAYERS)
 	if not err == OK:
 		# if another server is running, this will execute
-		
-		printerr("Can't host, port already in use")
+		print("server creation failed")
+		# printerr("Can't host, port already in use")
 		return
 	
 	get_tree().set_network_peer(server)
-	print(get_tree())
 	print("Server started, waiting for players")
 
 func _player_connected(id):
@@ -52,6 +51,8 @@ func _player_connected(id):
 	
 	# call the recently connected player to send its class type
 	rpc_id(id, "send_blueprint")
+	rpc_id(id, "say_zx")
+	print(get_tree().get_network_connected_peers())
 	
 func _player_disconnected(id):
 	players.erase(id)

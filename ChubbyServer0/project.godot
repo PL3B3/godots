@@ -19,10 +19,6 @@ config/name="ChubbyServer0"
 run/main_scene="res://ChubbyServer.tscn"
 config/icon="res://icon.png"
 
-[autoload]
-
-ChubbyServer="*res://ChubbyServer.gd"
-
 [rendering]
 
 environment/default_environment="res://default_env.tres"
