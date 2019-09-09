@@ -102,10 +102,13 @@ remote func add_player(id, type):
 
 	get_node("/root/ChubbyServer").add_child(player_phantom)
 	
+	print("These are the children ", get_children())
+
 	physics_processing = true
 
 # function called by client rpc, which executes a method of that client's representative ChubbyPhantom here on the server
 remote func parse_client_rpc(id, command, args):
+	print("Player ", id, " called function ", command)
 	players[id].callv(command, args)
 
 # TODO: do multithreading later for efficiency. players should be a dict of id: {ChubbyPhantom, thread}

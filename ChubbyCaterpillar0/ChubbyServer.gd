@@ -8,21 +8,17 @@ var ChubbyCharacter = preload("res://character/base_character/ChubbyCharacter.ts
 # hard coded for now
 var map = preload("res://maps/Map0.tscn")
 
-var client_id
+onready var client_id = get_tree().get_network_unique_id()
 var players = {}
 var my_type = "base"
 
 func _ready():
 	start_client()
 	
-	client_id = get_tree().get_network_unique_id()
-	
-	var my_chubby_character = ChubbyCharacter.instance()
-	my_chubby_character.set_stats(200, 200, 2, Vector2(0,0), client_id)
+	add_my_player(client_id, my_type)
 	var my_map = map.instance()
 	
 	add_child(my_map)
-	add_child(my_chubby_character)
 	
 #	rpc_id(1, "print_thing")
 	
@@ -41,6 +37,14 @@ func start_client():
 	get_tree().set_network_peer(client)
 	print("client created")
 
+# specifically to add my character...special sets it to network_master
+func add_my_player(id, type):
+	var my_chubby_character = ChubbyCharacter.instance()
+	my_chubby_character.set_stats(200, 200, 2, Vector2(0,0), client_id)
+	my_chubby_character.set_name(str(client_id))
+	add_child(my_chubby_character)
+	my_chubby_character.set_network_master(client_id)
+
 func add_player(id, type):
 	var player
 	
@@ -52,3 +56,9 @@ func add_player(id, type):
 	
 	get_node("/root/ChubbyServer").add_child(player)
 	
+# client_update and client_update_unreliable are called by their respective rpc functions by the server
+#  
+
+#
+remote func client_update_unreliable(players_updates_unreliable):
+	pass
