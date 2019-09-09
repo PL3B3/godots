@@ -10,10 +10,8 @@ var map = preload("res://maps/Map0.tscn")
 var physics_processing = false
 
 func _ready():
-	
-	
 	var server_map = map.instance()
-#	var nai = ChubbyPhantom.instance()
+
 	start_server()
 
 	get_tree().connect("network_peer_connected", self, "_player_connected")
@@ -23,11 +21,7 @@ func _ready():
 	get_tree().connect("server_disconnected", self, "_server_disconnected")
 	
 	add_child(server_map)
-#	get_node("/root/ChubbyServer").add_child(nai)
-	
-#	var client_0 = NetworkedMultiplayerENet.new()
-#	client_0.create_client('127.0.0.1', DEFAULT_PORT)
-#	get_tree().set_network_peer(client_0)
+
 
 remote func print_thing():
 	print("i printed a boi")
@@ -57,6 +51,9 @@ func _player_connected(id):
 	
 func _player_disconnected(id):
 	players.erase(id)
+	var disconnected_players_phantom = get_node("/root/ChubbyServer/" + str(id))
+	remove_child(disconnected_players_phantom)
+	disconnected_players_phantom.queue_free()
 	
 func _connected_ok():
 	print("got a connection")
@@ -84,6 +81,7 @@ func quit_game():
 remote func add_player(id, type):
 	var player_phantom
 	
+	# @d
 	print("Constructing player with id ", id, " and type ", type)
 
 	# construct an instance of a ChubbyPhantom or heir scene using the type provided 
@@ -98,10 +96,14 @@ remote func add_player(id, type):
 			player_phantom = ChubbyPhantom.instance()
 	
 	player_phantom.set_name(str(id))
+
+	# add player to the dictionary containing all player representations
 	players[id] = player_phantom
 
+	# add player to scene tree, specifically ChubbyServer. MUST BE SAME SCENE STRUCTURE AS CLIENT. ADD ALL CLIENT PLAYERS TO root/chubbyserver TOO
 	get_node("/root/ChubbyServer").add_child(player_phantom)
 	
+	# @d
 	print("These are the children ", get_children())
 
 	physics_processing = true
@@ -109,6 +111,9 @@ remote func add_player(id, type):
 # function called by client rpc, which executes a method of that client's representative ChubbyPhantom here on the server
 remote func parse_client_rpc(id, command, args):
 	print("Player ", id, " called function ", command)
+
+	print(players[id])
+
 	players[id].callv(command, args)
 
 # TODO: do multithreading later for efficiency. players should be a dict of id: {ChubbyPhantom, thread}

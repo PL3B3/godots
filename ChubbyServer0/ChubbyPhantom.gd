@@ -7,17 +7,17 @@ var TimedEffect = preload("res://character/TimedEffect.tscn")
 # float: health is actual current health
 # float: regen is the amount of health to be added or removed per second from the character
 # int: team is a letter representation of which team you are on
-var speed
-var health_cap
-var health
-var regen
-var team
+var speed = 200
+var health_cap = 200
+var health = 200
+var regen = 2
+var team = 'a'
 var timed_effects = []
 
 # gravity2 is a workaround to physics simulation problems (I don't want to code a whole-ass momentum thing yet)
 # It starts at 9.8 as a default
 var gravity2 = 0
-var velocity = Vector2()
+var velocity = Vector2(0,0)
 var rot_angle = -(PI / 2)
 var ability_usable = [true, true, true, true]
 
@@ -44,20 +44,22 @@ func physics_single_execute(delta):
 		# get one of the collisions, it's normal, and convert it into an angle
 		rot_angle = get_slide_collision(get_slide_count() - 1).get_normal().angle()
 
+	move_and_slide(velocity.rotated(rot_angle + (PI / 2)) + Vector2(0.0, gravity2), Vector2(0.0, -1.0), false, 4, 0.9)
+
 	if is_on_floor():
 		velocity = Vector2()
 		gravity2 = 0
 	else:
 		gravity2 += 9.8
 
-	move_and_slide(velocity.rotated(rot_angle + (PI / 2)) + Vector2(0.0, gravity2), Vector2(0.0, -1.0), false, 4, 0.9)
-
+	
 
 
 func cooldown(ability_num):
 	ability_usable[ability_num] = true
 
 func up():
+	print("up called on chubbyphantom for player ", get_name())
 	velocity.y -= 1.5 * speed
 	
 func down():

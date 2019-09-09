@@ -13,18 +13,18 @@ const rot_speed = 15
 # float: health is actual current health
 # float: regen is the amount of health to be added or removed per second from the character
 # char: team is a letter representation of which team you are on
-var speed
-var health_cap
-var health
-var regen
-var team
+var speed = 200
+var health_cap = 200
+var health = 200
+var regen = 2
+var team = 'a'
 var player_id
 
 # gravity2 is a workaround to physics simulation problems (I don't want to code a whole-ass momentum thing yet)
 # It starts at 9.8 as a default
 # type is the class of the character
 var gravity2 = 0
-var velocity = Vector2()
+var velocity = Vector2(0,0)
 var rot_angle = -(PI / 2)
 var facing = 0
 var type = "base"
@@ -55,22 +55,22 @@ func get_input():
 
 	if Input.is_key_pressed(KEY_W) && is_on_floor():
 		velocity.y -= 1.5 * speed
-		rpc_id(1, "parse_client_rpc", player_id, "up", []) 
+		get_node("/root/ChubbyServer").send_player_rpc(player_id, "up", []) 
 	if Input.is_key_pressed(KEY_D):
 		if velocity.x <= 200:
 			velocity.x += min(speed, 200 - velocity.x)
-			rpc_id(1, "parse_client_rpc", player_id, "right", [])
+			get_node("/root/ChubbyServer").send_player_rpc(player_id, "right", [])
 		else:
 			velocity.x = 200
 	if Input.is_key_pressed(KEY_A):
 		if velocity.x >= -200:
 			velocity.x -= min(speed, velocity.x + 200)
-			rpc_id(1, "parse_client_rpc", player_id, "left", [])
+			get_node("/root/ChubbyServer").send_player_rpc(player_id, "left", [])
 		else:
 			velocity.x = -200
 	if Input.is_key_pressed(KEY_S):
 		velocity.y += 0.1 * speed
-		rpc_id(1, "parse_client_rpc", player_id, "down", [])
+		get_node("/root/ChubbyServer").send_player_rpc(player_id, "down", [])
 
 func cooldown(ability):
 	ability_usable[ability] = true
@@ -89,6 +89,8 @@ func _physics_process(delta):
 		if abs(get_child(1).rotation - (rot_angle + PI / 2)) > 0.04:
 			get_child(1).rotation += ((rot_angle + PI / 2) - (get_child(1).rotation)) * delta * rot_speed 
 
+	move_and_slide(velocity.rotated(rot_angle + (PI / 2)) + Vector2(0.0, gravity2), Vector2(0.0, -1.0), false, 4, 0.9)
+
 	if is_on_floor():
 		velocity = Vector2()
 		gravity2 = 0
@@ -97,7 +99,7 @@ func _physics_process(delta):
 	
 	get_input()
 
-	move_and_slide(velocity.rotated(rot_angle + (PI / 2)) + Vector2(0.0, gravity2), Vector2(0.0, -1.0), false, 4, 0.9)
+	
 
 func hit(dam):
 	health -= dam
