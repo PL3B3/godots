@@ -1,0 +1,22 @@
+TODO list overview:
+
+ChubbyCaterpillar0
+	-reliable/unreliable split
+
+ChubbyServer0
+	-reliable/unreliable split
+
+Misc (long term goals)
+	-networking
+		-tweens for interpolation
+		-Lstm trained on client-server prediction to make game big smooth
+			-preprocessing of how many "Game objects" the player currently sees (a number, X)
+			-preprocessing of object attributes to small numbers between -1 and 1
+			-profile of every single player 
+			-l1: a recurrent neural network (RNN) runs X times, each takes inputs describing object type, position, health, shape bounds, shape type, current velocity, etc... might not even need current velocity
+			-l2: an lstm which takes past object values to predict the server's next packet sent
+			-Potentially even predicts gameplay moves, like when someone is likely to activate an ability
+	-final optimizations
+		-threading for physics processing
+		-polish sprites
+		-
