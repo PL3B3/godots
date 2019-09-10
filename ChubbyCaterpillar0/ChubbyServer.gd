@@ -10,7 +10,6 @@ extends Node
 # basically a central server and a client side middle server
 # the client player send their movement instructions through rpc_unreliable_id
 # and other instructions through reliable
-# The server sends authoritative players info to update, which the physics_process works on
 # Instead of individual physics functions per player, make single_physics_frame functions and
 # handle all of those through this file/node (chubbycaterpillar's server)
 # For simplicity's sake
@@ -59,7 +58,7 @@ func send_player_rpc_unreliable(id, command, args):
 
 func start_client():
 	var client = NetworkedMultiplayerENet.new()
-	client.create_client("127.0.0.1", DEFAULT_PORT)
+	client.create_client("192.168.174.1", DEFAULT_PORT)
 	get_tree().set_network_peer(client)
 	print("client created")
 
