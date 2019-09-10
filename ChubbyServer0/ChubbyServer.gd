@@ -123,7 +123,7 @@ remote func parse_client_rpc(id, command, args):
 	players[id].callv(command, args)
 
 # udp equivalent to parse_client_rpc
-remote func parce_client_rpc_unreliable(id, command, args):
+remote func parse_client_rpc_unreliable(id, command, args):
 	print("Player ", id, " called function ", command)
 
 	print(players[id])
