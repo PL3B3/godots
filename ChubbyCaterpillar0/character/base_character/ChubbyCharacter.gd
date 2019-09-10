@@ -55,22 +55,22 @@ func get_input():
 
 	if Input.is_key_pressed(KEY_W) && is_on_floor():
 		velocity.y -= 1.5 * speed
-		get_node("/root/ChubbyServer").send_player_rpc(player_id, "up", []) 
+		get_node("/root/ChubbyServer").send_player_rpc_unreliable(player_id, "up", []) 
 	if Input.is_key_pressed(KEY_D):
 		if velocity.x <= 200:
 			velocity.x += min(speed, 200 - velocity.x)
-			get_node("/root/ChubbyServer").send_player_rpc(player_id, "right", [])
+			get_node("/root/ChubbyServer").send_player_rpc_unreliable(player_id, "right", [])
 		else:
 			velocity.x = 200
 	if Input.is_key_pressed(KEY_A):
 		if velocity.x >= -200:
 			velocity.x -= min(speed, velocity.x + 200)
-			get_node("/root/ChubbyServer").send_player_rpc(player_id, "left", [])
+			get_node("/root/ChubbyServer").send_player_rpc_unreliable(player_id, "left", [])
 		else:
 			velocity.x = -200
 	if Input.is_key_pressed(KEY_S):
 		velocity.y += 0.1 * speed
-		get_node("/root/ChubbyServer").send_player_rpc(player_id, "down", [])
+		get_node("/root/ChubbyServer").send_player_rpc_unreliable(player_id, "down", [])
 
 func cooldown(ability):
 	ability_usable[ability] = true

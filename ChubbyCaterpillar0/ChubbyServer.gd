@@ -6,13 +6,24 @@ extends Node
 # reduce hard_coding. Create port, ip, map, character selectors
 #
 
-const DEFAULT_PORT = 3342
+# EXPLANATION:
+# basically a central server and a client side middle server
+# the client player send their movement instructions through rpc_unreliable_id
+# and other instructions through reliable
+# The server sends authoritative players info to update, which the physics_process works on
+# Instead of individual physics functions per player, make single_physics_frame functions and
+# handle all of those through this file/node (chubbycaterpillar's server)
+# For simplicity's sake
 
+
+
+# hard coded. please change
+const DEFAULT_PORT = 3342
 var ChubbyCharacter = preload("res://character/base_character/ChubbyCharacter.tscn")
-# hard coded for now
 var map = preload("res://maps/Map0.tscn")
 
 var client_id 
+var my_player_id
 var players = {}
 var my_type = "base"
 
@@ -42,6 +53,9 @@ remote func send_blueprint():
 
 func send_player_rpc(id, command, args):
 	rpc_id(1, "parse_client_rpc", id, command, args) 
+
+func send_player_rpc_unreliable(id, command, args):
+	rpc_unreliable_id(1, "parse_client_rpc_unreliable", id, command, args) 
 
 func start_client():
 	var client = NetworkedMultiplayerENet.new()

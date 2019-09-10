@@ -1,5 +1,11 @@
 extends Node
 
+# This is the dedicated server node
+
+# The server sends authoritative players info to update, which the client_side physics_process works on
+# Per each physics process cycle on this server, send
+# A dictionary
+
 const DEFAULT_PORT = 3342
 const MAX_PLAYERS = 8
 
@@ -108,8 +114,16 @@ remote func add_player(id, type):
 
 	physics_processing = true
 
-# function called by client rpc, which executes a method of that client's representative ChubbyPhantom here on the server
+# tcp function called by client rpc, which executes a method of that client's representative ChubbyPhantom here on the server
 remote func parse_client_rpc(id, command, args):
+	print("Player ", id, " called function ", command)
+
+	print(players[id])
+
+	players[id].callv(command, args)
+
+# udp equivalent to parse_client_rpc
+remote func parce_client_rpc_unreliable(id, command, args):
 	print("Player ", id, " called function ", command)
 
 	print(players[id])
