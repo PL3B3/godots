@@ -2,6 +2,7 @@ TODO list overview:
 
 ChubbyCaterpillar0
 	-reliable/unreliable split
+	-layer and mask setting, support for up to 10 teams
 
 ChubbyServer0
 	-reliable/unreliable split
@@ -9,7 +10,7 @@ ChubbyServer0
 Misc (long term goals)
 	-networking
 		-tweens for interpolation
-		-Lstm trained on client-server prediction to make game big smooth
+		**impractical, probably allows hacks, solved by simpler algs-Lstm trained on client-server prediction to make game big smooth
 			-preprocessing of how many "Game objects" the player currently sees (a number, X)
 			-preprocessing of object attributes to small numbers between -1 and 1
 			-profile of every single player 
@@ -19,4 +20,5 @@ Misc (long term goals)
 	-final optimizations
 		-threading for physics processing
 		-polish sprites
-		-
+		-animations
+		-sounds

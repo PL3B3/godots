@@ -13,6 +13,7 @@ func init_timer(time, fx, args, ps):
 	
 	if not ps:
 		self.connect("timeout", parent, fx, args)
+		self.connect("timeout", self, "stop_timer")
 		print(parent)
 	else:
 		# important note, the ps timer only runs for effect time - 1 because the effect timeout cuts out the last ps_timer timeout
@@ -25,6 +26,10 @@ func init_timer(time, fx, args, ps):
 
 func stop_ps_timer():
 	ps_timer.stop()
+	ps_timer.queue_free()
+
+func stop_timer():
+	queue_free()
 
 func reset_timer():
 	self.start(cap_time)

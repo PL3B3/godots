@@ -16,7 +16,7 @@ const rot_speed = 15
 var speed = 200
 var health_cap = 200
 var health = 200
-var regen = 2
+var regen = 0
 var team = 'a'
 var player_id
 
@@ -31,6 +31,9 @@ var type = "base"
 var timed_effects = []
 var ability_usable = [true, true, true, true]
 
+var character_under_my_control = false
+var is_alive = true
+
 func set_stats(speed, health_cap, regen, xy, player_id):
 	self.speed = speed
 	self.health_cap = health_cap
@@ -41,36 +44,40 @@ func set_stats(speed, health_cap, regen, xy, player_id):
 
 func _ready():
 	print("This is the character base class. Prepare muffin.")
-
+	character_under_my_control = is_network_master()
+	
 func add_and_return_timed_effect(time, effect, args, ps):
 	var timed_effect = TimedEffect.instance()
 	add_child(timed_effect)
 	timed_effect.init_timer(time, effect, args, ps)
 	timed_effects.push_back(timed_effect)
-	return timed_effect
 
 func get_input():
 	# Detect up/down/left/right keystate and only move when pressed.
 	# Continuous velocity makes prediction easier
-
-	if Input.is_key_pressed(KEY_W) && is_on_floor():
-		velocity.y -= 1.5 * speed
-		get_node("/root/ChubbyServer").send_player_rpc_unreliable(player_id, "up", []) 
-	if Input.is_key_pressed(KEY_D):
-		if velocity.x <= 200:
-			velocity.x += min(speed, 200 - velocity.x)
+	if character_under_my_control && is_alive:
+		if Input.is_key_pressed(KEY_W) && is_on_floor():
+			get_node("/root/ChubbyServer").send_player_rpc_unreliable(player_id, "up", []) 
+			up()
+		if Input.is_key_pressed(KEY_D):
 			get_node("/root/ChubbyServer").send_player_rpc_unreliable(player_id, "right", [])
-		else:
-			velocity.x = 200
-	if Input.is_key_pressed(KEY_A):
-		if velocity.x >= -200:
-			velocity.x -= min(speed, velocity.x + 200)
+			right()
+		if Input.is_key_pressed(KEY_A):
 			get_node("/root/ChubbyServer").send_player_rpc_unreliable(player_id, "left", [])
-		else:
-			velocity.x = -200
-	if Input.is_key_pressed(KEY_S):
-		velocity.y += 0.1 * speed
-		get_node("/root/ChubbyServer").send_player_rpc_unreliable(player_id, "down", [])
+			left()
+		if Input.is_key_pressed(KEY_S):
+			get_node("/root/ChubbyServer").send_player_rpc_unreliable(player_id, "down", [])
+			down()
+		# ability inputs to be handled separately to account for variable arguments
+		# makes inheritance easier because players only need to redefine ability methods, not get_input 
+		if Input.is_key_pressed(KEY_E):
+			ability0()
+		if Input.is_key_pressed(KEY_R):
+			ability1()
+		if Input.is_key_pressed(KEY_T):
+			ability2()
+		if Input.is_key_pressed(KEY_Z):
+			die()
 
 func cooldown(ability):
 	ability_usable[ability] = true
@@ -99,7 +106,6 @@ func _physics_process(delta):
 	
 	get_input()
 
-	
 
 func hit(dam):
 	health -= dam
@@ -115,15 +121,59 @@ func resetTimers():
 
 func die():
 	# I should expand this function to incorporate respawns, etc.. Don't want to have to reload resources every time
-	queue_free()
+	print("I died")
+	add_and_return_timed_effect(8, "ascend", [], true)
+	is_alive = false
+	# queue_free()
 
+func ascend():
+	print("ascending")
+	gravity2 = -400
+
+func up():
+	velocity.y -= 1.5 * speed
+
+func down():
+	velocity.y += 0.1 * speed
+
+func right():
+	if velocity.x <= speed:
+		velocity.x += min(speed, speed - velocity.x)
+	else:
+		velocity.x = speed
+
+func left():
+	if velocity.x >= -speed:
+		velocity.x -= min(speed, velocity.x + speed)
+	else:
+		velocity.x = -speed
+
+# the abilities are meant to be infrequently used, so i send them reliably. Also, they're quite important
 func ability0():
-	pass
-
+	print("ability0 activated")
+	get_node("/root/ChubbyServer").send_player_rpc(player_id, "ability0", [])
+	# even though i set usable to false, the current ability call still goes through b/c usable was true upon call
+	ability_usable[0] = false
+	add_and_return_timed_effect(10, "cooldown", [0], false)
+	
+	# specific code in inherited class goes here
+	
+	
 func ability1():
-	pass
+	print("ability1 activated")
+	get_node("/root/ChubbyServer").send_player_rpc(player_id, "ability1", [])
+	ability_usable[1] = false
+	add_and_return_timed_effect(10, "cooldown", [1], false)
+	
+	# specific code in inherited class goes here
+	
 	
 func ability2():
-	pass
-
+	print("ability2 activated")
+	get_node("/root/ChubbyServer").send_player_rpc(player_id, "ability2", [])
+	ability_usable[2] = false
+	add_and_return_timed_effect(10, "cooldown", [2], false)
+	
+	# specific code in inherited class goes here
+	
 	

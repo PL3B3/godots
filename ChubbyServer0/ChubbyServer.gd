@@ -36,7 +36,7 @@ func start_server():
 	var server = NetworkedMultiplayerENet.new()
 	
 	# compressing data packets -> big speed
-	# server.set_compression_mode(NetworkedMultiplayerENet.COMPRESS_ZLIB)
+	server.set_compression_mode(NetworkedMultiplayerENet.COMPRESS_ZLIB)
 	var err = server.create_server(DEFAULT_PORT, MAX_PLAYERS)
 	if not err == OK:
 		# if another server is running, this will execute
@@ -112,7 +112,18 @@ remote func add_player(id, type):
 	# @d
 	print("These are the children ", get_children())
 
+	# turn on the server's simulation if not already on
 	physics_processing = true
+
+	add_new_player_to_current_clients(id, type)
+
+# basic add player to client side, i will upgrade to include team, position, etc.
+func add_new_player_to_current_clients(id, type):
+	rpc("add_other_player", id, type)
+
+# sends another client's commands in a dictionary
+func send_other_client_commands(id, other_id, their_command):
+	pass
 
 # tcp function called by client rpc, which executes a method of that client's representative ChubbyPhantom here on the server
 remote func parse_client_rpc(id, command, args):
@@ -122,10 +133,7 @@ remote func parse_client_rpc(id, command, args):
 
 	players[id].callv(command, args)
 
-# udp equivalent to parse_client_rpc
-remote func parse_client_rpc_unreliable(id, command, args):
-	print("Player ", id, " called function ", command)
-
+# udp equivalent to parse_client_rpc Wd
 	print(players[id])
 
 	players[id].callv(command, args)
