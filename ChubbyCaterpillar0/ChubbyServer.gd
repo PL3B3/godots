@@ -58,28 +58,57 @@ func send_player_rpc_unreliable(id, command, args):
 
 func start_client():
 	var client = NetworkedMultiplayerENet.new()
-	client.create_client("192.168.174.1", DEFAULT_PORT)
+	client.create_client("127.0.0.1", DEFAULT_PORT)
 	get_tree().set_network_peer(client)
 	print("client created")
 
 # specifically to add my character...special sets it to network_master
 func add_my_player(id, type):
-	var my_chubby_character = ChubbyCharacter.instance()
-	my_chubby_character.set_stats(200, 200, 2, Vector2(0,0), client_id)
-	my_chubby_character.set_name(str(client_id))
-	my_chubby_character.set_network_master(client_id)
-	get_node("/root/ChubbyServer").add_child(my_chubby_character)
+	var my_chubby_character
 
-func add_player(id, type):
-	var player
+	match type:
+		"base":
+			my_chubby_character = ChubbyCharacter.instance()
+		_:
+			my_chubby_character = ChubbyCharacter.instance()
+
+	my_chubby_character.set_id(id)
+	my_chubby_character.set_name(str(id))
+	my_chubby_character.set_network_master(id)
+	get_node("/root/ChubbyServer").add_child(my_chubby_character)
+	players[id] = my_chubby_character
+
+remote func add_other_player(id, type):
+	var other_player
 	
 	match type:
 		"base":
-			player = ChubbyCharacter.instance()
+			other_player = ChubbyCharacter.instance()
+		_:
+			other_player = ChubbyCharacter.instance()
+	other_player.set_id(id)
+	other_player.set_name(str(id))
+	get_node("/root/ChubbyServer").add_child(other_player)
+	players[id] = other_player
+
+# general add player
+remote func add_random_player(id, type):
+	var chubby_character
+
+	match type:
+		"base":
+			chubby_character = ChubbyCharacter.instance()
+		_:
+			chubby_character = ChubbyCharacter.instance()
+
+	chubby_character.set_id(id)
+	chubby_character.set_name(str(id))
 	
-	players[id] = player
+	if (id == client_id):
+		chubby_character.set_network_master(id)
 	
-	get_node("/root/ChubbyServer").add_child(player)
+	get_node("/root/ChubbyServer").add_child(chubby_character)
+	players[id] = chubby_character
 	
 # client_update and client_update_unreliable are called by their respective rpc functions by the server
 #  

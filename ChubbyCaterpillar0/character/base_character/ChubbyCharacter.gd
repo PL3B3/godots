@@ -42,8 +42,14 @@ func set_stats(speed, health_cap, regen, xy, player_id):
 	self.player_id = player_id
 	set_global_position(xy)
 
+func set_id(id):
+	self.player_id = id
+
+# for debugging: this makes only network master able to control this character
+# and sets global position to 0,0
 func _ready():
 	print("This is the character base class. Prepare muffin.")
+	set_global_position(Vector2(0,0))
 	character_under_my_control = is_network_master()
 	
 func add_and_return_timed_effect(time, effect, args, ps):
