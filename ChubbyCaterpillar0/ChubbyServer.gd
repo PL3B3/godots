@@ -18,6 +18,7 @@ extends Node
 
 # hard coded. please change
 const DEFAULT_PORT = 3342
+onready var Interpolator = get_node("Interpolator")
 var ChubbyCharacter = preload("res://character/base_character/ChubbyCharacter.tscn")
 var map = preload("res://maps/Map0.tscn")
 
@@ -79,17 +80,19 @@ func add_my_player(id, type):
 	players[id] = my_chubby_character
 
 remote func add_other_player(id, type):
-	var other_player
-	
-	match type:
-		"base":
-			other_player = ChubbyCharacter.instance()
-		_:
-			other_player = ChubbyCharacter.instance()
-	other_player.set_id(id)
-	other_player.set_name(str(id))
-	get_node("/root/ChubbyServer").add_child(other_player)
-	players[id] = other_player
+	# checks if the "other player" is in fact our client player to avoid duplicating it
+	if (id != client_id):
+		var other_player
+		
+		match type:
+			"base":
+				other_player = ChubbyCharacter.instance()
+			_:
+				other_player = ChubbyCharacter.instance()
+		other_player.set_id(id)
+		other_player.set_name(str(id))
+		get_node("/root/ChubbyServer").add_child(other_player)
+		players[id] = other_player
 
 # general add player
 remote func add_random_player(id, type):
@@ -114,5 +117,7 @@ remote func add_random_player(id, type):
 #  
 
 #
-remote func client_update_unreliable(players_updates_unreliable):
-	pass
+remote func parse_updated_player_position_from_server_unreliable (id, latest_server_position):
+	# players[id].velocity += players[id].get_global_position().direction_to(latest_server_position) \
+	# 	* (players[id].speed / 4)
+	players[id].set_global_position(latest_server_position)

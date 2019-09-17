@@ -12,6 +12,7 @@ var health_cap = 200
 var health = 200
 var regen = 2
 var team = 'a'
+var type = "base"
 var timed_effects = []
 
 # gravity2 is a workaround to physics simulation problems (I don't want to code a whole-ass momentum thing yet)
@@ -20,6 +21,7 @@ var gravity2 = 0
 var velocity = Vector2(0,0)
 var rot_angle = -(PI / 2)
 var ability_usable = [true, true, true, true]
+var physics_processing = false
 
 func set_stats(speed, health_cap, health, regen):
 	self.speed = speed
@@ -35,25 +37,17 @@ func add_and_return_timed_effect(time, effect, args, ps):
 	timed_effect.init_timer(time, effect, args, ps)
 	return timed_effect
 
-
-#func _physics_process(delta):
-#	physics_single_execute(delta)
-
 func physics_single_execute(delta):
 	if get_slide_count() > 0:
 		# get one of the collisions, it's normal, and convert it into an angle
 		rot_angle = get_slide_collision(get_slide_count() - 1).get_normal().angle()
-
 	move_and_slide(velocity.rotated(rot_angle + (PI / 2)) + Vector2(0.0, gravity2), Vector2(0.0, -1.0), false, 4, 0.9)
-
+	
 	if is_on_floor():
 		velocity = Vector2()
 		gravity2 = 0
 	else:
 		gravity2 += 9.8
-
-	
-
 
 func cooldown(ability_num):
 	ability_usable[ability_num] = true
