@@ -61,7 +61,8 @@ func _player_disconnected(id):
 	var disconnected_players_phantom = get_node("/root/ChubbyServer/" + str(id))
 	remove_child(disconnected_players_phantom)
 	disconnected_players_phantom.queue_free()
-	
+	rpc("remove_other_player", id)
+
 func _connected_ok():
 	print("got a connection")
 	
@@ -120,6 +121,9 @@ remote func add_player(id, type):
 	# @d
 	print("These are the children ", get_children())
 
+	# set new player's id
+	players[id].set_id(id)
+
 	# turn on the server's simulation if not already on
 	players[id].physics_processing = true
 
@@ -156,11 +160,13 @@ remote func parse_client_rpc_unreliable(id, command, args):
 	players[id].callv(command, args)
 
 # TODO: do multithreading later for efficiency. players should be a dict of id: {ChubbyPhantom, thread}
+"""
 func _physics_process(delta):
 	for id in players:
 		if (players[id].physics_processing):
 			players[id].physics_single_execute(delta)
 			send_updated_player_position_to_client_unreliable(id, players[id].get_global_position())
+"""
 
 # Sends integrity-sensitive updates like health changes to each client for them to change
 func send_updated_player_info_to_client(id, info):

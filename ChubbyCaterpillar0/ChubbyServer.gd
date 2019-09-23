@@ -27,6 +27,9 @@ var my_player_id
 var players = {}
 var my_type = "base"
 
+# keeps track of client physics processing speed, used for interpolating server/client position
+var client_delta
+
 func _ready():
 	start_client()
 	client_id = get_tree().get_network_unique_id()
@@ -36,7 +39,7 @@ func _ready():
 	add_my_player(client_id, my_type)
 	var my_map = map.instance()
 
-	rpc_id(1, "parse_client_rpc", client_id, "right", []) 
+	# rpc_id(1, "parse_client_rpc", client_id, "right", []) 
 	
 	add_child(my_map)
 	
@@ -94,30 +97,50 @@ remote func add_other_player(id, type):
 		get_node("/root/ChubbyServer").add_child(other_player)
 		players[id] = other_player
 
+remote func remove_other_player(id):
+	# Checks if not already removed
+	print("Removing player ", id)
+	if (players.has(id)):
+	#	remove_child(players[id])
+	#	players[id].queue_free()
+	#	players.erase(id)
+		players.erase(id)
+		var disconnected_players_phantom = get_node("/root/ChubbyServer/" + str(id))
+		remove_child(disconnected_players_phantom)
+		disconnected_players_phantom.queue_free()
+	
 # general add player
 remote func add_random_player(id, type):
-	var chubby_character
+	if (!players.has(id)):
+		var chubby_character
 
-	match type:
-		"base":
-			chubby_character = ChubbyCharacter.instance()
-		_:
-			chubby_character = ChubbyCharacter.instance()
+		match type:
+			"base":
+				chubby_character = ChubbyCharacter.instance()
+			_:
+				chubby_character = ChubbyCharacter.instance()
 
-	chubby_character.set_id(id)
-	chubby_character.set_name(str(id))
-	
-	if (id == client_id):
-		chubby_character.set_network_master(id)
-	
-	get_node("/root/ChubbyServer").add_child(chubby_character)
-	players[id] = chubby_character
+		chubby_character.set_id(id)
+		chubby_character.set_name(str(id))
+		
+		if (id == client_id):
+			chubby_character.set_network_master(id)
+		
+		get_node("/root/ChubbyServer").add_child(chubby_character)
+		players[id] = chubby_character
 	
 # client_update and client_update_unreliable are called by their respective rpc functions by the server
 #  
 
+func _physics_process(delta):
+	client_delta = delta
 #
-remote func parse_updated_player_position_from_server_unreliable (id, latest_server_position):
-	# players[id].velocity += players[id].get_global_position().direction_to(latest_server_position) \
-	# 	* (players[id].speed / 4)
-	players[id].set_global_position(latest_server_position)
+remote func parse_updated_player_position_from_server_unreliable(id, latest_server_position):
+	#players[id].velocity += players[id].get_global_position().direction_to(latest_server_position) \
+	#	* (players[id].speed / 4)
+	
+	Interpolator.interpolate_property(get_node("/root/ChubbyServer/" + str(id)), "position", players[id].get_global_position(), latest_server_position, client_delta, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	Interpolator.start()
+#	if (players.has(id)):
+#		players[id].set_global_position(latest_server_position)
+	#pass
