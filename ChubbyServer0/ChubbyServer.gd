@@ -36,7 +36,7 @@ func start_server():
 	var server = NetworkedMultiplayerENet.new()
 	
 	# compressing data packets -> big speed
-	server.set_compression_mode(NetworkedMultiplayerENet.COMPRESS_ZLIB)
+	# server.set_compression_mode(NetworkedMultiplayerENet.COMPRESS_ZLIB);
 	var err = server.create_server(DEFAULT_PORT, MAX_PLAYERS)
 	if not err == OK:
 		# if another server is running, this will execute
@@ -53,6 +53,7 @@ func _player_connected(id):
 	# call the recently connected player to send its class type
 	rpc_id(id, "send_blueprint")
 	rpc_id(id, "say_zx")
+	
 	print(get_tree().get_network_connected_peers())
 	
 func _player_disconnected(id):
