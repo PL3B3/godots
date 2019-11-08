@@ -36,7 +36,8 @@ func start_server():
 	var server = NetworkedMultiplayerENet.new()
 	
 	# compressing data packets -> big speed
-	# server.set_compression_mode(NetworkedMultiplayerENet.COMPRESS_ZLIB);
+	# server.set_compression_mode(NetworkedMultiplayerENet.COMPRESS_ZLIB)
+
 	var err = server.create_server(DEFAULT_PORT, MAX_PLAYERS)
 	if not err == OK:
 		# if another server is running, this will execute
@@ -53,7 +54,7 @@ func _player_connected(id):
 	# call the recently connected player to send its class type
 	rpc_id(id, "send_blueprint")
 	rpc_id(id, "say_zx")
-	
+
 	print(get_tree().get_network_connected_peers())
 	
 func _player_disconnected(id):
@@ -61,7 +62,8 @@ func _player_disconnected(id):
 	var disconnected_players_phantom = get_node("/root/ChubbyServer/" + str(id))
 	remove_child(disconnected_players_phantom)
 	disconnected_players_phantom.queue_free()
-	
+	rpc("remove_other_player", id)
+
 func _connected_ok():
 	print("got a connection")
 	
@@ -96,13 +98,20 @@ remote func add_player(id, type):
 		"base":
 			print("creating base character")
 			player_phantom = ChubbyPhantom.instance()
+			player_phantom.type = "base"
 		"0":
 			player_phantom = ChubbyPhantom0.instance()
+			player_phantom.type = "0"
 		_:
 			print("creating other character")
 			player_phantom = ChubbyPhantom.instance()
+			player_phantom.type = "base"
 	
 	player_phantom.set_name(str(id))
+
+	# sx
+	# comes b4 adding new id to players, but contains extra check in case
+	add_current_clients_to_new_player(id)
 
 	# add player to the dictionary containing all player representations
 	players[id] = player_phantom
@@ -113,14 +122,23 @@ remote func add_player(id, type):
 	# @d
 	print("These are the children ", get_children())
 
+	# set new player's id
+	players[id].set_id(id)
+
 	# turn on the server's simulation if not already on
-	physics_processing = true
+	players[id].physics_processing = true
 
 	add_new_player_to_current_clients(id, type)
 
 # basic add player to client side, i will upgrade to include team, position, etc.
 func add_new_player_to_current_clients(id, type):
 	rpc("add_other_player", id, type)
+
+# adds every current player to new player's players set
+func add_current_clients_to_new_player(new_player_id):
+	for id in players:
+		if (id != new_player_id):
+			rpc_id(new_player_id, "add_other_player", id, players[id].type)
 
 # sends another client's commands in a dictionary
 func send_other_client_commands(id, other_id, their_command):
@@ -135,12 +153,26 @@ remote func parse_client_rpc(id, command, args):
 	players[id].callv(command, args)
 
 # udp equivalent to parse_client_rpc Wd
+remote func parse_client_rpc_unreliable(id, command, args):
+	print("Player ", id, " called function ", command)
+	
 	print(players[id])
 
 	players[id].callv(command, args)
 
 # TODO: do multithreading later for efficiency. players should be a dict of id: {ChubbyPhantom, thread}
+"""
 func _physics_process(delta):
-	if physics_processing:
-		for id in players:
+	for id in players:
+		if (players[id].physics_processing):
 			players[id].physics_single_execute(delta)
+			send_updated_player_position_to_client_unreliable(id, players[id].get_global_position())
+"""
+
+# Sends integrity-sensitive updates like health changes to each client for them to change
+func send_updated_player_info_to_client(id, info):
+	rpc("parse_updated_player_info_from_server", id, info)
+
+# Sends position to client
+func send_updated_player_position_to_client_unreliable(id, position):
+	rpc("parse_updated_player_position_from_server_unreliable", id, position)

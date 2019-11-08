@@ -21,7 +21,7 @@ var team = 'a'
 var player_id
 
 # gravity2 is a workaround to physics simulation problems (I don't want to code a whole-ass momentum thing yet)
-# It starts at 9.8 as a default
+# It starts at 9.8 as a default 
 # type is the class of the character
 var gravity2 = 0
 var velocity = Vector2(0,0)
@@ -42,8 +42,14 @@ func set_stats(speed, health_cap, regen, xy, player_id):
 	self.player_id = player_id
 	set_global_position(xy)
 
+func set_id(id):
+	self.player_id = id
+
+# for debugging: this makes only network master able to control this character
+# and sets global position to 0,0
 func _ready():
 	print("This is the character base class. Prepare muffin.")
+	set_global_position(Vector2(0,0))
 	character_under_my_control = is_network_master()
 	
 func add_and_return_timed_effect(time, effect, args, ps):
@@ -82,9 +88,14 @@ func get_input():
 func cooldown(ability):
 	ability_usable[ability] = true
 
+func label_debug(text):
+	get_node("Label").set_text(text)
+
 func _physics_process(delta):
 	get_node("Label").set_text(str(health as int))
 	get_child(1).position = get_child(0).position
+
+	get_input()
 
 	# if we're hitting a surface
 	if get_slide_count() > 0:
@@ -103,8 +114,6 @@ func _physics_process(delta):
 		gravity2 = 0
 	else:
 		gravity2 += 9.8
-	
-	get_input()
 
 
 func hit(dam):
