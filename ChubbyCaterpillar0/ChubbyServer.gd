@@ -58,7 +58,7 @@ func send_player_rpc_unreliable(id, command, args):
 
 func start_client():
 	var client = NetworkedMultiplayerENet.new()
-	client.create_client("192.168.174.1", DEFAULT_PORT)
+	client.create_client("127.0.0.1", DEFAULT_PORT)
 	get_tree().set_network_peer(client)
 	print("client created")
 
