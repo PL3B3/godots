@@ -29,7 +29,7 @@ var rot_angle = -(PI / 2)
 var facing = 0
 var type = "base"
 var timed_effects = []
-var ability_usable = [true, true, true, true]
+var ability_usable = {}
 var cooldowns = {}
 var abilities = {}
 
@@ -91,11 +91,27 @@ func get_input():
 		if Input.is_key_pressed(KEY_S):
 			get_node("/root/ChubbyServer").send_player_rpc_unreliable(player_id, "down", [])
 			down()
+
 		# ability inputs to be handled separately to account for variable arguments
 		# makes inheritance easier because players only need to redefine ability methods, not get_input 
-		
-		for n in abilities:
-			abilities[n].trigger()
+
+# This function will be called by child classes within their _get_input function to:
+# 1. call the ability with arguments passed in, tba at time of button press
+# 2. tell the server the command given
+# 3. 
+func use_ability_and_notify_server_and_start_cooldown(ability_name, cooldown, args):
+		# call the ability
+		self.callv(ability_name, args)
+
+		# for debugging
+		print(parent.player_id + " activated ability: " + ability_name)
+
+		# Tells server our player did the action and the arguments used
+		get_node("/root/ChubbyServer").send_player_rpc(parent.player_id, ability_name, args)
+
+		# Puts ability on cooldown
+		parent.ability_usable[ability_name] = false
+		add_and_return_timed_effect_exit(cooldown, "cooldown", ability_name)
 
 func cooldown(ability):
 	ability_usable[ability] = true

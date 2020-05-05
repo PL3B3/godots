@@ -6,6 +6,7 @@ extends Timer
 # used for lag compensation, rewind, etc.
 var tick_time
 var tick_total
+var varnames
 var snapshots = []
 
 # current_queue_head is the position of the most recent element of the queue
@@ -19,14 +20,18 @@ onready var players = get_parent().players
 func init_time_queue(tick_time, tick_total, varnames):
 	self.tick_time = tick_time
 	self.tick_total = tick_total
+	self.varnames = varnames
 	self.start(tick_time)
-	self.connect("timeout", self, "tick", varnames)
+	self.connect("timeout", self, "take_snapshot")
 
-func take_snapshot(varnames):
+# called each tick, stores the specified variables' states for each player
+# also increments ticks_since_start
+func take_snapshot():
 	var snapshot = {}
 	for player_id in players:
 		for name in varnames:
 			snapshot[player_id][name] = players[player_id].get(name)
+	ticks_since_start += 1
 	return snapshot
 
 # adds to the queue, starting over at the head if it overflows
@@ -41,11 +46,16 @@ func add_to_queue(snapshot):
 	else:
 		snapshots[0] = snapshot
 
-# to call each tick
-# increments tick counter, takes and adds snapshot
-func tick(varnames):
-	add_to_queue(take_snapshot(varnames))
-	ticks_since_start += 1
+# self-explanatory
+# may return null if accessed too early (index is ahead of current_queue_head) &&
+# is empty. Handle when called.
+func get_snapshot_x_seconds_ago(time_ago):
+	var ticks_ago = time_ago / tick_time
+	if ticks_ago >= tick_total:
+		print("Specified access time too far in the past")
+		return
+	var index = int((current_queue_head - ticks_ago) % tick_total)
+	return snapshots[index]
 
 # based on a tf2 meme where the engineer does the ol' "texas turnaround" because his will
 # to live has been sapped

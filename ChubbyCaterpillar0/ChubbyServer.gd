@@ -21,13 +21,14 @@ const DEFAULT_PORT = 3342
 onready var Interpolator = get_node("Interpolator")
 var ChubbyCharacter = preload("res://character/base_character/ChubbyCharacter.tscn")
 var ChubbyCharacter0 = preload("res://character/ChubbyCharacter0.tscn")
+var ChubbyCharacter1 = preload("res://character/experimental_character/ChubbyCharacter_experimental_0.tscn")
 var map = preload("res://maps/Map0.tscn")
 var TimeQueue = preload("res://character/base_character/TimeQueue.tscn")
 
 var client_id 
 var my_player_id
 var players = {}
-var my_type = "pubert"
+var my_type = "frug"
 
 # keeps track of client physics processing speed, used for interpolating server/client position
 var client_delta
@@ -47,7 +48,7 @@ func _ready():
 	
 	var timequeue = TimeQueue.instance()
 	add_child(timequeue)
-	timequeue.init_time_queue(0.1, 20, ["health","velocity","gravity2"])
+#	timequeue.init_time_queue(1, 20, ["health", "velocity"])
 	
 #	rpc_id(1, "print_thing")
 	
@@ -81,6 +82,8 @@ func add_my_player(id, type):
 			my_chubby_character = ChubbyCharacter.instance()
 		"pubert":
 			my_chubby_character = ChubbyCharacter0.instance()
+		"frug":
+			my_chubby_character = ChubbyCharacter1.instance()
 		_:
 			my_chubby_character = ChubbyCharacter.instance()
 
