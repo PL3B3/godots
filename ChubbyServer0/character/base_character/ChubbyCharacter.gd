@@ -1,20 +1,13 @@
 extends KinematicBody2D
 
-##
-## Base class for multiplayer-oriented character
-##
+# Base class for multiplayer-oriented character
 
-
-##
-## Preloaded resources
-##
+# Preloaded resources
 
 var TimedEffect = preload("res://character/TimedEffect.tscn")
-onready var server = get_parent()
 
-##
-## general player stats
-##
+
+# general player stats
 
 # float: speed is the character's movement speed
 # float: health_cap defines the basic "max health" of a character, but overheal and boosts can change this
@@ -29,23 +22,18 @@ var team = 'a'
 var is_alive = true
 var timed_effects = []
 
-##
-## for physics and visual
-##
+# for physics and visual
 
-# float: gravity2 is a workaround to physics simulation problems (I don't want to code a whole-ass momentum thing yet)
-# 	It starts at 9.8 as a default 
-# Vector2: velocity tracks player movement
-# float: rot_angle is used to orient the player perpendicular to collision normal
+# gravity2 is a workaround to physics simulation problems (I don't want to code a whole-ass momentum thing yet)
+# It starts at 9.8 as a default 
+# type is the class of the character
 var gravity2 = 0
 var velocity = Vector2(0,0)
 var rot_angle = -(PI / 2)
 var facing = 0
 const rot_speed = 15
 
-##
-## tracks if an ability is on cooldown
-##
+# tracks if an ability is on cooldown
 
 # I picked an arbitrary order
 # 0: mouse_ability_0
@@ -54,32 +42,19 @@ const rot_speed = 15
 # 3: key_ability_1
 # 4: key_ability_2
 var ability_usable = [true, true, true, true, true]
-var cooldowns = [10, 10, 10, 10, 10]
-# Used to convert between ability name and its index in the ability_usable array
-const ability_conversions = {
-	"mouse_ability_0" : 0,
-	"mouse_ability_1" : 1, 
-	"key_ability_0" : 2, 
-	"key_ability_1" : 3, 
-	"key_ability_2" : 4
-}
+var cooldowns = []
 
-##
-## for multiplayer
-##
+# for multiplayer
 
-# decimal: player_id is the unique network id of the player
-# string: type is the class of the character
-# boolean: character_under_my_control marks if this is client's player
-# decimal: object_id_counter is # Incremented every time child object is spawned
-# 	Each child object is named [player_id]-[this number]
-# 	Example: player id is 3000123, this counter is 5, 
-# 	then the object is: "3000123-5" as a STRING
 var player_id
 var type = "base"
+# only turned true when
 var character_under_my_control = false
+# Incremented every time child object is spawned
+# Each child object is named [player_id]-[this number]
+# Example: player id is 3000123, this counter is 5, 
+# then the object is: "3000123-5" as a STRING
 var object_id_counter = 0
-var objects = {}
 var physics_processing = false
 
 func set_stats_default():
@@ -101,74 +76,44 @@ func set_id(id):
 func _ready():
 	print("This is the character base class on the server side")
 	set_global_position(Vector2(0,0))
-
-##
-## Attribute syncing functions
-##
-
-func sync_vars():
-	pass
-
-func sync_objects():
-	for object in objects:
-		
-
-func sync_timed_effects():
-	pass
-
-##
-## Character ability functions
-##
-
-# adds a created object to the object dictionary and sets its name to its counter
-# because TCP sends commands in ORDER, the objects spawned by the same ability call 
-# will have the same object_counter_id
-func add_object(object):
-	object.set_name(object_id_counter)
 	
-	add_child(object)
+#func old_add_and_return_timed_effect(time, effect, args, ps):
+#	var timed_effect = TimedEffect.instance()
+#	add_child(timed_effect)
+#	timed_effect.init_timer(time, effect, args, ps)
+#	timed_effects.push_back(timed_effect)
 	
-	objects[object_id_counter] = object
-	
-	object_id_counter += 1
-
-# base function to create/add a timed effect to our player, add it to the timed effects array
-# and initiate the effect with all its arguments
 func add_and_return_timed_effect_full(time, enter_func, enter_args, body_func, body_args, exit_func, exit_args, repeats):
 	var timed_effect = TimedEffect.instance()
 	add_child(timed_effect)
 	timed_effect.init_timer(time, enter_func, enter_args, body_func, body_args, exit_func, exit_args, repeats)
 	timed_effects.push_back(timed_effect)
 
-# wrapper timed effect function for an effect which only has an action-per-tick
-# aka it doesn't call any function upon start or end
 func add_and_return_timed_effect_exit(time, exit_func, exit_args):
 	add_and_return_timed_effect_full(time, "", [], "", [], exit_func, exit_args, 1)
 
-# wrapper timed effect function for an effect with per-tick action and an ending action
 func add_and_return_timed_effect_body(time, body_func, body_args, repeats):
 	add_and_return_timed_effect_full(time, "", [], body_func, body_args, "", [], repeats)
 
 # 1. call the ability with arguments passed in, tba at time of button press
-# 2. activate cooldown timer
-func use_ability_and_start_cooldown(ability_name, args):
-	# converts ability name to its arbitrary number from 0-4, or null if...
-	# ...the ability is just a movement
-	var ability_num = ability_conversions.get(ability_name)
-	
-	# if the ability is an actual ability and not just movement
-	if (ability_num != null):
+# 2. tell the server the command given
+# 3. activate cooldown timer
+func use_ability_and_notify_server_and_start_cooldown(ability_name, cooldown, args):
 		# call the ability
 		callv(ability_name, args)
-		# Puts ability on cooldown
-		ability_usable[ability_num] = false
-		add_and_return_timed_effect_exit(cooldowns[ability_num], "cooldown", [ability_num])
-	else:
-		# simply call the movement function
-		call(ability_name)
 
-func cooldown(ability_num):
-	ability_usable[ability_num] = true
+		# for debugging
+#		print(str(player_id) + " activated ability: " + ability_name)
+
+		# Tells server our player did the action and the arguments used
+		get_node("/root/ChubbyServer").send_player_rpc(player_id, ability_name, args)
+
+		# Puts ability on cooldown
+		ability_usable[ability_name] = false
+		add_and_return_timed_effect_exit(cooldown, "cooldown", ability_name)
+
+func cooldown(ability):
+	ability_usable[ability] = true
 
 func label_debug(text):
 	get_node("Label").set_text(text)
@@ -190,7 +135,7 @@ func _physics_process(delta):
 		else:
 			gravity2 += 9.8
 
-		server.send_server_rpc_to_all_players_unreliable("parse_updated_player_position_from_server", [player_id, get_global_position()])
+		get_parent().send_server_rpc_to_all_players_unreliable("parse_server_rpc", "parse_updated_player_position_from_server", player_id, get_global_position())
 #		get_parent().send_updated_player_position_to_client_unreliable(player_id, get_global_position())
 
 func hit(dam):
@@ -205,6 +150,10 @@ func sayhi():
 func reset_timers():
 	for effect in timed_effects:
 		effect.reset_timer()
+
+func accelerate_timers():
+	for effect in timed_effects:
+		effect.accelerate_timer()
 
 func die():
 	# I should expand this function to incorporate respawns, etc.. Don't want to have to reload resources every time
@@ -223,16 +172,12 @@ func ascend():
 	gravity2 = -400
 
 func up():
-	# todo: add a check to see if client was on the floor at time of send
-	#if is_on_floor():
-	
 	velocity.y -= 1.5 * speed
 
 func down():
 	velocity.y += 0.1 * speed
 
 func right():
-	print("right called on chubbyphantom for player:" + str(player_id))
 	if velocity.x <= speed:
 		velocity.x += min(speed, speed - velocity.x)
 	else:
@@ -244,19 +189,19 @@ func left():
 	else:
 		velocity.x = -speed
 
-func mouse_ability_0(mouse_pos, ability_uuid):
+func mouse_ability_0(mouse_pos):
 	pass
 
-func mouse_ability_1(mouse_pos, ability_uuid):
+func mouse_ability_1(mouse_pos):
 	pass
 
-func key_ability_0(ability_uuid):
+func key_ability_0():
 	print("key_ability_0 activated on player: " + str(player_id))
 	pass
 
-func key_ability_1(ability_uuid):
+func key_ability_1():
 	print("yohoho")
 	pass
 
-func key_ability_2(ability_uuid):
+func key_ability_2():
 	pass

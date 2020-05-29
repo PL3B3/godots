@@ -1,6 +1,14 @@
 extends Node
 
-# This is the dedicated server node
+##
+## TODO
+##
+
+# no need for id parameter when adding player, just get sender id
+
+##
+## This is the dedicated server node
+##
 
 # The server sends authoritative players info to update, which the client_side physics_process works on
 # Per each physics process cycle on this server, send
@@ -9,15 +17,18 @@ extends Node
 const DEFAULT_PORT = 3342
 const MAX_PLAYERS = 8
 
-var players = {}
+var uuid_generator = preload("res://server_resources/uuid_generator.tscn")
 var ChubbyPhantom = preload("res://ChubbyPhantom.tscn")
 var ChubbyPhantom0 = preload("res://ChubbyPhantom0.tscn")
 var map = preload("res://maps/Map0.tscn")
+
 var physics_processing = false
+var players = {}
+var server_uuid_generator = uuid_generator.instance()
 
 func _ready():
 	var server_map = map.instance()
-
+	
 	start_server()
 
 	get_tree().connect("network_peer_connected", self, "_player_connected")
@@ -27,7 +38,7 @@ func _ready():
 	get_tree().connect("server_disconnected", self, "_server_disconnected")
 	
 	add_child(server_map)
-
+	add_child(server_uuid_generator)
 
 remote func print_thing():
 	print("i printed a boi")
@@ -52,8 +63,8 @@ func _player_connected(id):
 	print("Player with id ", id, " connected")
 	
 	# call the recently connected player to send its class type
-	rpc_id(id, "send_blueprint")
-	rpc_id(id, "say_zx")
+	rpc_id(id, "parse_server_rpc", "send_blueprint", [])
+	# rpc_id(id, "parse"say_zx")
 
 	print(get_tree().get_network_connected_peers())
 	
@@ -62,7 +73,7 @@ func _player_disconnected(id):
 	var disconnected_players_phantom = get_node("/root/ChubbyServer/" + str(id))
 	remove_child(disconnected_players_phantom)
 	disconnected_players_phantom.queue_free()
-	rpc("remove_other_player", id)
+	rpc("parse_server_rpc", "remove_other_player", id)
 
 func _connected_ok():
 	print("got a connection")
@@ -86,6 +97,48 @@ func quit_game():
 		get_tree().remove_child(n)
 		n.queue_free()
 
+##
+## these following 4 functions send all server commands to clients
+##
+
+# tcp (reliable) sends server command to all connected peers with specified args
+func send_server_rpc_to_all_players(server_cmd, args):
+	rpc("parse_server_rpc", server_cmd, args)
+
+# udp (unreliable) sends server command to all connected peers with specified args
+func send_server_rpc_to_all_players_unreliable(server_cmd, args):
+	rpc_unreliable("parse_server_rpc", server_cmd, args)
+
+# tcp (reliable) sends a server command to specified client with args
+func send_server_rpc_to_one_player(player_id, server_cmd, args):
+	rpc_id(player_id, "parse_server_rpc", server_cmd, args)
+
+# udp (unreliable) equivalent to above
+func send_server_rpc_to_one_player_unreliable(player_id, server_cmd, args):
+	rpc_unreliable_id(player_id, "parse_server_rpc", server_cmd, args)
+
+##
+## the following 3 functions handle all direct calls from the client
+## the first function is for player commands to the server as a whole
+## the second function for the player sending commands to their "representative" on the server
+## the last one adds the player to the server / other clients and vice versa
+##
+
+remote func parse_client_rpc(client_cmd, args):
+	callv(client_cmd, args)
+
+# tcp function called by client rpc, which executes a method of that client's representative ChubbyPhantom here on the server
+# this method may be movement OR an ability...handling both in one function for simplicity
+# todo whitelist / blacklist for which commands are acceptable...
+remote func parse_player_rpc(player_id, ability_name, args):
+	var caller_id = get_tree().get_rpc_sender_id()
+	
+	print("Player ", caller_id, " called function ", ability_name)
+	
+	# stops non-player peers from controlling that player
+	if (str(caller_id) == str(player_id)):
+		players[player_id].callv("use_ability_and_start_cooldown", [ability_name, args])
+
 # this function is called upon player_connected, which calls the player to tell this function its id and class type
 remote func add_player(id, type):
 	var player_phantom
@@ -99,19 +152,15 @@ remote func add_player(id, type):
 			print("creating base character")
 			player_phantom = ChubbyPhantom.instance()
 			player_phantom.type = "base"
-		"0":
+		"pubert":
 			player_phantom = ChubbyPhantom0.instance()
-			player_phantom.type = "0"
+			player_phantom.type = "pubert"
 		_:
 			print("creating other character")
 			player_phantom = ChubbyPhantom.instance()
 			player_phantom.type = "base"
 	
 	player_phantom.set_name(str(id))
-
-	# sx
-	# comes b4 adding new id to players, but contains extra check in case
-	add_current_clients_to_new_player(id)
 
 	# add player to the dictionary containing all player representations
 	players[id] = player_phantom
@@ -122,43 +171,41 @@ remote func add_player(id, type):
 	# @d
 	print("These are the children ", get_children())
 
-	# set new player's id
+	# set new player's id, so that it has an internal reference to it
 	players[id].set_id(id)
 
-	# turn on the server's simulation if not already on
+	# turn on the server's physics simulation FOR THIS PLAYER SPECIFICALLY if not already on
 	players[id].physics_processing = true
 
-	add_new_player_to_current_clients(id, type)
+	# ensures all other clients have a copy of this player and vice versa
+	add_new_player_to_current_clients_and_old_players_to_new_client(id, type)
 
-# basic add player to client side, i will upgrade to include team, position, etc.
-func add_new_player_to_current_clients(id, type):
-	rpc("add_other_player", id, type)
+# for security purposes
+func generate_player_id():
+	pass
 
-# adds every current player to new player's players set
-func add_current_clients_to_new_player(new_player_id):
-	for id in players:
-		if (id != new_player_id):
-			rpc_id(new_player_id, "add_other_player", id, players[id].type)
+# when a new player is added, it should be replicated in other clients' scenetrees
+# also, existing players must be added to the new client
+func add_new_player_to_current_clients_and_old_players_to_new_client(new_player_id, new_player_type):
+	for player_id in players:
+		# avoids redundantly adding our new player to its own client
+		if (player_id != new_player_id):
+			# add new player to existing clients
+			rpc_id(player_id, "parse_server_rpc", "add_a_player", [new_player_id, new_player_type])
+			# add existing players to new client
+			rpc_id(new_player_id, "parse_server_rpc", "add_a_player", [player_id, players[player_id].type])
 
 # sends another client's commands in a dictionary
 func send_other_client_commands(id, other_id, their_command):
 	pass
 
-# tcp function called by client rpc, which executes a method of that client's representative ChubbyPhantom here on the server
-remote func parse_client_rpc(id, command, args):
-	print("Player ", id, " called function ", command)
+# basic add player to client side, i will upgrade to include team, position, etc.
+func add_object_to_all_current_clients(object_id, blueprint):
+	rpc("add_object", object_id, blueprint)
 
-	print(players[id])
+func remove_object_from_all_current_clients(object_id, blueprint):
+	rpc("remove_object", object_id, blueprint)
 
-	players[id].callv(command, args)
-
-# udp equivalent to parse_client_rpc Wd
-remote func parse_client_rpc_unreliable(id, command, args):
-	print("Player ", id, " called function ", command)
-	
-	print(players[id])
-
-	players[id].callv(command, args)
 
 # TODO: do multithreading later for efficiency. players should be a dict of id: {ChubbyPhantom, thread}
 """
@@ -170,9 +217,5 @@ func _physics_process(delta):
 """
 
 # Sends integrity-sensitive updates like health changes to each client for them to change
-func send_updated_player_info_to_client(id, info):
+func send_updated_player_info_to_all_clients(id, info):
 	rpc("parse_updated_player_info_from_server", id, info)
-
-# Sends position to client
-func send_updated_player_position_to_client_unreliable(id, position):
-	rpc("parse_updated_player_position_from_server_unreliable", id, position)

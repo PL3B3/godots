@@ -1,11 +1,15 @@
 TODO list overview:
 
 ChubbyCaterpillar0
-	-reliable/unreliable split
+	-ChubbyCharacter
+		-multiplayer interpolate velocity as well as position
 	-layer and mask setting, support for up to 10 teams
 
 ChubbyServer0
-	-reliable/unreliable split
+	-Misc
+		-move character files into gamecharacters folder
+	-ChubbyPhantom
+		-finish object syncing
 
 Misc (long term goals)
 	-networking

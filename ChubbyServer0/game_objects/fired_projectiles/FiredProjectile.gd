@@ -6,6 +6,7 @@ var timer = null
 var bullet_life = 10
 var gravity = 10
 var fired = false
+var physics_processing = false
 
 func _ready():
 	timer = Timer.new()
@@ -13,6 +14,7 @@ func _ready():
 	timer.start(bullet_life)
 	timer.connect("timeout", self, "on_timeout_complete")
 	add_child(timer)
+	physics_processing = true
 
 func on_timeout_complete():
 	queue_free()
@@ -24,13 +26,15 @@ func fire(center, radius, dir):
 	fired = true
 
 func _physics_process(delta):
-	var collision = move_and_collide(velocity * delta)
-	
-	if fired:
-		velocity.y += gravity
-	if collision:
-		if collision.collider.has_method("hit"):
-			collision.collider.hit(damage)
-		queue_free()
+	if physics_processing:
+		var collision = move_and_collide(velocity * delta)
+		
+		if fired:
+			velocity.y += gravity
+		if collision:
+			if collision.collider.has_method("hit"):
+				var time_damage_multiplier = log(bullet_life - timer.time_left)
+				collision.collider.hit(time_damage_multiplier * damage)
+			queue_free()
 
 

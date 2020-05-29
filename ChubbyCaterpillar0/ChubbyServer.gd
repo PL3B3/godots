@@ -4,6 +4,7 @@ extends Node
 
 # TODO: 
 # reduce hard_coding. Create port, ip, map, character selectors
+# modify sendplayerrpc to only allow for the player to send its own phantom commands
 #
 
 # EXPLANATION:
@@ -19,16 +20,21 @@ extends Node
 # hard coded. please change
 const DEFAULT_PORT = 3342
 onready var Interpolator = get_node("Interpolator")
+var uuid_generator = preload("res://server_resources/uuid_generator.tscn")
 var ChubbyCharacter = preload("res://character/base_character/ChubbyCharacter.tscn")
-var ChubbyCharacter0 = preload("res://character/ChubbyCharacter0.tscn")
+var ChubbyCharacter0 = preload("res://character/game_characters/ChubbyCharacter0.tscn")
 var ChubbyCharacter1 = preload("res://character/experimental_character/ChubbyCharacter_experimental_0.tscn")
 var map = preload("res://maps/Map0.tscn")
 var TimeQueue = preload("res://character/base_character/TimeQueue.tscn")
 
+# int: client_id sex
+# dictionary int-chubbycharacter: tracks all connected players
+# string: my_type the class of the character we control
+# Node2d: client_uuid_generator a utility node which makes uuids...helps catalogue objects/timedeffects
 var client_id 
-var my_player_id
 var players = {}
-var my_type = "frug"
+var my_type = "pubert"
+var client_uuid_generator = uuid_generator.instance()
 
 # keeps track of client physics processing speed, used for interpolating server/client position
 var client_delta
@@ -39,7 +45,7 @@ func _ready():
 	
 	print(client_id)
 
-	add_my_player(client_id, my_type)
+	add_a_player(client_id, my_type)
 	var my_map = map.instance()
 
 	# rpc_id(1, "parse_client_rpc", client_id, "right", []) 
@@ -54,18 +60,40 @@ func _ready():
 	
 #	print(get_tree())
 
-remote func say_zx():
+# executes the client function specified by the server
+# @param server_cmd - client function to call 
+# @param args - arguments to pass into the command
+remote func parse_server_rpc(server_cmd, args):
+	#print("Command [" + server_cmd + "] called from server")
+
+	callv(server_cmd, args)
+
+func say_zx():
 	print("I said zx ok?? My name a ", client_id)
-	
-remote func send_blueprint():
+
+# called upon connecting to server, asks for our player's type information in order to construct a replica on server	
+func send_blueprint():
 	rpc_id(1, "add_player", client_id, my_type)
 	print("sending blueprint for ", client_id)
 
+##
+## these functions handle sending most player commands to server
+##
+
+func send_client_rpc(client_cmd, args):
+	rpc_id(1, "parse_client_rpc", client_cmd, args)
+
+func send_client_rpc_unreliable(client_cmd, args):
+	rpc_unreliable_id(1, "parse_client_rpc", client_cmd, args)
+
+# allow client to send command to specific player (our own)
 func send_player_rpc(id, command, args):
-	rpc_id(1, "parse_client_rpc", id, command, args) 
+	if id == client_id:
+		rpc_id(1, "parse_player_rpc", id, command, args) 
 
 func send_player_rpc_unreliable(id, command, args):
-	rpc_unreliable_id(1, "parse_client_rpc_unreliable", id, command, args) 
+	if id == client_id:
+		rpc_unreliable_id(1, "parse_player_rpc", id, command, args) 
 
 func start_client():
 	var client = NetworkedMultiplayerENet.new()
@@ -73,27 +101,34 @@ func start_client():
 	get_tree().set_network_peer(client)
 	print("client created")
 
-# specifically to add my character...special sets it to network_master
-func add_my_player(id, type):
-	var my_chubby_character
+# adds a character to the local (client) scenetree
+# int: id the player's network id
+# string: type the player's class
+# bool: mine whether or not this is our player
+func add_a_player(id, type):
+	var player_to_add
 
 	match type:
 		"base":
-			my_chubby_character = ChubbyCharacter.instance()
+			player_to_add = ChubbyCharacter.instance()
 		"pubert":
-			my_chubby_character = ChubbyCharacter0.instance()
-		"frug":
-			my_chubby_character = ChubbyCharacter1.instance()
+			player_to_add = ChubbyCharacter0.instance()
 		_:
-			my_chubby_character = ChubbyCharacter.instance()
+			player_to_add = ChubbyCharacter.instance()
+	
+	# sets player node's name and id
+	player_to_add.set_id(id)
+	player_to_add.set_name(str(id))
+	
+	# sets my player as network master
+	if id == client_id:
+		player_to_add.set_network_master(id)
+	
+	# adds player node
+	get_node("/root/ChubbyServer").add_child(player_to_add)
+	players[id] = player_to_add
 
-	my_chubby_character.set_id(id)
-	my_chubby_character.set_name(str(id))
-	my_chubby_character.set_network_master(id)
-	get_node("/root/ChubbyServer").add_child(my_chubby_character)
-	players[id] = my_chubby_character
-
-remote func add_other_player(id, type):
+func add_other_player(id, type):
 	# checks if the "other player" is in fact our client player to avoid duplicating it
 	if (id != client_id):
 		var other_player
@@ -108,7 +143,7 @@ remote func add_other_player(id, type):
 		get_node("/root/ChubbyServer").add_child(other_player)
 		players[id] = other_player
 
-remote func remove_other_player(id):
+func remove_other_player(id):
 	# Checks if not already removed
 	print("Removing player ", id)
 	if (players.has(id)):
@@ -121,6 +156,7 @@ remote func remove_other_player(id):
 		disconnected_players_phantom.queue_free()
 
 # general add player
+# function not used for now...may come in handy when switching player control
 remote func add_random_player(id, type):
 	if (!players.has(id)):
 		var chubby_character
@@ -129,7 +165,7 @@ remote func add_random_player(id, type):
 			"base":
 				chubby_character = ChubbyCharacter.instance()
 			_:
-				chubby_character = ChubbyCharacter.instance()
+				chubby_character = ChubbyCharacter0.instance()
 
 		chubby_character.set_id(id)
 		chubby_character.set_name(str(id))
@@ -140,13 +176,13 @@ remote func add_random_player(id, type):
 		get_node("/root/ChubbyServer").add_child(chubby_character)
 		players[id] = chubby_character
 	
-# client_update and client_update_unreliable are called by their respective rpc functions by the server
-#  
 
+#  
 func _physics_process(delta):
 	client_delta = delta
-#
-remote func parse_updated_player_position_from_server_unreliable(id, latest_server_position):
+
+# updates position of a player based on recent server info
+func parse_updated_player_position_from_server(id, latest_server_position):
 	# Interpolates between client position and server position using client_delta, aka physics processing rate, to determine a smooth speed
 	Interpolator.interpolate_property(get_node("/root/ChubbyServer/" + str(id)), "position", players[id].get_global_position(), latest_server_position, client_delta, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	Interpolator.start()

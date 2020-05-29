@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://ChubbyPhantom.gd" type="Script" id=1]
+[ext_resource path="res://character/base_character/ChubbyCharacter.gd" type="Script" id=1]
 [ext_resource path="res://assets/Squeejee_pode_state_1.png" type="Texture" id=2]
 [ext_resource path="res://open_dyslexic.tres" type="DynamicFont" id=3]
 
@@ -10,7 +10,7 @@ radius = 20.0
 [sub_resource type="CircleShape2D" id=2]
 radius = 22.0
 
-[node name="ChubbyPhantom" type="KinematicBody2D"]
+[node name="ChubbyCharacter" type="KinematicBody2D"]
 collision_mask = 7
 script = ExtResource( 1 )
 

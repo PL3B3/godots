@@ -1,4 +1,4 @@
-extends "res://ChubbyPhantom.gd"
+extends "res://character/base_character/ChubbyCharacter.gd"
 
 var FiredProjectile = preload("res://game_objects/fired_projectiles/FiredProjectile.tscn")
 

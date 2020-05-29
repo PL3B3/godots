@@ -3,8 +3,6 @@
 [ext_resource path="res://game_objects/fired_projectiles/FiredProjectile.gd" type="Script" id=1]
 [ext_resource path="res://assets/Bean_1.png" type="Texture" id=2]
 
-
-
 [sub_resource type="CapsuleShape2D" id=1]
 radius = 5.0
 height = 10.0
