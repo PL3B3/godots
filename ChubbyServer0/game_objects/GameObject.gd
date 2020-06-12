@@ -6,12 +6,12 @@ extends KinematicBody2D
 
 onready var parent = get_parent()
 
-var counter_id
+var counter_id : String
 var uuid
 
 # self-explanatory
 func remove_from_parent_and_free() -> void:
-	parent.objects.erase(str(counter_id))
+	parent.objects.erase(counter_id)
 	queue_free()
 
 

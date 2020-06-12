@@ -1,5 +1,7 @@
 extends KinematicBody2D
 
+onready var parent = get_parent()
+
 var damage = 40
 var velocity = Vector2()
 var timer = null
@@ -13,17 +15,20 @@ func _ready():
 	timer.set_one_shot(true)
 	timer.start(bullet_life)
 	timer.connect("timeout", self, "on_timeout_complete")
+	timer.set_name("bullet_timer")
 	add_child(timer)
 	physics_processing = true
 
 func on_timeout_complete():
-	queue_free()
-
+	# no behavior...removal determined by server
+	pass
+	
 func fire(center, radius, dir):
 	rotation = dir
 	position = center + Vector2(radius, 0.0).rotated(dir)
-	velocity = Vector2(800, 0).rotated(dir)
+	velocity = Vector2(600, 0).rotated(dir)
 	fired = true
+	#print("center at %s, position at %s, velocity is %s" % [center, position, velocity])
 
 func _physics_process(delta):
 	if physics_processing:
@@ -32,7 +37,6 @@ func _physics_process(delta):
 		if fired:
 			velocity.y += gravity
 		if collision:
-			if collision.collider.has_method("hit"):
-				var time_damage_multiplier = log(bullet_life - timer.time_left)
-				collision.collider.hit(time_damage_multiplier * damage)
-			queue_free()
+			# doesn't register a hit...that's determined by the server
+			print("we collided")
+			# no behavior...removal determined by server

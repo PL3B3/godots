@@ -1,4 +1,5 @@
 extends KinematicBody2D
+# 扭曲树
 
 ##
 ## Base class for multiplayer-oriented character
@@ -78,7 +79,7 @@ const ability_conversions = {
 var player_id
 var type = "base"
 var character_under_my_control = false
-var object_id_counter = 0
+#var object_id_counter = 0
 var objects = {}
 var physics_processing = false
 
@@ -109,9 +110,9 @@ func _ready():
 func sync_vars():
 	pass
 
-func sync_objects():
-	for object in objects:
-		
+#func sync_objects():
+#	for object in objects:
+#		server.send_server_rpc_to_all_players("sync_object", [player_id, ])
 
 func sync_timed_effects():
 	pass
@@ -121,16 +122,24 @@ func sync_timed_effects():
 ##
 
 # adds a created object to the object dictionary and sets its name to its counter
+# also sets the object as toplevel so it may move freely, not tied to character position
 # because TCP sends commands in ORDER, the objects spawned by the same ability call 
 # will have the same object_counter_id
-func add_object(object):
-	object.set_name(object_id_counter)
+func add_object(object, uuid):
+	#var object_id_string = str(object_id_counter)
+	
+	#object.set_name(object_id_string)
+	object.set_name(uuid)
+	
+	# this "unties" the object from its parent player so it may move freely
+	object.set_as_toplevel(true)
 	
 	add_child(object)
 	
-	objects[object_id_counter] = object
+	#objects[object_id_string] = object
+	objects[uuid] = object
 	
-	object_id_counter += 1
+	#object_id_counter += 1
 
 # base function to create/add a timed effect to our player, add it to the timed effects array
 # and initiate the effect with all its arguments
@@ -182,7 +191,10 @@ func _physics_process(delta):
 			# get one of the collisions, it's normal, and convert it into an angle
 			rot_angle = get_slide_collision(get_slide_count() - 1).get_normal().angle()
 
-		move_and_slide(velocity.rotated(rot_angle + (PI / 2)) + Vector2(0.0, gravity2), Vector2(0.0, -1.0), false, 4, 0.9)
+		move_and_slide(60 * delta * (velocity.rotated(rot_angle + (PI / 2)) + Vector2(0.0, gravity2)), Vector2(0.0, -1.0), false, 4, 0.9)
+		
+		send_updated_attribute(str(player_id), "velocity", velocity)
+		send_updated_attribute(str(player_id), "gravity2", gravity2)
 		
 		if is_on_floor():
 			velocity = Vector2()
@@ -190,21 +202,30 @@ func _physics_process(delta):
 		else:
 			gravity2 += 9.8
 
-		server.send_server_rpc_to_all_players_unreliable("parse_updated_player_position_from_server", [player_id, get_global_position()])
-#		get_parent().send_updated_player_position_to_client_unreliable(player_id, get_global_position())
+		send_updated_attribute(str(player_id), "position", position)
+		send_updated_attribute(str(player_id), "rot_angle", rot_angle)
+
+# helper function for updating a node attribute (on clients) based on new server info
+func send_updated_attribute(node_name: String, attribute_name: String, new_value) -> void:
+	server.send_server_rpc_to_all_players_unreliable("update_node_attribute", [node_name, attribute_name, new_value])	
 
 func hit(dam):
 	health -= dam
+	send_updated_attribute(str(player_id), "health", health)
 	print("Was hit")
 	if not health > 0:
 		die()
-		
+
+
 func sayhi():
 	print("hi")
-	
-func reset_timers():
-	for effect in timed_effects:
-		effect.reset_timer()
+
+
+# Can't use yet, need a way to check if timer exists...
+#func reset_timers():
+#	for effect in timed_effects:
+#		effect.reset_timer()
+
 
 func die():
 	# I should expand this function to incorporate respawns, etc.. Don't want to have to reload resources every time
@@ -214,29 +235,32 @@ func die():
 	add_and_return_timed_effect_exit(20, "respawn", [])
 	# queue_free()
 
+
 func respawn():
 	set_stats_default()
 	is_alive = true
+
 
 func ascend():
 	print("ascending")
 	gravity2 = -400
 
+
 func up():
-	# todo: add a check to see if client was on the floor at time of send
-	#if is_on_floor():
-	
-	velocity.y -= 1.5 * speed
+	velocity.y = -1.5 * speed
+
 
 func down():
 	velocity.y += 0.1 * speed
 
+
 func right():
-	print("right called on chubbyphantom for player:" + str(player_id))
+	#print("right called on chubbyphantom for player:" + str(player_id))
 	if velocity.x <= speed:
 		velocity.x += min(speed, speed - velocity.x)
 	else:
 		velocity.x = speed
+
 
 func left():
 	if velocity.x >= -speed:

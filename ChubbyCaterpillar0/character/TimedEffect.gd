@@ -46,6 +46,14 @@ func old_init_timer(time, fx, args, ps):
 		
 		self.connect("timeout", self, "stop_ps_timer")
 
+# updates this timedeffect based on latest info from server
+func update(updated_iterations: int) -> void:
+	current_iterations = updated_iterations
+
+	# starts the next 1-second timer
+	self.start(1)
+
+
 # p: time: cap time of timer
 # ps: func/args: function/args to call at beginning, during, and end of timedEffect.
 # 	these are optional, and inputting "" for the function name will make it do nothing
@@ -74,6 +82,10 @@ func init_timer(time, enter_func, enter_args, body_func, body_args, exit_func, e
 
 # called every second while timedEffect is active
 func iterate():
+	# removes timer if player is dead
+	if parent.is_alive == false:
+		stop_timer()
+
 	# we check if iterations is greater than 1 instead of 0 because of the iteration math
 	# Basically it allows the number of "repeats" to correspond to the number of function calls
 	if current_iterations > 1:

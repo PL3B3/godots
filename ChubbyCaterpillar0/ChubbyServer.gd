@@ -73,7 +73,7 @@ func say_zx():
 
 # called upon connecting to server, asks for our player's type information in order to construct a replica on server	
 func send_blueprint():
-	rpc_id(1, "add_player", client_id, my_type)
+	rpc_id(1, "add_player", my_type)
 	print("sending blueprint for ", client_id)
 
 ##
@@ -86,12 +86,14 @@ func send_client_rpc(client_cmd, args):
 func send_client_rpc_unreliable(client_cmd, args):
 	rpc_unreliable_id(1, "parse_client_rpc", client_cmd, args)
 
-# allow client to send command to specific player (our own)
+# sends our in-game commands to the server
 func send_player_rpc(id, command, args):
+	# prevents cheating by faking commands from other players
 	if id == client_id:
 		rpc_id(1, "parse_player_rpc", id, command, args) 
 
 func send_player_rpc_unreliable(id, command, args):
+	# prevents cheating by faking commands from other players
 	if id == client_id:
 		rpc_unreliable_id(1, "parse_player_rpc", id, command, args) 
 
@@ -177,12 +179,57 @@ remote func add_random_player(id, type):
 		players[id] = chubby_character
 	
 
-#  
-func _physics_process(delta):
+# sets client_delta to an appropriate length to smooth interpolation
+func _process(delta):
 	client_delta = delta
+
+##
+## Functions for syncing attributes (such as health, position, etc) and actions
+##
+
+
+# Updates an attribute of a player or object
+func update_node_attribute(node_name: String, attribute_name: String, updated_value) -> void:
+	var node_to_update = get_node("/root/ChubbyServer/" + node_name)
+	
+	# checks if node exists before attempting to change its properties
+	if is_instance_valid(node_to_update):
+		Interpolator.interpolate_property(node_to_update, attribute_name, node_to_update.get(attribute_name), updated_value, client_delta, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+		Interpolator.start()
+
+
+# Calls an method of a player
+func call_player_method(player_id: int, method_name: String, args) -> void:
+	# if we have a player node with the specified name
+	if self.has_node(str(player_id)):
+		# call the method of the player with its args
+		players[player_id].callv("use_ability_and_start_cooldown", [method_name, args])
+
+
+##
+## Deprecated functions
+##
 
 # updates position of a player based on recent server info
 func parse_updated_player_position_from_server(id, latest_server_position):
 	# Interpolates between client position and server position using client_delta, aka physics processing rate, to determine a smooth speed
 	Interpolator.interpolate_property(get_node("/root/ChubbyServer/" + str(id)), "position", players[id].get_global_position(), latest_server_position, client_delta, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	Interpolator.start()
+#	get_node("/root/ChubbyServer/" + str(id)).set("position", latest_server_position) 
+
+
+# Linearly interpolates a NON-ESSENTIAL player attribute based on latest server information
+func update_player_attribute(player_id: int, attribute_name: String, latest_server_info) -> void:
+	# Interpolates between client position and server position using client_delta, aka physics processing rate, to determine a smooth speed
+	Interpolator.interpolate_property(get_node("/root/ChubbyServer/" + str(player_id)), attribute_name, players[player_id].get(attribute_name), latest_server_info, client_delta, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	Interpolator.start()
+	#get_node("/root/ChubbyServer/" + str(player_id)).set(attribute_name, latest_server_info)
+
+
+# Immediately sets an ESSENTIAL player attribute based on latest server information
+func set_player_attribute(player_id: int, attribute_name: String, latest_server_info) -> void:
+	get_node("/root/ChubbyServer/" + str(player_id)).set(attribute_name, latest_server_info)
+
+# 
+func update_timed_effect(player_id: int, timed_effect_id: int, server_current_iterations: int) -> void:
+	get_node("/root/ChubbyServer/" + str(player_id)).timed_effects[timed_effect_id].update(server_current_iterations)

@@ -1,4 +1,5 @@
 extends KinematicBody2D
+# 扭曲树
 
 # base class for multiplayer-oriented character
 
@@ -9,6 +10,7 @@ extends KinematicBody2D
 
 onready var client = get_node("/root/ChubbyServer")
 onready var uuid_generator = client.client_uuid_generator
+onready var Interpolator = get_node("/root/ChubbyServer/Interpolator")
 var TimedEffect = preload("res://character/TimedEffect.tscn")
 
 ##
@@ -32,13 +34,10 @@ var timed_effects = []
 ## for physics and visual
 ##
 
-# float: gravity2 is a workaround to physics simulation problems (I don't want to code a whole-ass momentum thing yet)
-# 	It starts at 9.8 as a default 
-# Vector2: velocity tracks player movement
-# float: rot_angle is used to orient the player perpendicular to collision normal
-var gravity2 = 0
-var velocity = Vector2(0,0)
-var rot_angle = -(PI / 2)
+
+var gravity2 := 0.0 # a workaround to enable directional acceleration, It starts at 9.8 as a default
+var velocity := Vector2(0,0) # Vector2: velocity tracks player movement
+var rot_angle = -(PI / 2) # float: rot_angle is used to orient the player perpendicular to collision normal
 var facing = 0
 const rot_speed = 15
 
@@ -70,14 +69,12 @@ const ability_conversions = {
 # decimal: player_id is the unique network id of the player
 # string: type is the class of the character
 # boolean: character_under_my_control marks if this is client's player
-# decimal: object_id_counter is # Incremented every time child object is spawned
-# 	Each child object is named [player_id]-[this number]
-# 	Example: player id is 3000123, this counter is 5, 
-# 	then the object is: "3000123-5" as a STRING
+# decimal: object_id_counter is incremented every time child object is spawned
+# 	Each child object is named its id
 var player_id
 var type = "base"
 var character_under_my_control = false
-var object_id_counter = 0
+#var object_id_counter = 0
 var objects = {}
 
 func set_stats_default():
@@ -101,36 +98,46 @@ func _ready():
 	set_global_position(Vector2(0,0))
 	character_under_my_control = is_network_master()
 
+
+##
+## Character syncing functions
+##
+
+func sync_death():
+	pass
+
+
 ##
 ## Character ability functions
 ##
 
 # adds a created object to the object dictionary and sets its name to its counter
+# also sets the object as toplevel so it may move freely, not tied to character position
 # because TCP sends commands in ORDER, the objects spawned by the same ability call 
 # will have the same object_counter_id
-func add_object(object):
-#	var object_uuid = uuid_generator.v4()
+func add_object(object, uuid: String) -> void:
+	#var object_id_string = str(object_id_counter)
 	
-	# ensures id is unique
-#	while(objects.has(object_uuid)):
-#		object_uuid = uuid_generator.v4()
+	#object.set_name(object_id_string)
+	object.set_name(uuid)
 	
-	# authoritative path to this object
-#	var object_path = "/root/ChubbyServer/%s/%s" % [player_id, object_uuid]
-	
-	object.set_name(object_id_counter)
+	# this "unties" the object from its parent player so it may move freely
+	object.set_as_toplevel(true)
 	
 	add_child(object)
 	
-	objects[object_id_counter] = object
+	#objects[object_id_string] = object
+	objects[uuid] = object
 	
-	object_id_counter += 1
+	#object_id_counter += 1
 	
+
 func add_and_return_timed_effect_full(time, enter_func, enter_args, body_func, body_args, exit_func, exit_args, repeats):
 	var timed_effect = TimedEffect.instance()
 	add_child(timed_effect)
 	timed_effect.init_timer(time, enter_func, enter_args, body_func, body_args, exit_func, exit_args, repeats)
 	timed_effects.push_back(timed_effect)
+
 
 func add_and_return_timed_effect_exit(time, exit_func, exit_args):
 	add_and_return_timed_effect_full(time, "", [], "", [], exit_func, exit_args, 1)
@@ -144,17 +151,13 @@ func get_input():
 	if character_under_my_control && is_alive:
 		if Input.is_key_pressed(KEY_W) && is_on_floor():
 			#todo: server must check if player on floor as well... 
-			get_node("/root/ChubbyServer").send_player_rpc_unreliable(player_id, "up", []) 
-			up()
+			use_ability_and_notify_server_and_start_cooldown("up", [])
 		if Input.is_key_pressed(KEY_D):
-			get_node("/root/ChubbyServer").send_player_rpc_unreliable(player_id, "right", [])
-			right()
+			use_ability_and_notify_server_and_start_cooldown("right", [])
 		if Input.is_key_pressed(KEY_A):
-			get_node("/root/ChubbyServer").send_player_rpc_unreliable(player_id, "left", [])
-			left()
+			use_ability_and_notify_server_and_start_cooldown("left", [])
 		if Input.is_key_pressed(KEY_S):
-			get_node("/root/ChubbyServer").send_player_rpc_unreliable(player_id, "down", [])
-			down()
+			use_ability_and_notify_server_and_start_cooldown("down", [])
 			
 		# ability inputs
 		
@@ -183,25 +186,49 @@ func get_input():
 # 3. activate cooldown timer
 # 4. attaches a uuid to this specific command (at the end of the args array) to be used for syncing purposes
 func use_ability_and_notify_server_and_start_cooldown(ability_name, args):
-	# generates a uuid to track the command, adds it to args
-	var ability_uuid = uuid_generator.v4()
-
-	args = args.push_back(ability_uuid)
-
-	# call the ability
-	callv(ability_name, args)
-
-	# for debugging
-#		print(str(player_id) + " activated ability: " + ability_name)
-
-	# Tells server our player did the action and the arguments used
-	client.send_player_rpc(player_id, ability_name, args)
-
-	# Puts ability on cooldown
+	# converts ability name to its enumeration
 	var ability_num = ability_conversions[ability_name]
+	
+	# checks to see if the "ability" is an actual ability or just movement	
+	if (ability_num != null): # it's an ability
+		# generates a uuid to track the command, adds it to args
+		var ability_uuid = uuid_generator.v4()
+		args.push_back(ability_uuid)
+		
+		# calls the ability
+		callv(ability_name, args)
+		
+		# for debugging
+		# print(str(player_id) + " activated ability: " + ability_name)
+		
+		# Tells server our player did the action and the arguments used
+		client.send_player_rpc(player_id, ability_name, args)
+		
+		# Puts ability on cooldown
+		ability_usable[ability_num] = false
+		add_and_return_timed_effect_exit(cooldowns[ability_num], "cooldown", [ability_num])
+	else: # it's a movement or other non-ability method
+		call(ability_name)
+		# use udp b/c movement isn't essential
+		client.send_player_rpc_unreliable(player_id, ability_name, args)
 
-	ability_usable[ability_num] = false
-	add_and_return_timed_effect_exit(cooldowns[ability_num], "cooldown", [ability_num])
+# called by server to replicate the commands of another client
+# 1. call the ability with arguments passed in, including the ability_uuid
+# 2. activate cooldown timer
+func use_ability_and_start_cooldown(ability_name: String, args) -> void:
+	# converts ability name to its enumeration
+	var ability_num = ability_conversions[ability_name]
+	
+	# checks to see if the "ability" is an actual ability or just movement	
+	if (ability_num != null): # it's an ability
+		# calls the ability
+		callv(ability_name, args)
+		
+		# Puts ability on cooldown
+		ability_usable[ability_num] = false
+		add_and_return_timed_effect_exit(cooldowns[ability_num], "cooldown", [ability_num])
+	else: # it's a movement or other non-ability method
+		call(ability_name)
 
 func cooldown(ability_num):
 	ability_usable[ability_num] = true
@@ -219,9 +246,10 @@ func _physics_process(delta):
 	if get_slide_count() > 0:
 		# get one of the collisions, it's normal, and convert it into an angle
 		rot_angle = get_slide_collision(get_slide_count() - 1).get_normal().angle()
-
-	move_and_slide(velocity.rotated(rot_angle + (PI / 2)) + Vector2(0.0, gravity2), Vector2(0.0, -1.0), false, 4, 0.9)
 	
+	move_and_slide(60 * delta * (velocity.rotated(rot_angle + (PI / 2)) + Vector2(0.0, gravity2)), Vector2(0.0, -1.0), false, 4, 0.9)
+	
+	# check here for errors: may be double-counting being on the floor b/c of outdated server info
 	if is_on_floor():
 		velocity = Vector2()
 		gravity2 = 0
@@ -234,41 +262,59 @@ func hit(dam):
 	print("Was hit")
 	if not health > 0:
 		die()
-		
+
+
 func sayhi():
 	print("hi")
-	
-func reset_timers():
-	for effect in timed_effects:
-		effect.reset_timer()
 
+
+
+# Can't use yet, need a way to check if timer exists...
+#func reset_timers():
+#	for effect in timed_effects:
+#		effect.reset_timer()
+
+
+# this function is canonically the grim reaper in the game
 func die():
 	# I should expand this function to incorporate respawns, etc.. Don't want to have to reload resources every time
 	print("I died")
 	add_and_return_timed_effect_body(1, "ascend", [], 8)
 	is_alive = false
 	add_and_return_timed_effect_exit(20, "respawn", [])
-	# queue_free()
+
+	# clears all timedeffects
+
+	# reset object_counter_id
+
 
 func respawn():
 	set_stats_default()
 	is_alive = true
 
+
 func ascend():
 	print("ascending")
 	gravity2 = -400
 
+
 func up():
-	velocity.y -= 1.5 * speed
+	# this sets the velocity instead of subtracting from it
+	# which avoids the issue of "double-jumping" due to laggy info from server
+	# which might cause us to believe we are on the floor even after jumping
+	velocity.y = -1.5 * speed
+
 
 func down():
 	velocity.y += 0.1 * speed
+
 
 func right():
 	if velocity.x <= speed:
 		velocity.x += min(speed, speed - velocity.x)
 	else:
 		velocity.x = speed
+
 
 func left():
 	if velocity.x >= -speed:

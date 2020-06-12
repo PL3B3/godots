@@ -74,6 +74,10 @@ func init_timer(time, enter_func, enter_args, body_func, body_args, exit_func, e
 
 # called every second while timedEffect is active
 func iterate():
+	# removes timer if player is dead
+	if parent.is_alive == false:
+		stop_timer()
+
 	# we check if iterations is greater than 1 instead of 0 because of the iteration math
 	# Basically it allows the number of "repeats" to correspond to the number of function calls
 	if current_iterations > 1:

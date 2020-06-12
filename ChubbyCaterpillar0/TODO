@@ -1,15 +1,26 @@
 TODO list overview:
 
+Both
+	-ability syncing
+	-object removal
+	-(done) when syncing objects or anything really, need to check if that thing exists on the client first or else errors!
+
 ChubbyCaterpillar0
 	-ChubbyCharacter
-		-multiplayer interpolate velocity as well as position
+		-
+		-(done) multiplayer interpolate velocity as well as position
 	-layer and mask setting, support for up to 10 teams
+	-devise a reasonable system for updating player attributes/objects
 
 ChubbyServer0
 	-Misc
 		-move character files into gamecharacters folder
+	-Chubbyserver
+		-when a player sends a command, all other players must be notified
 	-ChubbyPhantom
 		-finish object syncing
+		-sync rot angle, gravity2, velocity...make a new var tracking "total velocity" and use that
+
 
 Misc (long term goals)
 	-networking

@@ -1,12 +1,6 @@
 extends Node
 
 ##
-## TODO
-##
-
-# no need for id parameter when adding player, just get sender id
-
-##
 ## This is the dedicated server node
 ##
 
@@ -18,8 +12,8 @@ const DEFAULT_PORT = 3342
 const MAX_PLAYERS = 8
 
 var uuid_generator = preload("res://server_resources/uuid_generator.tscn")
-var ChubbyPhantom = preload("res://ChubbyPhantom.tscn")
-var ChubbyPhantom0 = preload("res://ChubbyPhantom0.tscn")
+var ChubbyPhantom = preload("res://character/base_character/ChubbyPhantom.tscn")
+var ChubbyPhantom0 = preload("res://character/game_characters/ChubbyPhantom0.tscn")
 var map = preload("res://maps/Map0.tscn")
 
 var physics_processing = false
@@ -130,17 +124,22 @@ remote func parse_client_rpc(client_cmd, args):
 # tcp function called by client rpc, which executes a method of that client's representative ChubbyPhantom here on the server
 # this method may be movement OR an ability...handling both in one function for simplicity
 # todo whitelist / blacklist for which commands are acceptable...
-remote func parse_player_rpc(player_id, ability_name, args):
+remote func parse_player_rpc(player_id, method_name, args):
 	var caller_id = get_tree().get_rpc_sender_id()
 	
-	print("Player ", caller_id, " called function ", ability_name)
+	#print("Player ", caller_id, " called function ", ability_name)
 	
 	# stops non-player peers from controlling that player
 	if (str(caller_id) == str(player_id)):
-		players[player_id].callv("use_ability_and_start_cooldown", [ability_name, args])
+		players[player_id].callv("use_ability_and_start_cooldown", [method_name, args])
+	
+	# sends this command to other clients
+	send_server_rpc_to_all_players("call_player_method", [player_id, method_name, args])
 
 # this function is called upon player_connected, which calls the player to tell this function its id and class type
-remote func add_player(id, type):
+remote func add_player(type):
+	var id = get_tree().get_rpc_sender_id()
+	
 	var player_phantom
 	
 	# @d
@@ -198,13 +197,6 @@ func add_new_player_to_current_clients_and_old_players_to_new_client(new_player_
 # sends another client's commands in a dictionary
 func send_other_client_commands(id, other_id, their_command):
 	pass
-
-# basic add player to client side, i will upgrade to include team, position, etc.
-func add_object_to_all_current_clients(object_id, blueprint):
-	rpc("add_object", object_id, blueprint)
-
-func remove_object_from_all_current_clients(object_id, blueprint):
-	rpc("remove_object", object_id, blueprint)
 
 
 # TODO: do multithreading later for efficiency. players should be a dict of id: {ChubbyPhantom, thread}
