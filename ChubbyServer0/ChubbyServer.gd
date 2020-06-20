@@ -10,6 +10,14 @@ extends Node
 
 const DEFAULT_PORT = 3342
 const MAX_PLAYERS = 8
+# Used to convert between ability name and its index in the ability_usable array
+const ability_conversions = {
+	"mouse_ability_0" : 0,
+	"mouse_ability_1" : 1, 
+	"key_ability_0" : 2, 
+	"key_ability_1" : 3, 
+	"key_ability_2" : 4
+}
 
 var uuid_generator = preload("res://server_resources/uuid_generator.tscn")
 var ChubbyPhantom = preload("res://character/base_character/ChubbyPhantom.tscn")
@@ -67,7 +75,7 @@ func _player_disconnected(id):
 	var disconnected_players_phantom = get_node("/root/ChubbyServer/" + str(id))
 	remove_child(disconnected_players_phantom)
 	disconnected_players_phantom.queue_free()
-	rpc("parse_server_rpc", "remove_other_player", id)
+	rpc("parse_server_rpc", "remove_other_player", [id])
 
 func _connected_ok():
 	print("got a connection")
@@ -124,17 +132,30 @@ remote func parse_client_rpc(client_cmd, args):
 # tcp function called by client rpc, which executes a method of that client's representative ChubbyPhantom here on the server
 # this method may be movement OR an ability...handling both in one function for simplicity
 # todo whitelist / blacklist for which commands are acceptable...
-remote func parse_player_rpc(player_id, method_name, args):
+remote func parse_player_rpc(player_id, method_name, args) -> void:
 	var caller_id = get_tree().get_rpc_sender_id()
 	
 	#print("Player ", caller_id, " called function ", ability_name)
 	
 	# stops non-player peers from controlling that player
 	if (str(caller_id) == str(player_id)):
-		players[player_id].callv("use_ability_and_start_cooldown", [method_name, args])
-	
-	# sends this command to other clients
-	send_server_rpc_to_all_players("call_player_method", [player_id, method_name, args])
+		var ability_num = ability_conversions[method_name]
+		var player_to_call = players[player_id]
+		# if this is an actual ability, not just movement, 
+		if ability_num != null:
+			if player_to_call.ability_usable[ability_num]: # if it is usable
+				# call the ability
+				player_to_call.callv("use_ability_and_start_cooldown", [method_name, args])
+			else: # ability isn't usable
+				# do nothing
+				return
+		
+		# if we reach this point, the method is either a movement or a legitimate ability call
+		# sends this command to other clients
+		for id in players:
+			if id != player_id:
+				send_server_rpc_to_one_player(id, "call_player_method", [player_id, method_name, args])
+
 
 # this function is called upon player_connected, which calls the player to tell this function its id and class type
 remote func add_player(type):

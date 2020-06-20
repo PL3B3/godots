@@ -1,6 +1,6 @@
 extends Node2D
 
-var character = preload("res://ChubbyPhantom.tscn")
+var character = preload("res://character/base_character/ChubbyPhantom.tscn")
 var map = preload("res://maps/Map0.tscn")
 #var chubby = preload("res://ChubbyServer.tscn")
 

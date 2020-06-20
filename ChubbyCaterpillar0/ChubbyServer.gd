@@ -37,7 +37,7 @@ var my_type = "pubert"
 var client_uuid_generator = uuid_generator.instance()
 
 # keeps track of client physics processing speed, used for interpolating server/client position
-var client_delta
+var client_delta = 1.0 / (ProjectSettings.get_setting("physics/common/physics_fps"))
 
 func _ready():
 	start_client()
@@ -125,6 +125,11 @@ func add_a_player(id, type):
 	# sets my player as network master
 	if id == client_id:
 		player_to_add.set_network_master(id)
+		
+		# camera follow
+		var camera = get_node("Camera2D")
+		remove_child(camera)
+		player_to_add.add_child(camera)
 	
 	# adds player node
 	get_node("/root/ChubbyServer").add_child(player_to_add)
@@ -174,17 +179,19 @@ remote func add_random_player(id, type):
 		
 		if (id == client_id):
 			chubby_character.set_network_master(id)
+			
+			# camera follow
+			var camera = get_node("Camera2D")
+			remove_child(camera)
+			chubby_character.add_child(camera)
 		
 		get_node("/root/ChubbyServer").add_child(chubby_character)
 		players[id] = chubby_character
 	
 
-# sets client_delta to an appropriate length to smooth interpolation
-func _process(delta):
-	client_delta = delta
 
 ##
-## Functions for syncing attributes (such as health, position, etc) and actions
+## Functions for syncing attributes (such as health, position, etc), objects, and actions
 ##
 
 
@@ -198,12 +205,19 @@ func update_node_attribute(node_name: String, attribute_name: String, updated_va
 		Interpolator.start()
 
 
-# Calls an method of a player
+# used by server to call a method of a player
 func call_player_method(player_id: int, method_name: String, args) -> void:
-	# if we have a player node with the specified name
+	# if we have a player node with the specified name, and that player isn't us
 	if self.has_node(str(player_id)):
 		# call the method of the player with its args
-		players[player_id].callv("use_ability_and_start_cooldown", [method_name, args])
+		players[player_id].callv(method_name, args)
+
+
+# unused
+# called by server to remove a player object, such as a projectile. client can't remove them by itself
+func remove_player_object(player_id: int, object_uuid: String) -> void:
+	if self.has_node(str(player_id)):
+		players[player_id].callv("remove_object", [object_uuid])
 
 
 ##

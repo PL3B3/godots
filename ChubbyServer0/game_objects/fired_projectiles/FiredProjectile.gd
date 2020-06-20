@@ -21,8 +21,7 @@ func _ready():
 
 func on_timeout_complete():
 	# remove self from player's object dictionary
-	parent.objects.erase(name)
-	queue_free()
+	parent.call_and_sync("remove_object", [name])
 
 func fire(center, radius, dir):
 	rotation = dir
@@ -45,6 +44,4 @@ func _physics_process(delta):
 				var time_damage_multiplier = log(3 + bullet_life - timer.time_left)
 				collision.collider.hit(time_damage_multiplier * damage)
 			# remove self from player's object dictionary
-			parent.objects.erase(name)
-			queue_free()
-
+			on_timeout_complete()

@@ -1,30 +1,49 @@
 TODO list overview:
 
 Both
-	-ability syncing
-	-object removal
+	-**theory:
+		-unreliable = aesthetic
+		-reliable calls = set and lock.
+	-make health an int
+	-misc debugging!
+	-(done) change remove_obj to use callplayermethod
+	-base class for shared funcs b/w phantom and chubbycharacter
+	-(done) debug timedeffect to mk sure it lasts long enuff
+	-(done) chubbyserver timedeffect update, no time param in init
+	-fix add a player to use send server rpc
+	-(done) camera
+	-(done) rethink player method calling and cooldowns to sync, not client side
+		-(done) client side, no cooldown thing. just call method with uuid and notify server
+		-(done) stll need sepr8 function for external calling (to not double-notify server)
+		-(done) serverside method replication exludes using for loop
+	-(done) is client side use method adding new uuid?
+	-layer and mask setting, support for up to 6 teams
+	-death and respawn
+		-use remove_child with state storage variable for respawning?
+	-(done) ability syncing. client calls to server, server tells all other clients
+	-(done) object removal. serverside objects call their parents to self-remove and notify clients, who also remove it, with check for node validity
 	-(done) when syncing objects or anything really, need to check if that thing exists on the client first or else errors!
+
 
 ChubbyCaterpillar0
 	-ChubbyCharacter
-		-
 		-(done) multiplayer interpolate velocity as well as position
-	-layer and mask setting, support for up to 10 teams
-	-devise a reasonable system for updating player attributes/objects
+
+	-(done) devise a reasonable system for updating player attributes/objects
 
 ChubbyServer0
 	-Misc
-		-move character files into gamecharacters folder
+		-(done) move character files into gamecharacters folder
 	-Chubbyserver
-		-when a player sends a command, all other players must be notified
+		-(done) when a player sends a command, all other players must be notified
 	-ChubbyPhantom
-		-finish object syncing
-		-sync rot angle, gravity2, velocity...make a new var tracking "total velocity" and use that
+		-(done) finish object syncing
+		-(done) sync rot angle, gravity2, velocity
 
 
 Misc (long term goals)
 	-networking
-		-tweens for interpolation
+		-(done) tweens for interpolation
 		**impractical, probably allows hacks, solved by simpler algs-Lstm trained on client-server prediction to make game big smooth
 			-preprocessing of how many "Game objects" the player currently sees (a number, X)
 			-preprocessing of object attributes to small numbers between -1 and 1
@@ -32,7 +51,7 @@ Misc (long term goals)
 			-l1: a recurrent neural network (RNN) runs X times, each takes inputs describing object type, position, health, shape bounds, shape type, current velocity, etc... might not even need current velocity
 			-l2: an lstm which takes past object values to predict the server's next packet sent
 			-Potentially even predicts gameplay moves, like when someone is likely to activate an ability
-	-final optimizations
+	-more stuff
 		-threading for physics processing
 		-polish sprites
 		-animations

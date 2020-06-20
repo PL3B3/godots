@@ -108,7 +108,7 @@ func sync_death():
 
 
 ##
-## Character ability functions
+## Object sync functions
 ##
 
 # adds a created object to the object dictionary and sets its name to its counter
@@ -130,20 +130,35 @@ func add_object(object, uuid: String) -> void:
 	objects[uuid] = object
 	
 	#object_id_counter += 1
-	
 
-func add_and_return_timed_effect_full(time, enter_func, enter_args, body_func, body_args, exit_func, exit_args, repeats):
+
+# function to remove an object
+func remove_object(uuid: String) -> void:
+	var object_to_remove = get_node(uuid)
+
+	# check if object exists
+	if is_instance_valid(object_to_remove):
+		objects[uuid].queue_free()
+		objects.erase(uuid)
+
+
+##
+## Timed Effect creation functions
+##
+
+
+func add_and_return_timed_effect_full(enter_func, enter_args, body_func, body_args, exit_func, exit_args, repeats):
 	var timed_effect = TimedEffect.instance()
 	add_child(timed_effect)
-	timed_effect.init_timer(time, enter_func, enter_args, body_func, body_args, exit_func, exit_args, repeats)
+	timed_effect.init_timer(enter_func, enter_args, body_func, body_args, exit_func, exit_args, repeats)
 	timed_effects.push_back(timed_effect)
 
 
-func add_and_return_timed_effect_exit(time, exit_func, exit_args):
-	add_and_return_timed_effect_full(time, "", [], "", [], exit_func, exit_args, 1)
+func add_and_return_timed_effect_exit(exit_func, exit_args, repeats):
+	add_and_return_timed_effect_full("", [], "", [], exit_func, exit_args, repeats)
 
-func add_and_return_timed_effect_body(time, body_func, body_args, repeats):
-	add_and_return_timed_effect_full(time, "", [], body_func, body_args, "", [], repeats)
+func add_and_return_timed_effect_body(body_func, body_args, repeats):
+	add_and_return_timed_effect_full("", [], body_func, body_args, "", [], repeats)
 
 func get_input():
 	# Detect up/down/left/right keystate and only move when pressed.
@@ -187,7 +202,7 @@ func get_input():
 # 4. attaches a uuid to this specific command (at the end of the args array) to be used for syncing purposes
 func use_ability_and_notify_server_and_start_cooldown(ability_name, args):
 	# converts ability name to its enumeration
-	var ability_num = ability_conversions[ability_name]
+	var ability_num = ability_conversions.get(ability_name)
 	
 	# checks to see if the "ability" is an actual ability or just movement	
 	if (ability_num != null): # it's an ability
@@ -206,32 +221,23 @@ func use_ability_and_notify_server_and_start_cooldown(ability_name, args):
 		
 		# Puts ability on cooldown
 		ability_usable[ability_num] = false
-		add_and_return_timed_effect_exit(cooldowns[ability_num], "cooldown", [ability_num])
-	else: # it's a movement or other non-ability method
-		call(ability_name)
+		add_and_return_timed_effect_body("notify_cooldown", [ability_name], cooldowns[ability_num])
+	else: # it's a movement
+		callv(ability_name, args)
 		# use udp b/c movement isn't essential
 		client.send_player_rpc_unreliable(player_id, ability_name, args)
 
-# called by server to replicate the commands of another client
-# 1. call the ability with arguments passed in, including the ability_uuid
-# 2. activate cooldown timer
-func use_ability_and_start_cooldown(ability_name: String, args) -> void:
-	# converts ability name to its enumeration
-	var ability_num = ability_conversions[ability_name]
-	
-	# checks to see if the "ability" is an actual ability or just movement	
-	if (ability_num != null): # it's an ability
-		# calls the ability
-		callv(ability_name, args)
-		
-		# Puts ability on cooldown
-		ability_usable[ability_num] = false
-		add_and_return_timed_effect_exit(cooldowns[ability_num], "cooldown", [ability_num])
-	else: # it's a movement or other non-ability method
-		call(ability_name)
 
+# notifies that an ability is on cooldown each second
+func notify_cooldown(ability_name: String) -> void:
+	print(ability_name + " is on cooldown")
+
+
+# allows an ability to be usable
 func cooldown(ability_num):
+	# only called by server
 	ability_usable[ability_num] = true
+
 
 func label_debug(text):
 	get_node("Label").set_text(text)
@@ -279,9 +285,9 @@ func sayhi():
 func die():
 	# I should expand this function to incorporate respawns, etc.. Don't want to have to reload resources every time
 	print("I died")
-	add_and_return_timed_effect_body(1, "ascend", [], 8)
+	add_and_return_timed_effect_body("ascend", [], 4)
 	is_alive = false
-	add_and_return_timed_effect_exit(20, "respawn", [])
+	add_and_return_timed_effect_exit("respawn", [], 5)
 
 	# clears all timedeffects
 
