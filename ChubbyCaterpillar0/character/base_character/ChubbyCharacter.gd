@@ -23,8 +23,8 @@ var TimedEffect = preload("res://character/TimedEffect.tscn")
 # float: regen is the amount of health to be added or removed per second from the character
 # char: team is a letter representation of which team you are on
 var speed = 200
-var health_cap = 200
-var health = 200
+var health_cap : int = 200
+var health : int = 200
 var regen = 0
 var team = 'a'
 var is_alive = true
@@ -264,7 +264,7 @@ func _physics_process(delta):
 
 
 func hit(dam):
-	health -= dam
+	health -= dam as int
 	print("Was hit")
 	if not health > 0:
 		die()

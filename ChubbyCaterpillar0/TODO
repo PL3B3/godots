@@ -4,6 +4,17 @@ Both
 	-**theory:
 		-unreliable = aesthetic
 		-reliable calls = set and lock.
+		-server-to-player-calls: applies on every client
+			-cooldown
+			-die
+			-respawn
+			-all attribute updates
+		-server-to-puppet-player-calls: replicates client commands on other clients only
+	-If player calls an ability that hasn't cooled down yet, how does the game respond?
+		-Server does not register, should message the player
+		-Client side still does the ability, but only visually
+		-Cooldowns should have approximate timers: The very last second is actually more than a second depending on server response times. On average it will be a fraction of a second, and at worst it probably won't be gamebreaking because your lag would be awful anyway
+	-hit mechanism?
 	-make health an int
 	-misc debugging!
 	-(done) change remove_obj to use callplayermethod

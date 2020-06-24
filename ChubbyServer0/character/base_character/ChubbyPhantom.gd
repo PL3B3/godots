@@ -23,8 +23,8 @@ onready var server = get_parent()
 # float: regen is the amount of health to be added or removed per second from the character
 # char: team is a letter representation of which team you are on
 var speed = 200
-var health_cap = 200
-var health = 200
+var health_cap : int = 200
+var health : int = 200
 var regen = 0
 var team = 'a'
 var is_alive = true
@@ -218,7 +218,7 @@ func cooldown(ability_num):
 
 # ESSENTIAL
 func hit(dam):
-	health -= dam
+	health -= dam as int
 	send_updated_attribute(str(player_id), "health", health)
 	print("Was hit")
 	if not health > 0:
