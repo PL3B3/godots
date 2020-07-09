@@ -78,7 +78,7 @@ const ability_conversions = {
 # 	then the object is: "3000123-5" as a STRING
 var player_id
 var type = "base"
-var character_under_my_control = false
+#var character_under_my_control = false
 #var object_id_counter = 0
 var objects = {}
 var physics_processing = false
@@ -189,26 +189,28 @@ func label_debug(text):
 # calculates and syncs position/movement
 func _physics_process(delta):
 	get_node("Label").set_text(str(health as int))
+
 	get_child(1).position = get_child(0).position
 
-	if (physics_processing):
-		if get_slide_count() > 0:
-			# get one of the collisions, it's normal, and convert it into an angle
-			rot_angle = get_slide_collision(get_slide_count() - 1).get_normal().angle()
+	if get_slide_count() > 0:
+		# get one of the collisions, it's normal, and convert it into an angle
+		rot_angle = get_slide_collision(get_slide_count() - 1).get_normal().angle()
 
-		move_and_slide(60 * delta * (velocity.rotated(rot_angle + (PI / 2)) + Vector2(0.0, gravity2)), Vector2(0.0, -1.0), false, 4, 0.9)
-		
-		send_updated_attribute(str(player_id), "velocity", velocity)
-		send_updated_attribute(str(player_id), "gravity2", gravity2)
-		
-		if is_on_floor():
-			velocity = Vector2()
-			gravity2 = 0
-		else:
-			gravity2 += 9.8
+	move_and_slide(60 * delta * (velocity.rotated(rot_angle + (PI / 2)) + Vector2(0.0, gravity2)), Vector2(0.0, -1.0), false, 4, 0.9)
+	
+	
+	if is_on_floor():
+		velocity = Vector2()
+		gravity2 = 0
+	else:
+		gravity2 += 9.8
 
-		send_updated_attribute(str(player_id), "position", position)
-		send_updated_attribute(str(player_id), "rot_angle", rot_angle)
+# updates vital player attributes on all clients
+func send_updates():
+	send_updated_attribute(str(player_id), "gravity2", gravity2)
+	send_updated_attribute(str(player_id), "velocity", velocity)
+	send_updated_attribute(str(player_id), "position", position)
+	send_updated_attribute(str(player_id), "rot_angle", rot_angle)
 
 
 # ESSENTIAL
@@ -219,7 +221,7 @@ func cooldown(ability_num):
 # ESSENTIAL
 func hit(dam):
 	health -= dam as int
-	send_updated_attribute(str(player_id), "health", health)
+	#send_updated_attribute(str(player_id), "health", health)
 	print("Was hit")
 	if not health > 0:
 		die()
@@ -236,12 +238,19 @@ func sayhi():
 
 
 func die():
-	# I should expand this function to incorporate respawns, etc.. Don't want to have to reload resources every time
 	print("I died")
-	add_and_return_timed_effect_body("ascend", [], 4)
+	
+	# Only in Jesus mode
+	#add_and_return_timed_effect_body("ascend", [], 4)
+	
+	# disable collisions
+	$CollisionShape2D.set_deferred("disabled", true)
+	
+	# make invisible
+	$Sprite2D.visible = false
 	is_alive = false
 	add_and_return_timed_effect_exit("respawn", [], 5)
-	# queue_free()
+	
 
 
 func respawn():

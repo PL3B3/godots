@@ -1,36 +1,56 @@
 TODO list overview:
 
 Both
+	-plumplet and pumpqueen: select color, threshold 12, expand region by 4 px...use beige background
 	-**theory:
 		-unreliable = aesthetic
 		-reliable calls = set and lock.
-		-server-to-player-calls: applies on every client
-			-cooldown
+		-(SUC) server- universal call: applies on every client | authoritative server stuff
+			-cooldown: 
 			-die
 			-respawn
 			-all attribute updates
-		-server-to-puppet-player-calls: replicates client commands on other clients only
+			-all object updates including removal: Serverside objects call their parents to call_and_sync the remove_object function with their name as the parameter
+			-basically any timed thing
+			-map and gamemode-specific updates like winning, health packs, etc
+		-(SPC) server-to-puppet-player-calls: replicates client commands on other clients only | controlled by client
+			-ability call
+			-movement
 	-If player calls an ability that hasn't cooled down yet, how does the game respond?
-		-Server does not register, should message the player
+		-what we can assume: cooldown timer is done on client side
+		-Server defers that ability call by COOLDOWN_MARGIN seconds. Around 0.05 seconds or so, just about the max ping variation you expect, since the difference between the two timers is 
 		-Client side still does the ability, but only visually
 		-Cooldowns should have approximate timers: The very last second is actually more than a second depending on server response times. On average it will be a fraction of a second, and at worst it probably won't be gamebreaking because your lag would be awful anyway
 	-hit mechanism?
 	-make health an int
 	-misc debugging!
-	-(done) change remove_obj to use callplayermethod
+	-fix add a player to use send server rpc
+	-layer and mask setting, support for up to 6 teams
+	-death and respawn
+		-on death: server leave behind a body object (for use in game mechanics). it will despawn on player respawn (signal), does a SUC telling all clients the player died and to call their own death functions
+		
+		var dead_body = DeadBody.instance()
+		dead_body.init($Sprite2D, )
+		var dead_body_uuid = uuid_generator.v4()
+		add_object(dead_body_uuid)
+
+		-die function: temporarily disable collision shape, teleport away, teleport to dead zone (unreachable by other players)
+			$CollisionShape2D.set_deferred("disabled", true)
+
+		-Server uses a timed_effect which reinstantiates the player when ready and does a SUC telling all clients to reinstantiate
+		-reinstantiation has arguments: position (vector2 float), spawn args (for characters that change based on how they last died)
+		-
+	-recursive reference for timedeffect countdown? pass own timer into thingy????
 	-base class for shared funcs b/w phantom and chubbycharacter
+	-(done) change remove_obj to use callplayermethod
 	-(done) debug timedeffect to mk sure it lasts long enuff
 	-(done) chubbyserver timedeffect update, no time param in init
-	-fix add a player to use send server rpc
 	-(done) camera
 	-(done) rethink player method calling and cooldowns to sync, not client side
 		-(done) client side, no cooldown thing. just call method with uuid and notify server
 		-(done) stll need sepr8 function for external calling (to not double-notify server)
 		-(done) serverside method replication exludes using for loop
 	-(done) is client side use method adding new uuid?
-	-layer and mask setting, support for up to 6 teams
-	-death and respawn
-		-use remove_child with state storage variable for respawning?
 	-(done) ability syncing. client calls to server, server tells all other clients
 	-(done) object removal. serverside objects call their parents to self-remove and notify clients, who also remove it, with check for node validity
 	-(done) when syncing objects or anything really, need to check if that thing exists on the client first or else errors!

@@ -195,7 +195,7 @@ remote func add_player(type):
 	players[id].set_id(id)
 
 	# turn on the server's physics simulation FOR THIS PLAYER SPECIFICALLY if not already on
-	players[id].physics_processing = true
+	#players[id].physics_processing = true
 
 	# ensures all other clients have a copy of this player and vice versa
 	add_new_player_to_current_clients_and_old_players_to_new_client(id, type)
