@@ -38,5 +38,5 @@ func _physics_process(delta):
 			velocity.y += gravity
 		if collision:
 			# doesn't register a hit...that's determined by the server
-			print("we collided")
 			# no behavior...removal determined by server
+			pass

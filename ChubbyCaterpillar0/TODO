@@ -1,6 +1,8 @@
 TODO list overview:
 
 Both
+	-physics needs syncing (chubbyphantom!!!! use .physproc!!)
+	-handling server calls to nonexistent objects on client
 	-plumplet and pumpqueen: select color, threshold 12, expand region by 4 px...use beige background
 	-**theory:
 		-unreliable = aesthetic

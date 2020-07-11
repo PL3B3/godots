@@ -139,18 +139,19 @@ remote func parse_player_rpc(player_id, method_name, args) -> void:
 	
 	# stops non-player peers from controlling that player
 	if (str(caller_id) == str(player_id)):
-		var ability_num = ability_conversions[method_name]
+		var ability_num = ability_conversions.get(method_name)
 		var player_to_call = players[player_id]
 		# if this is an actual ability, not just movement, 
 		if ability_num != null:
-			if player_to_call.ability_usable[ability_num]: # if it is usable
-				# call the ability
-				player_to_call.callv("use_ability_and_start_cooldown", [method_name, args])
-			else: # ability isn't usable
-				# do nothing
-				return
+			if !player_to_call.ability_usable[ability_num]: # ability isn't usable
+				# so end the function here, doing nothing
+				return		
 		
 		# if we reach this point, the method is either a movement or a legitimate ability call
+		
+		# we call it
+		player_to_call.callv("use_ability_and_start_cooldown", [method_name, args])
+		
 		# sends this command to other clients
 		for id in players:
 			if id != player_id:
