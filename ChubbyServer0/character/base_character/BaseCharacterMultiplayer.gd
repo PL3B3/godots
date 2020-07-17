@@ -165,7 +165,6 @@ func die():
     # make invisible
     $Sprite2D.visible = false
     is_alive = false
-    add_and_return_timed_effect_exit("respawn", [], 5)
 
 func respawn():
     set_stats_default()
