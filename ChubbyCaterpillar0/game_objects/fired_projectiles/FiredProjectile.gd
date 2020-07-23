@@ -11,6 +11,9 @@ var fired = false
 var physics_processing = false
 
 func _ready():
+	set_collision_layer(parent.get_collision_layer())
+	# should not scan pickups
+	set_collision_mask(parent.get_collision_mask() - 128)
 	timer = Timer.new()
 	timer.set_one_shot(true)
 	timer.start(bullet_life)

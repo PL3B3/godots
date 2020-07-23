@@ -8,21 +8,31 @@
 position = Vector2( 13.2964, 150.692 )
 rotation = 1.5708
 scale = Vector2( 4, 10 )
+collision_layer = 256
+collision_mask = 127
 
 [node name="Wall2" parent="." instance=ExtResource( 1 )]
 position = Vector2( -753.463, 150.692 )
 rotation = 1.5708
 scale = Vector2( 4, 10 )
+collision_layer = 256
+collision_mask = 127
 
 [node name="Wall3" parent="." instance=ExtResource( 1 )]
 position = Vector2( 777.839, 150.693 )
 rotation = 1.5708
 scale = Vector2( 4, 10 )
+collision_layer = 256
+collision_mask = 127
 
 [node name="Wall4" parent="." instance=ExtResource( 1 )]
 position = Vector2( 837.613, -47.6031 )
 scale = Vector2( 2, 4 )
+collision_layer = 256
+collision_mask = 127
 
 [node name="Wall5" parent="." instance=ExtResource( 1 )]
 position = Vector2( -843.721, -64.3446 )
 scale = Vector2( 2, 4 )
+collision_layer = 256
+collision_mask = 127

@@ -19,6 +19,22 @@ config/name="ChubbyServer0"
 run/main_scene="res://ChubbyServer.tscn"
 config/icon="res://icon.png"
 
+[layer_names]
+
+2d_physics/layer_1="team_0"
+2d_physics/layer_2="team_1"
+2d_physics/layer_3="team_2"
+2d_physics/layer_4="team_3"
+2d_physics/layer_5="team_4"
+2d_physics/layer_6="team_5"
+2d_physics/layer_7="fauna"
+2d_physics/layer_8="pickups"
+2d_physics/layer_9="env"
+
+[physics]
+
+common/physics_fps=120
+
 [rendering]
 
 environment/default_environment="res://default_env.tres"

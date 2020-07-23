@@ -27,25 +27,31 @@ var ChubbyCharacter1 = preload("res://character/experimental_character/ChubbyCha
 var map = preload("res://maps/Map0.tscn")
 var TimeQueue = preload("res://character/base_character/TimeQueue.tscn")
 
-# int: client_id sex
-# dictionary int-chubbycharacter: tracks all connected players
-# string: my_type the class of the character we control
 # Node2d: client_uuid_generator a utility node which makes uuids...helps catalogue objects/timedeffects
-var client_id 
-var players = {}
-var my_type = "pubert"
+var client_id : int
+var players = {} # tracks all connected players
+var my_type := "pubert"
+var my_team : int
 var client_uuid_generator = uuid_generator.instance()
 
 # keeps track of client physics processing speed, used for interpolating server/client position
 var client_delta = 1.0 / (ProjectSettings.get_setting("physics/common/physics_fps"))
 
 func _ready():
+	$SelectionInput.connect("text_entered", self, "process_selection_input")
+
+func process_selection_input(selection: String):
+	my_team = int(selection)
+	$SelectionInput.queue_free()
+	start_game()
+
+func start_game():
 	start_client()
 	client_id = get_tree().get_network_unique_id()
 	
 	print(client_id)
 
-	add_a_player(client_id, my_type)
+	add_a_player(client_id, my_type, my_team)
 	var my_map = map.instance()
 
 	# rpc_id(1, "parse_client_rpc", client_id, "right", []) 
@@ -55,10 +61,7 @@ func _ready():
 	var timequeue = TimeQueue.instance()
 	add_child(timequeue)
 #	timequeue.init_time_queue(1, 20, ["health", "velocity"])
-	
-#	rpc_id(1, "print_thing")
-	
-#	print(get_tree())
+
 
 # executes the client function specified by the server
 # @param server_cmd - client function to call 
@@ -73,7 +76,7 @@ func say_zx():
 
 # called upon connecting to server, asks for our player's type information in order to construct a replica on server	
 func send_blueprint():
-	rpc_id(1, "add_player", my_type)
+	rpc_id(1, "add_player", my_type, my_team)
 	print("sending blueprint for ", client_id)
 
 ##
@@ -107,7 +110,7 @@ func start_client():
 # int: id the player's network id
 # string: type the player's class
 # bool: mine whether or not this is our player
-func add_a_player(id, type):
+func add_a_player(id, type, team: int):
 	var player_to_add
 
 	match type:
@@ -118,9 +121,11 @@ func add_a_player(id, type):
 		_:
 			player_to_add = ChubbyCharacter.instance()
 	
-	# sets player node's name and id
+	# sets player node's name and id and team
 	player_to_add.set_id(id)
 	player_to_add.set_name(str(id))
+	player_to_add.team = team
+	player_to_add.set_team(team)
 	
 	# sets my player as network master
 	if id == client_id:
@@ -128,6 +133,7 @@ func add_a_player(id, type):
 		
 		# camera follow
 		var camera = get_node("Camera2D")
+		#camera.make_current()
 		remove_child(camera)
 		player_to_add.add_child(camera)
 	
@@ -235,7 +241,7 @@ func parse_updated_player_position_from_server(id, latest_server_position):
 # Linearly interpolates a NON-ESSENTIAL player attribute based on latest server information
 func update_player_attribute(player_id: int, attribute_name: String, latest_server_info) -> void:
 	# Interpolates between client position and server position using client_delta, aka physics processing rate, to determine a smooth speed
-	Interpolator.interpolate_property(get_node("/root/ChubbyServer/" + str(player_id)), attribute_name, players[player_id].get(attribute_name), latest_server_info, client_delta, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	Interpolator.interpolate_property(get_node("/root/ChubbyServer/" + str(player_id)), attribute_name, players[player_id].get(attribute_name), latest_server_info, client_delta * 5, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 	Interpolator.start()
 	#get_node("/root/ChubbyServer/" + str(player_id)).set(attribute_name, latest_server_info)
 

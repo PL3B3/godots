@@ -11,11 +11,11 @@ var TimedEffect = preload("res://character/TimedEffect.tscn")
 ## general player stats
 ##
 
-var speed: float = 200
+var speed: float = 500
 var health_cap : int = 200 # defines the basic "max health" of a character, but overheal and boosts can change this
 var health : int = 200
 var regen: int = 0
-var team := 'a'
+var team : int
 var is_alive := true
 var timed_effects = []
 
@@ -26,6 +26,13 @@ var timed_effects = []
 var gravity2 := 0 # downwards movement added per frame while airborne
 var velocity = Vector2(0,0)
 var rot_angle := -(PI / 2) # used to orient movement relative to ground angle
+
+##
+## For player mechanics
+##
+
+var death_room_position = Vector2(0, 500) # where players go when dead
+var respawn_position = Vector2(0, 0)
 
 ##
 ## tracks if an ability is on cooldown
@@ -57,6 +64,10 @@ var type := "base"
 #var object_id_counter = 0
 var objects = {}
 
+func _ready():
+	# sets masks to check fauna, pickups, and environment
+	for b in range(6, 9):
+		set_collision_mask_bit(b, true)
 
 ##
 ## For modifying character stats 
@@ -74,6 +85,13 @@ func set_stats(speed, health_cap, regen, xy, player_id):
     self.regen = regen
     self.player_id = player_id
     set_global_position(xy)
+
+# there are 6 teams, numbered 0-5, corresponding to the first six layer/mask bits
+func set_team(team_num: int):
+	set_collision_layer_bit(team_num, true)
+	
+	for t in range(0,6):
+		set_collision_mask_bit(t, t != team_num)
 
 # adds a created object to the object dictionary and sets its name to its counter
 # also sets the object as toplevel so it may move freely, not tied to character position
@@ -130,7 +148,8 @@ func _physics_process(delta):
     
     
     if is_on_floor():
-        velocity = Vector2()
+        velocity.y = 0
+        velocity.x *= (0.95 * abs(velocity.x)) / speed
         gravity2 = 0
     else:
         gravity2 += 9.8
@@ -154,23 +173,23 @@ func hit(dam):
         die()
 
 func die():
-    print("I died")
-    
-    # Only in Jesus mode
-    #add_and_return_timed_effect_body("ascend", [], 4)
-    
-    # disable collisions
-    $CollisionShape2D.set_deferred("disabled", true)
-    
-    # make invisible
-    $Sprite2D.visible = false
-    is_alive = false
+	print("I died")
+	is_alive = false    
+	# Only in Jesus mode
+	#add_and_return_timed_effect_body("ascend", [], 4)
+	# disable collisions
+	$CollisionShape2D.set_deferred("disabled", true)
+	# make invisible
+	$Sprite2D.visible = false
+	# move far away
+	set_global_position(death_room_position)
 
 func respawn():
-    set_stats_default()
-    $CollisionShape2D.set_deferred("disabled", false)
-    $Sprite2D.visible = false
-    is_alive = true
+	set_stats_default()
+	$CollisionShape2D.set_deferred("disabled", false)
+	$Sprite2D.visible = false
+	set_global_position(respawn_position)
+	is_alive = true
 
 func ascend():
     print("ascending")
@@ -178,7 +197,7 @@ func ascend():
 
 
 func up():
-    velocity.y = -1.5 * speed
+    velocity.y = -2 * speed
 
 
 func down():

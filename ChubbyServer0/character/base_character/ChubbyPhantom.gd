@@ -25,11 +25,11 @@ func _ready():
 # UNRELIABLE protocol
 # helper function for updating a node attribute (on clients) based on new server info
 func send_updated_attribute(node_name: String, attribute_name: String, new_value) -> void:
-	server.send_server_rpc_to_all_players_unreliable("update_node_attribute", [node_name, attribute_name, new_value]
+	server.send_server_rpc_to_all_players_unreliable("update_node_attribute", [node_name, attribute_name, new_value])
 
 # call a method on this phantom's client instance
 func replicate_on_client(method_name: String, args) -> void:
-	server.send_server_rpc_to_all_players("call_player_method", [player_id, method_name, args])       
+	server.send_server_rpc_to_all_players("call_player_method", [player_id, method_name, args])
 
 # calls a method on this phantom and all its client instances
 func call_and_sync(method_name: String, args) -> void: 
@@ -56,7 +56,6 @@ func use_ability_and_start_cooldown(ability_name, args):
 		callv(ability_name, args)
 
 func _physics_process(delta):
-	._physics_process(delta)
 	send_updates()
 
 # updates vital player attributes on all clients

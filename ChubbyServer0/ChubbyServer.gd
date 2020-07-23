@@ -159,7 +159,7 @@ remote func parse_player_rpc(player_id, method_name, args) -> void:
 
 
 # this function is called upon player_connected, which calls the player to tell this function its id and class type
-remote func add_player(type):
+remote func add_player(type, team):
 	var id = get_tree().get_rpc_sender_id()
 	
 	var player_phantom
@@ -181,7 +181,12 @@ remote func add_player(type):
 			player_phantom = ChubbyPhantom.instance()
 			player_phantom.type = "base"
 	
+	# set player node name
 	player_phantom.set_name(str(id))
+	
+	# sets player team
+	player_phantom.team = team
+	player_phantom.set_team(team)
 
 	# add player to the dictionary containing all player representations
 	players[id] = player_phantom
@@ -194,12 +199,13 @@ remote func add_player(type):
 
 	# set new player's id, so that it has an internal reference to it
 	players[id].set_id(id)
+	
 
 	# turn on the server's physics simulation FOR THIS PLAYER SPECIFICALLY if not already on
 	#players[id].physics_processing = true
 
 	# ensures all other clients have a copy of this player and vice versa
-	add_new_player_to_current_clients_and_old_players_to_new_client(id, type)
+	add_new_player_to_current_clients_and_old_players_to_new_client(id, type, team)
 
 # for security purposes
 func generate_player_id():
@@ -207,14 +213,14 @@ func generate_player_id():
 
 # when a new player is added, it should be replicated in other clients' scenetrees
 # also, existing players must be added to the new client
-func add_new_player_to_current_clients_and_old_players_to_new_client(new_player_id, new_player_type):
+func add_new_player_to_current_clients_and_old_players_to_new_client(new_player_id, new_player_type, new_player_team):
 	for player_id in players:
 		# avoids redundantly adding our new player to its own client
 		if (player_id != new_player_id):
 			# add new player to existing clients
-			rpc_id(player_id, "parse_server_rpc", "add_a_player", [new_player_id, new_player_type])
+			send_server_rpc_to_one_player(player_id, "add_a_player", [new_player_id, new_player_type, new_player_team])
 			# add existing players to new client
-			rpc_id(new_player_id, "parse_server_rpc", "add_a_player", [player_id, players[player_id].type])
+			send_server_rpc_to_one_player(new_player_id, "add_a_player", [player_id, players[player_id].type, players[player_id].team])
 
 # sends another client's commands in a dictionary
 func send_other_client_commands(id, other_id, their_command):

@@ -11,7 +11,6 @@ extends "res://character/base_character/BaseCharacterMultiplayer.gd"
 
 onready var client = get_node("/root/ChubbyServer")
 onready var uuid_generator = client.client_uuid_generator
-onready var Interpolator = get_node("/root/ChubbyServer/Interpolator")
 
 var character_under_my_control = false # Sets player character
 
@@ -61,7 +60,6 @@ func get_input():
 
 # gets input
 func _physics_process(delta):
-	._physics_process(delta)
 	get_input()
 
 

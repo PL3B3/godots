@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://ChubbyServer.gd" type="Script" id=1]
+[ext_resource path="res://server_resources/Camera2D.gd" type="Script" id=2]
 
 [node name="ChubbyServer" type="Node"]
 script = ExtResource( 1 )
@@ -9,5 +10,13 @@ script = ExtResource( 1 )
 current = true
 drag_margin_h_enabled = false
 drag_margin_v_enabled = false
+smoothing_speed = 10.0
+script = ExtResource( 2 )
 
 [node name="Interpolator" type="Tween" parent="."]
+
+[node name="SelectionInput" type="LineEdit" parent="."]
+margin_left = -64.7626
+margin_top = -177.24
+margin_right = 67.2374
+margin_bottom = -128.24
