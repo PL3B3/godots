@@ -58,8 +58,12 @@ func get_input():
 		if Input.is_key_pressed(KEY_C) && ability_usable[4]:
 			use_ability_and_notify_server_and_start_cooldown("key_ability_2", [])
 
+var counter = 0
 # gets input
 func _physics_process(delta):
+	counter += 1
+	if counter % 73 == 0:
+		print(position)
 	get_input()
 
 

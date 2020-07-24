@@ -40,6 +40,8 @@ func call_and_sync(method_name: String, args) -> void:
 # 1. call the ability with arguments passed in, tba at time of button press
 # 2. activate cooldown timer
 func use_ability_and_start_cooldown(ability_name, args):
+	if not is_alive:
+		return
 	# converts ability name to its arbitrary number from 0-4, or null if...
 	# ...the ability is just a movement
 	var ability_num = ability_conversions.get(ability_name)
@@ -56,7 +58,8 @@ func use_ability_and_start_cooldown(ability_name, args):
 		callv(ability_name, args)
 
 func _physics_process(delta):
-	send_updates()
+	if is_alive:
+		send_updates()
 
 # updates vital player attributes on all clients
 func send_updates():
@@ -65,16 +68,13 @@ func send_updates():
 	send_updated_attribute(str(player_id), "position", position)
 	send_updated_attribute(str(player_id), "rot_angle", rot_angle)
 
-func die():
-       # performs death functionality
-       .die()
-       # tells client to die
-       replicate_on_client("die", [])
-       # starts respawn timer
-       add_and_return_timed_effect_exit("call_and_sync", ["respawn", []], 10)
-
-func respawn():
-       # performs respawn functionality
-       .respawn()
-       # tell client to respawn
-       replicate_on_client("respawn", [])
+func hit(dam):
+	.hit(dam)
+	replicate_on_client("hit", [dam])
+	if not health > 0:
+		# die
+		call_and_sync("die", [])
+		# start respawn timer
+		yield(get_tree().create_timer(5.0), "timeout")
+		call_and_sync("respawn", [])
+		#add_and_return_timed_effect_exit("call_and_sync", ["respawn", []], 5)

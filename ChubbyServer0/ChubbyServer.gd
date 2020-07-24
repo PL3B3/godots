@@ -4,6 +4,8 @@ extends Node
 ## This is the dedicated server node
 ##
 
+# homepubip is 174.70.104.137 haha don't use this against me
+
 # The server sends authoritative players info to update, which the client_side physics_process works on
 # Per each physics process cycle on this server, send
 # A dictionary

@@ -2,6 +2,9 @@ extends "res://character/base_character/ChubbyCharacter.gd"
 
 var FiredProjectile = preload("res://game_objects/fired_projectiles/FiredProjectile.tscn")
 
+func _ready():
+	cooldowns[0] = 2
+
 func mouse_ability_0(mouse_pos: Vector2, ability_uuid: String) -> void:
 	var bullet_baby = FiredProjectile.instance()
 #	print("fired")
@@ -13,5 +16,7 @@ func mouse_ability_1(mouse_pos: Vector2, ability_uuid: String) -> void:
     var ray_cast = RayCast2D.new()
     add_child(ray_cast)
 	
+# this hits us for 40 damage on serverside
 func key_ability_0(ability_uuid):
-	print("%s, %s" % [get_child(0).global_position, get_child(1).global_position])
+	pass
+	#print("%s, %s" % [get_child(0).global_position, get_child(1).global_position])

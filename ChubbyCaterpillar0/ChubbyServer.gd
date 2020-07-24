@@ -19,6 +19,7 @@ extends Node
 
 # hard coded. please change
 const DEFAULT_PORT = 3342
+var server_ip = "127.0.0.1"
 onready var Interpolator = get_node("Interpolator")
 var uuid_generator = preload("res://server_resources/uuid_generator.tscn")
 var ChubbyCharacter = preload("res://character/base_character/ChubbyCharacter.tscn")
@@ -41,7 +42,9 @@ func _ready():
 	$SelectionInput.connect("text_entered", self, "process_selection_input")
 
 func process_selection_input(selection: String):
-	my_team = int(selection)
+	var split_selection = selection.split(",", false)
+	my_team = int(split_selection[0])
+	server_ip = split_selection[1]
 	$SelectionInput.queue_free()
 	start_game()
 
@@ -102,7 +105,7 @@ func send_player_rpc_unreliable(id, command, args):
 
 func start_client():
 	var client = NetworkedMultiplayerENet.new()
-	client.create_client("127.0.0.1", DEFAULT_PORT)
+	client.create_client(server_ip, DEFAULT_PORT)
 	get_tree().set_network_peer(client)
 	print("client created")
 

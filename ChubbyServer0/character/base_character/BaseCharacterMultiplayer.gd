@@ -15,7 +15,6 @@ var speed: float = 500
 var health_cap : int = 200 # defines the basic "max health" of a character, but overheal and boosts can change this
 var health : int = 200
 var regen: int = 0
-var team : int
 var is_alive := true
 var timed_effects = []
 
@@ -45,7 +44,7 @@ var respawn_position = Vector2(0, 0)
 # 3: key_ability_1
 # 4: key_ability_2
 var ability_usable = [true, true, true, true, true]
-var cooldowns = [10, 10, 10, 10, 10]
+var cooldowns = [1, 1, 1, 1, 1]
 # Used to convert between ability name and its index in the ability_usable array
 const ability_conversions = {
     "mouse_ability_0" : 0,
@@ -60,7 +59,9 @@ const ability_conversions = {
 ##
 
 var player_id : int # unique network id of the player
-var type := "base" 
+var type := "base"
+var team : int
+var team_colors = [Color(0,0.7,1), Color(1,1,0.1), Color(1,0.1,0.3), Color(0.9,0.2,0.6), Color(0.8,0.5,0.5), Color(0.3,0.2,0.5)]
 #var object_id_counter = 0
 var objects = {}
 
@@ -92,6 +93,8 @@ func set_team(team_num: int):
 	
 	for t in range(0,6):
 		set_collision_mask_bit(t, t != team_num)
+	
+	$Sprite.modulate = team_colors[team_num]
 
 # adds a created object to the object dictionary and sets its name to its counter
 # also sets the object as toplevel so it may move freely, not tied to character position
@@ -136,25 +139,25 @@ func add_and_return_timed_effect_body(body_func, body_args, repeats):
 
 # calculates and syncs position/movement
 func _physics_process(delta):
-    get_node("Label").set_text(str(health as int))
+	if is_alive:
+	    put_label(str(health as int))
+	
+	    get_child(1).position = get_child(0).position
+	
+	    if get_slide_count() > 0:
+	        # get one of the collisions, it's normal, and convert it into an angle
+	        rot_angle = get_slide_collision(get_slide_count() - 1).get_normal().angle()
+	
+	    move_and_slide(60 * delta * (velocity.rotated(rot_angle + (PI / 2)) + Vector2(0.0, gravity2)), Vector2(0.0, -1.0), false, 4, 0.9)
+	    
+	    velocity.x *= (0.95 * abs(velocity.x)) / speed
+	    if is_on_floor():
+	        velocity.y = 0
+	        gravity2 = 0
+	    else:
+	        gravity2 += 9.8
 
-    get_child(1).position = get_child(0).position
-
-    if get_slide_count() > 0:
-        # get one of the collisions, it's normal, and convert it into an angle
-        rot_angle = get_slide_collision(get_slide_count() - 1).get_normal().angle()
-
-    move_and_slide(60 * delta * (velocity.rotated(rot_angle + (PI / 2)) + Vector2(0.0, gravity2)), Vector2(0.0, -1.0), false, 4, 0.9)
-    
-    
-    if is_on_floor():
-        velocity.y = 0
-        velocity.x *= (0.95 * abs(velocity.x)) / speed
-        gravity2 = 0
-    else:
-        gravity2 += 9.8
-
-func label_debug(text):
+func put_label(text):
     get_node("Label").set_text(text)
 
 func sayhi():
@@ -162,33 +165,37 @@ func sayhi():
     
 # ESSENTIAL
 func cooldown(ability_num):
-    ability_usable[ability_num] = true
+	print("Making ability " + str(ability_num) + " usable")
+	ability_usable[ability_num] = true
 
 # ESSENTIAL
 func hit(dam):
     health -= dam as int
     #send_updated_attribute(str(player_id), "health", health)
     print("Was hit")
-    if not health > 0:
-        die()
 
 func die():
-	print("I died")
-	is_alive = false    
+	is_alive = false
 	# Only in Jesus mode
 	#add_and_return_timed_effect_body("ascend", [], 4)
+	# no movement
+	velocity = Vector2()
 	# disable collisions
 	$CollisionShape2D.set_deferred("disabled", true)
 	# make invisible
-	$Sprite2D.visible = false
+	$Sprite.visible = false
 	# move far away
-	set_global_position(death_room_position)
+	print("I died")
+#	yield(get_tree().create_timer(0.08), "timeout")
+#	set_global_position(death_room_position)
 
 func respawn():
+	print("respawning")
 	set_stats_default()
 	$CollisionShape2D.set_deferred("disabled", false)
-	$Sprite2D.visible = false
-	set_global_position(respawn_position)
+	$Sprite.visible = true
+	position = respawn_position
+	ability_usable = [true, true, true, true, true]
 	is_alive = true
 
 func ascend():
@@ -201,7 +208,8 @@ func up():
 
 
 func down():
-    velocity.y += 0.1 * speed
+	if velocity.y <= 0.5 * speed:
+		velocity.y += 0.1 * speed
 
 
 func right():
