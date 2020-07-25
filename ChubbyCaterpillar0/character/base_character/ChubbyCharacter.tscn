@@ -38,3 +38,8 @@ margin_right = 29.3633
 margin_bottom = -14.5469
 rect_scale = Vector2( 0.8, 0.8 )
 custom_fonts/font = ExtResource( 3 )
+
+[node name="FloorScan" type="RayCast2D" parent="."]
+position = Vector2( 0, 10 )
+cast_to = Vector2( 0, 18 )
+collision_mask = 320

@@ -25,13 +25,14 @@ var uuid_generator = preload("res://server_resources/uuid_generator.tscn")
 var ChubbyPhantom = preload("res://character/base_character/ChubbyPhantom.tscn")
 var ChubbyPhantom0 = preload("res://character/game_characters/ChubbyPhantom0.tscn")
 var map = preload("res://maps/Map0.tscn")
+var map2 = preload("res://maps/Map2.tscn")
 
 var physics_processing = false
 var players = {}
 var server_uuid_generator = uuid_generator.instance()
 
 func _ready():
-	var server_map = map.instance()
+	var server_map = map2.instance()
 	
 	start_server()
 

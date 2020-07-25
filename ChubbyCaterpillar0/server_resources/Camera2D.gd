@@ -11,7 +11,15 @@ var scouting_distance_y := 0.05 # how far ahead camera looks in direction of vel
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	make_current()
+	$TeamMenu.connect("mouse_entered", self, "team_menu_entered")
 
+# Alerts parent player that mouse is in team menu
+func team_menu_entered():
+	pass
+
+# Alerts
+func team_menu_exited():
+	pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta):

@@ -31,7 +31,7 @@ var rot_angle := -(PI / 2) # used to orient movement relative to ground angle
 ##
 
 var death_room_position = Vector2(0, 500) # where players go when dead
-var respawn_position = Vector2(0, 0)
+var respawn_position = Vector2(1500, 0)
 
 ##
 ## tracks if an ability is on cooldown
@@ -66,6 +66,7 @@ var team_colors = [Color(0,0.7,1), Color(1,1,0.1), Color(1,0.1,0.3), Color(0.9,0
 var objects = {}
 
 func _ready():
+	position = Vector2(1000, 0)
 	# sets masks to check fauna, pickups, and environment
 	for b in range(6, 9):
 		set_collision_mask_bit(b, true)
@@ -150,12 +151,13 @@ func _physics_process(delta):
 	
 	    move_and_slide(60 * delta * (velocity.rotated(rot_angle + (PI / 2)) + Vector2(0.0, gravity2)), Vector2(0.0, -1.0), false, 4, 0.9)
 	    
-	    velocity.x *= (0.95 * abs(velocity.x)) / speed
+#	    velocity.x *= (0.95 * abs(velocity.x)) / speed
 	    if is_on_floor():
-	        velocity.y = 0
+#	        velocity.y = 0
 	        gravity2 = 0
 	    else:
 	        gravity2 += 9.8
+	        rot_angle = - PI / 2
 
 func put_label(text):
     get_node("Label").set_text(text)
@@ -208,23 +210,18 @@ func up():
 
 
 func down():
-	if velocity.y <= 0.5 * speed:
-		velocity.y += 0.1 * speed
+	if velocity.y <= speed:
+		velocity.y += speed
 
 
 func right():
-    #print("right called on chubbyphantom for player:" + str(player_id))
-    if velocity.x <= speed:
-        velocity.x += min(speed, speed - velocity.x)
-    else:
-        velocity.x = speed
+	#print("right called on chubbyphantom for player:" + str(player_id))
+	velocity.x += speed
 
 
 func left():
-    if velocity.x >= -speed:
-        velocity.x -= min(speed, velocity.x + speed)
-    else:
-        velocity.x = -speed
+	velocity.x -= speed
+
 
 func mouse_ability_0(mouse_pos, ability_uuid):
     pass

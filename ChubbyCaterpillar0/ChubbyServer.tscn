@@ -1,7 +1,10 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://ChubbyServer.gd" type="Script" id=1]
 [ext_resource path="res://server_resources/Camera2D.gd" type="Script" id=2]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 50, 50 )
 
 [node name="ChubbyServer" type="Node"]
 script = ExtResource( 1 )
@@ -12,6 +15,14 @@ drag_margin_h_enabled = false
 drag_margin_v_enabled = false
 smoothing_speed = 10.0
 script = ExtResource( 2 )
+
+[node name="TeamMenu" type="Area2D" parent="Camera2D"]
+collision_layer = 0
+collision_mask = 0
+
+[node name="TeamMenuShape" type="CollisionShape2D" parent="Camera2D/TeamMenu"]
+position = Vector2( 462.64, -248.857 )
+shape = SubResource( 1 )
 
 [node name="Interpolator" type="Tween" parent="."]
 

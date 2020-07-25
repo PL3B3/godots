@@ -26,6 +26,7 @@ var ChubbyCharacter = preload("res://character/base_character/ChubbyCharacter.ts
 var ChubbyCharacter0 = preload("res://character/game_characters/ChubbyCharacter0.tscn")
 var ChubbyCharacter1 = preload("res://character/experimental_character/ChubbyCharacter_experimental_0.tscn")
 var map = preload("res://maps/Map0.tscn")
+var map2 = preload("res://maps/Map2.tscn")
 var TimeQueue = preload("res://character/base_character/TimeQueue.tscn")
 
 # Node2d: client_uuid_generator a utility node which makes uuids...helps catalogue objects/timedeffects
@@ -34,12 +35,16 @@ var players = {} # tracks all connected players
 var my_type := "pubert"
 var my_team : int
 var client_uuid_generator = uuid_generator.instance()
+var offline = true
 
 # keeps track of client physics processing speed, used for interpolating server/client position
 var client_delta = 1.0 / (ProjectSettings.get_setting("physics/common/physics_fps"))
 
 func _ready():
-	$SelectionInput.connect("text_entered", self, "process_selection_input")
+	if offline:
+		start_game_offline()
+	else:
+		$SelectionInput.connect("text_entered", self, "process_selection_input")
 
 func process_selection_input(selection: String):
 	var split_selection = selection.split(",", false)
@@ -48,6 +53,12 @@ func process_selection_input(selection: String):
 	$SelectionInput.queue_free()
 	start_game()
 
+func start_game_offline():
+	$SelectionInput.queue_free()
+	add_a_player(client_id, my_type, my_team)
+	var my_map = map2.instance()
+	add_child(my_map)
+
 func start_game():
 	start_client()
 	client_id = get_tree().get_network_unique_id()
@@ -55,7 +66,7 @@ func start_game():
 	print(client_id)
 
 	add_a_player(client_id, my_type, my_team)
-	var my_map = map.instance()
+	var my_map = map2.instance()
 
 	# rpc_id(1, "parse_client_rpc", client_id, "right", []) 
 	

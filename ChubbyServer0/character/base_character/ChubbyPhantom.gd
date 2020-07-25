@@ -16,7 +16,6 @@ onready var server = get_parent()
 # sets global position to 0,0
 func _ready():
 	print("This is the character base class on the server side")
-	set_global_position(Vector2(0,0))
 
 ##
 ## Syncing functions top level
