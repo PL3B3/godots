@@ -158,8 +158,11 @@ remote func parse_player_rpc(player_id, method_name, args) -> void:
 		# sends this command to other clients
 		for id in players:
 			if id != player_id:
-				send_server_rpc_to_one_player(id, "call_player_method", [player_id, method_name, args])
+				call_player_method_on_client(id, player_id, method_name, args)
+#				send_server_rpc_to_one_player(id, "call_player_method", [player_id, method_name, args])
 
+func call_player_method_on_client(client_id, player_id, method_name, args):
+	send_server_rpc_to_one_player(client_id, "call_node_method", [str(player_id), method_name, args])
 
 # this function is called upon player_connected, which calls the player to tell this function its id and class type
 remote func add_player(type, team):
@@ -231,14 +234,22 @@ func send_other_client_commands(id, other_id, their_command):
 
 
 # TODO: do multithreading later for efficiency. players should be a dict of id: {ChubbyPhantom, thread}
-"""
+
 func _physics_process(delta):
+	if Input.is_action_pressed("ui_left"):
+		$Camera2D.position += Vector2(-10,0)
+	if Input.is_action_pressed("ui_right"):
+		$Camera2D.position += Vector2(10,0)
+	if Input.is_action_pressed("ui_up"):
+		$Camera2D.position += Vector2(0,-10)
+	if Input.is_action_pressed("ui_down"):
+		$Camera2D.position += Vector2(0,10)
+	"""
 	for id in players:
 		if (players[id].physics_processing):
 			players[id].physics_single_execute(delta)
 			send_updated_player_position_to_client_unreliable(id, players[id].get_global_position())
-"""
-
+	"""
 # Sends integrity-sensitive updates like health changes to each client for them to change
 func send_updated_player_info_to_all_clients(id, info):
 	rpc("parse_updated_player_info_from_server", id, info)

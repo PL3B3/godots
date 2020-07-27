@@ -1,10 +1,10 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://ChubbyServer.gd" type="Script" id=1]
 [ext_resource path="res://server_resources/Camera2D.gd" type="Script" id=2]
-
-[sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 50, 50 )
+[ext_resource path="res://server_resources/MiniMap.gd" type="Script" id=3]
+[ext_resource path="res://assets/ui/panel_boltsGreen.png" type="Texture" id=4]
+[ext_resource path="res://assets/ui/hud_p1.png" type="Texture" id=5]
 
 [node name="ChubbyServer" type="Node"]
 script = ExtResource( 1 )
@@ -16,14 +16,6 @@ drag_margin_v_enabled = false
 smoothing_speed = 10.0
 script = ExtResource( 2 )
 
-[node name="TeamMenu" type="Area2D" parent="Camera2D"]
-collision_layer = 0
-collision_mask = 0
-
-[node name="TeamMenuShape" type="CollisionShape2D" parent="Camera2D/TeamMenu"]
-position = Vector2( 462.64, -248.857 )
-shape = SubResource( 1 )
-
 [node name="Interpolator" type="Tween" parent="."]
 
 [node name="SelectionInput" type="LineEdit" parent="."]
@@ -31,3 +23,61 @@ margin_left = -64.7626
 margin_top = -177.24
 margin_right = 67.2374
 margin_bottom = -128.24
+
+[node name="MinMapRenderer" type="Viewport" parent="."]
+disable_3d = true
+usage = 0
+render_target_v_flip = true
+render_target_update_mode = 0
+
+[node name="MinMapBoi" type="Sprite" parent="."]
+scale = Vector2( 0.9761, 0.947421 )
+
+[node name="UICanvas" type="CanvasLayer" parent="."]
+
+[node name="MiniMap" type="MarginContainer" parent="UICanvas"]
+visible = false
+modulate = Color( 1, 1, 1, 0.733333 )
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -512.0
+margin_top = -300.0
+margin_right = -195.0
+margin_bottom = -67.0
+mouse_filter = 1
+script = ExtResource( 3 )
+
+[node name="Frame" type="NinePatchRect" parent="UICanvas/MiniMap"]
+margin_right = 317.0
+margin_bottom = 233.0
+mouse_filter = 1
+texture = ExtResource( 4 )
+patch_margin_left = 32
+patch_margin_top = 32
+patch_margin_right = 32
+patch_margin_bottom = 32
+
+[node name="MapContainer" type="MarginContainer" parent="UICanvas/MiniMap"]
+margin_right = 317.0
+margin_bottom = 233.0
+mouse_filter = 1
+size_flags_stretch_ratio = 0.0
+custom_constants/margin_right = 13
+custom_constants/margin_top = 14
+custom_constants/margin_left = 13
+custom_constants/margin_bottom = 14
+
+[node name="TextureRect" type="TextureRect" parent="UICanvas/MiniMap/MapContainer"]
+margin_left = 13.0
+margin_top = 14.0
+margin_right = 304.0
+margin_bottom = 219.0
+rect_clip_content = true
+expand = true
+
+[node name="PlayerMarker" type="Sprite" parent="UICanvas/MiniMap/MapContainer/TextureRect"]
+scale = Vector2( 0.6, 0.6 )
+texture = ExtResource( 5 )
+offset = Vector2( 0, -8 )

@@ -11,7 +11,7 @@ var TimedEffect = preload("res://character/TimedEffect.tscn")
 ## general player stats
 ##
 
-var speed: float = 500
+var speed: float = 400
 var health_cap : int = 200 # defines the basic "max health" of a character, but overheal and boosts can change this
 var health : int = 200
 var regen: int = 0
@@ -23,8 +23,11 @@ var timed_effects = []
 ##
 
 var gravity2 := 0 # downwards movement added per frame while airborne
+var gravity_mult = 400
 var velocity = Vector2(0,0)
 var rot_angle := -(PI / 2) # used to orient movement relative to ground angle
+var max_floor_angle = 0.9
+var max_slide_count = 4
 
 ##
 ## For player mechanics
@@ -125,6 +128,8 @@ func remove_object(uuid: String) -> void:
     if is_instance_valid(object_to_remove):
         objects[uuid].queue_free()
         objects.erase(uuid)
+    else:
+        print("Object " + str(uuid) + " is not available for removal")
 
 func add_and_return_timed_effect_full(enter_func, enter_args, body_func, body_args, exit_func, exit_args, repeats):
     var timed_effect = TimedEffect.instance()
@@ -141,23 +146,39 @@ func add_and_return_timed_effect_body(body_func, body_args, repeats):
 # calculates and syncs position/movement
 func _physics_process(delta):
 	if is_alive:
-	    put_label(str(health as int))
-	
-	    get_child(1).position = get_child(0).position
-	
-	    if get_slide_count() > 0:
-	        # get one of the collisions, it's normal, and convert it into an angle
-	        rot_angle = get_slide_collision(get_slide_count() - 1).get_normal().angle()
-	
-	    move_and_slide(60 * delta * (velocity.rotated(rot_angle + (PI / 2)) + Vector2(0.0, gravity2)), Vector2(0.0, -1.0), false, 4, 0.9)
-	    
-#	    velocity.x *= (0.95 * abs(velocity.x)) / speed
-	    if is_on_floor():
-#	        velocity.y = 0
-	        gravity2 = 0
-	    else:
-	        gravity2 += 9.8
-	        rot_angle = - PI / 2
+		put_label(str(health as int))
+		get_child(1).position = get_child(0).position
+		
+		if get_slide_count() > 0:
+			var rot_angle_cume = Vector2()
+			for i in range(0,get_slide_count()):
+				var slide_normal = get_slide_collision(i).get_normal() 
+				var slide_angle = slide_normal.angle()
+				# If angle isn't a ceiling normal
+				if slide_angle >= (PI / 2) + max_floor_angle or slide_angle <= (PI / 2) - max_floor_angle:
+					 rot_angle_cume += slide_normal
+			rot_angle = rot_angle_cume.angle()
+#			if is_on_floor():
+				# move parrallel with the floor, jump perpendicular, etc...
+#				rot_angle = get_slide_collision(get_slide_count() - 1).get_normal().angle()
+				#gravity2 = 10
+				#velocity.y = 10
+#			if is_on_wall():
+#				rot_angle = get_slide_collision(get_slide_count() - 1).get_normal().angle()
+#				print("I am on wall")
+			if is_on_ceiling():
+				if gravity2 < 0.1 * gravity_mult:
+					gravity2 = 0.1 * gravity_mult
+			#	velocity.y = 10
+		move_and_slide(velocity.rotated(rot_angle + (PI / 2)) + Vector2(0,gravity2), Vector2(0.0, -1.0), true, max_slide_count, max_floor_angle)
+		velocity.x *= (0.95 * abs(velocity.x)) / speed
+		if is_on_floor():
+			gravity2 = 10
+			#velocity.y = 10
+		else:
+			rot_angle = -PI / 2
+			if gravity2 < 4 * speed:
+				gravity2 += gravity_mult * delta
 
 func put_label(text):
     get_node("Label").set_text(text)
@@ -202,25 +223,25 @@ func respawn():
 
 func ascend():
     print("ascending")
-    gravity2 = -400
 
 
 func up():
-    velocity.y = -2 * speed
-
+    gravity2 = -speed
 
 func down():
-	if velocity.y <= speed:
-		velocity.y += speed
+	pass
+#	velocity.y = 2 * speed
 
 
 func right():
-	#print("right called on chubbyphantom for player:" + str(player_id))
-	velocity.x += speed
+	# If velocity is already fast right, do nothing
+	#velocity.x += speed
+	velocity.x = speed
 
 
 func left():
-	velocity.x -= speed
+	#velocity.x -= speed
+	velocity.x = -speed
 
 
 func mouse_ability_0(mouse_pos, ability_uuid):

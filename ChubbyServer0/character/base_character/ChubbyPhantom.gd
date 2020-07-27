@@ -26,9 +26,9 @@ func _ready():
 func send_updated_attribute(node_name: String, attribute_name: String, new_value) -> void:
 	server.send_server_rpc_to_all_players_unreliable("update_node_attribute", [node_name, attribute_name, new_value])
 
-# call a method on this phantom's client instance
+# call a method on all this phantom's client instances
 func replicate_on_client(method_name: String, args) -> void:
-	server.send_server_rpc_to_all_players("call_player_method", [player_id, method_name, args])
+	server.send_server_rpc_to_all_players("call_node_method", [str(player_id), method_name, args])
 
 # calls a method on this phantom and all its client instances
 func call_and_sync(method_name: String, args) -> void: 

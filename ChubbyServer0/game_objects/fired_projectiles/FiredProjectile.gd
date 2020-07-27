@@ -5,7 +5,7 @@ onready var parent = get_parent()
 var damage = 40
 var velocity = Vector2()
 var timer = null
-var bullet_life = 10
+var bullet_life = 4
 var gravity = 7
 var fired = false
 var physics_processing = false
@@ -25,6 +25,8 @@ func _ready():
 
 func on_timeout_complete():
 	# remove self from player's object dictionary
+	print("Removing self: " + name)
+	$bullet_timer.queue_free()
 	parent.call_and_sync("remove_object", [name])
 
 func fire(center, radius, dir):
@@ -45,7 +47,7 @@ func _physics_process(delta):
 			velocity.y += gravity
 		if collision:
 			if collision.collider.has_method("hit"):
-				var time_damage_multiplier = log(3 + bullet_life - timer.time_left)
+				var time_damage_multiplier = log(3 + (2.5 * bullet_life - timer.time_left))
 				collision.collider.hit(time_damage_multiplier * damage)
 			# remove self from player's object dictionary
 			on_timeout_complete()

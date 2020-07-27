@@ -5,21 +5,12 @@ onready var Interpolator = get_node("/root/ChubbyServer/Interpolator")
 
 
 var catch_up_rate := 0.02 # how quick camera catches up to player position + velocity
-var scouting_distance_x := 0.15 # how far ahead camera looks in direction of velocity_x
-var scouting_distance_y := 0.05 # how far ahead camera looks in direction of velocity_y
+var scouting_distance_x := 0.3 # how far ahead camera looks in direction of velocity_x
+var scouting_distance_y := 0.1 # how far ahead camera looks in direction of velocity_y
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	make_current()
-	$TeamMenu.connect("mouse_entered", self, "team_menu_entered")
-
-# Alerts parent player that mouse is in team menu
-func team_menu_entered():
-	pass
-
-# Alerts
-func team_menu_exited():
-	pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta):

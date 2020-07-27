@@ -4,6 +4,7 @@ var FiredProjectile = preload("res://game_objects/fired_projectiles/FiredProject
 
 func _ready():
 	cooldowns[0] = 2
+	cooldowns[1] = 10
 
 func mouse_ability_0(mouse_pos: Vector2, ability_uuid: String) -> void:
 	var bullet_baby = FiredProjectile.instance()

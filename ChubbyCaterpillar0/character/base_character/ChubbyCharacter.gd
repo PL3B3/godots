@@ -19,23 +19,24 @@ var character_under_my_control = false # Sets player character
 func _ready():
 	print("This is the character base class. Prepare muffin.")
 	character_under_my_control = is_network_master()
+	print(Vector2(0,0).angle())
 
 func _unhandled_input(event):
 	# Detect up/down/left/right keystate and only move when pressed.
 	if character_under_my_control && is_alive:
 		if event is InputEventKey:
-			if event.pressed:
+			if event.pressed && !event.echo:
 				#or Input.is_key_pressed(KEY_W)
 				if event.scancode == KEY_W:
-					print("W pressed")
+					#print("W pressed")
 					$FloorScan.enabled = true
 					if is_on_floor():
 						use_ability_and_notify_server_and_start_cooldown("up", [])
 					$FloorScan.set_enabled(false)
-				if event.scancode == KEY_D && !event.echo:
-					use_ability_and_notify_server_and_start_cooldown("right", [])
-				if event.scancode == KEY_A && !event.echo:
-					use_ability_and_notify_server_and_start_cooldown("left", [])
+#				if event.scancode == KEY_D:
+#					use_ability_and_notify_server_and_start_cooldown("right", [])
+#				if event.scancode == KEY_A:
+#					use_ability_and_notify_server_and_start_cooldown("left", [])
 				if event.scancode == KEY_S:
 					use_ability_and_notify_server_and_start_cooldown("down", [])
 				if event.scancode == KEY_E && ability_usable[2]:
@@ -46,28 +47,39 @@ func _unhandled_input(event):
 				# key_ability_2
 				if event.scancode == KEY_C && ability_usable[4]:
 					use_ability_and_notify_server_and_start_cooldown("key_ability_2", [])
-			if !event.pressed:
-				if event.scancode == KEY_D:
-					# reverse the momentum change
-					use_ability_and_notify_server_and_start_cooldown("left", [])
-				if event.scancode == KEY_A:
-					# reverse the momentum change
-					use_ability_and_notify_server_and_start_cooldown("right", [])
-	if event is InputEventMouseButton:
-		if event.pressed:
-			# mouse_ability_0
-			if event.button_index == BUTTON_LEFT && ability_usable[0]:
-				use_ability_and_notify_server_and_start_cooldown("mouse_ability_0", [get_global_mouse_position()])
-			# mouse_ability_1
-			if event.button_index == BUTTON_RIGHT && ability_usable[1]:
-				use_ability_and_notify_server_and_start_cooldown("mouse_ability_1", [get_global_mouse_position()])
+#			if !event.pressed:
+#				if event.scancode == KEY_W:
+					# reverse the velocity change
+#					use_ability_and_notify_server_and_start_cooldown("down", [])
+#				if event.scancode == KEY_D:
+					# reverse the velocity change
+#					use_ability_and_notify_server_and_start_cooldown("left", [])
+#				if event.scancode == KEY_A:
+					# reverse the velocity change
+#					use_ability_and_notify_server_and_start_cooldown("right", [])
+#				if event.scancode == KEY_S:
+					# reverse the velocity change
+#					use_ability_and_notify_server_and_start_cooldown("up", [])
+		if event is InputEventMouseButton:
+			if event.pressed:
+				# mouse_ability_0
+				if event.button_index == BUTTON_LEFT && ability_usable[0]:
+					use_ability_and_notify_server_and_start_cooldown("mouse_ability_0", [get_global_mouse_position()])
+				# mouse_ability_1
+				if event.button_index == BUTTON_RIGHT && ability_usable[1]:
+					use_ability_and_notify_server_and_start_cooldown("mouse_ability_1", [get_global_mouse_position()])
 
 var counter = 0
 # gets input
 func _physics_process(delta):
 	counter += 1
+	if Input.is_key_pressed(KEY_A):
+		use_ability_and_notify_server_and_start_cooldown("left", [])
+	if Input.is_key_pressed(KEY_D):
+		use_ability_and_notify_server_and_start_cooldown("right", [])
 	if counter % 83 == 0:
-		print(position)
+		pass
+#		print(position)
 
 # 1. call the ability with arguments passed in, tba at time of button press
 # 2. tell the server the command given

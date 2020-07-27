@@ -1,8 +1,12 @@
 TODO list overview:
 
+
+
 Both
 	-physics needs syncing (chubbyphantom!!!! use .physproc!!)
 	-handling server calls to nonexistent objects on client
+		-most objects will exist on all clients before they get the command to be removed or modified (such as bullets)
+		-essential exceptions such as removals should be handled with a slight delay: if remove fails the first time, then yield 0.5 seconds and do it again
 	-plumplet and pumpqueen: select color, threshold 12, expand region by 4 px...use beige background
 	-**theory:
 		-unreliable = aesthetic
@@ -23,12 +27,12 @@ Both
 		-Server defers that ability call by COOLDOWN_MARGIN seconds. Around 0.05 seconds or so, just about the max ping variation you expect, since the difference between the two timers is 
 		-Client side still does the ability, but only visually
 		-Cooldowns should have approximate timers: The very last second is actually more than a second depending on server response times. On average it will be a fraction of a second, and at worst it probably won't be gamebreaking because your lag would be awful anyway
-	-hit mechanism?
-	-make health an int
 	-misc debugging!
-	-fix add a player to use send server rpc
-	-layer and mask setting, support for up to 6 teams
-	-death and respawn
+	-recursive reference for timedeffect countdown? pass own timer into thingy????
+	-(done) fix add a player to use send server rpc
+	-(done) layer and mask setting, support for up to 6 teams
+	-(done) base class for shared funcs b/w phantom and chubbycharacter
+	-(done) death and respawn
 		-on death: server leave behind a body object (for use in game mechanics). it will despawn on player respawn (signal), does a SUC telling all clients the player died and to call their own death functions
 		
 		var dead_body = DeadBody.instance()
@@ -42,8 +46,8 @@ Both
 		-Server uses a timed_effect which reinstantiates the player when ready and does a SUC telling all clients to reinstantiate
 		-reinstantiation has arguments: position (vector2 float), spawn args (for characters that change based on how they last died)
 		-
-	-recursive reference for timedeffect countdown? pass own timer into thingy????
-	-base class for shared funcs b/w phantom and chubbycharacter
+	-(done) hit mechanism?
+	-(done) make health an int
 	-(done) change remove_obj to use callplayermethod
 	-(done) debug timedeffect to mk sure it lasts long enuff
 	-(done) chubbyserver timedeffect update, no time param in init
