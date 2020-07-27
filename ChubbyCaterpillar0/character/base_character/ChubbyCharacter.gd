@@ -73,10 +73,11 @@ var counter = 0
 # gets input
 func _physics_process(delta):
 	counter += 1
-	if Input.is_key_pressed(KEY_A):
-		use_ability_and_notify_server_and_start_cooldown("left", [])
-	if Input.is_key_pressed(KEY_D):
-		use_ability_and_notify_server_and_start_cooldown("right", [])
+	if is_alive && character_under_my_control:
+		if Input.is_key_pressed(KEY_A):
+			use_ability_and_notify_server_and_start_cooldown("left", [])
+		if Input.is_key_pressed(KEY_D):
+			use_ability_and_notify_server_and_start_cooldown("right", [])
 	if counter % 83 == 0:
 		pass
 #		print(position)
