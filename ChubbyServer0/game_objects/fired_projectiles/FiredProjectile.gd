@@ -17,10 +17,10 @@ func _ready():
 	$Sprite.modulate = parent.team_colors[parent.team]
 	timer = Timer.new()
 	timer.set_one_shot(true)
+	add_child(timer)
 	timer.start(bullet_life)
 	timer.connect("timeout", self, "on_timeout_complete")
 	timer.set_name("bullet_timer")
-	add_child(timer)
 	physics_processing = true
 
 func on_timeout_complete():

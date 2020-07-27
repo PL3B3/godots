@@ -56,14 +56,15 @@ func _process(delta):
 
 func process_selection_input(selection: String):
 	var split_selection = selection.split(",", false)
-	offline = bool(split_selection[0])
+	offline = bool(int(split_selection[0]))
 	my_team = int(split_selection[1])
 	server_ip = split_selection[2]
-	$SelectionInput.queue_free()
 	if offline:
 		start_game_offline()
 	else:
 		start_game_multiplayer()
+	$SelectionInput.queue_free()
+
 
 func start_game_multiplayer():
 	start_client()

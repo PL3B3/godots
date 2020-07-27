@@ -28,6 +28,9 @@ var velocity = Vector2(0,0)
 var rot_angle := -(PI / 2) # used to orient movement relative to ground angle
 var max_floor_angle = 0.9
 var max_slide_count = 4
+var friction_ratio = 0.99 # Velocity bleedoff before cliff is reached
+var friction_cliff = 0.8 # Proportion of speed below which velocity falls off dramatically quickly
+var friction_ratio_cliff = 0.5 # Velocity bleedoff after cliff is reached
 
 ##
 ## For player mechanics
@@ -50,11 +53,11 @@ var ability_usable = [true, true, true, true, true]
 var cooldowns = [1, 1, 1, 1, 1]
 # Used to convert between ability name and its index in the ability_usable array
 const ability_conversions = {
-    "mouse_ability_0" : 0,
-    "mouse_ability_1" : 1, 
-    "key_ability_0" : 2, 
-    "key_ability_1" : 3, 
-    "key_ability_2" : 4
+	"mouse_ability_0" : 0,
+	"mouse_ability_1" : 1, 
+	"key_ability_0" : 2, 
+	"key_ability_1" : 3, 
+	"key_ability_2" : 4
 }
 
 ##
@@ -78,18 +81,18 @@ func _ready():
 ## For modifying character stats 
 ##
 func set_id(id):
-    self.player_id = id
+	self.player_id = id
 
 func set_stats_default():
-    health = health_cap
+	health = health_cap
 
 func set_stats(speed, health_cap, regen, xy, player_id):
-    self.speed = speed
-    self.health_cap = health_cap
-    self.health = health_cap
-    self.regen = regen
-    self.player_id = player_id
-    set_global_position(xy)
+	self.speed = speed
+	self.health_cap = health_cap
+	self.health = health_cap
+	self.regen = regen
+	self.player_id = player_id
+	set_global_position(xy)
 
 # there are 6 teams, numbered 0-5, corresponding to the first six layer/mask bits
 func set_team(team_num: int):
@@ -105,43 +108,43 @@ func set_team(team_num: int):
 # because TCP sends commands in ORDER, the objects spawned by the same ability call 
 # will have the same object_counter_id
 func add_object(object, uuid):
-    #var object_id_string = str(object_id_counter)
-    
-    #object.set_name(object_id_string)
-    object.set_name(uuid)
-    
-    # this "unties" the object from its parent player so it may move freely
-    object.set_as_toplevel(true)
-    
-    add_child(object)
-    
-    #objects[object_id_string] = object
-    objects[uuid] = object
-    
-    #object_id_counter += 1
+	#var object_id_string = str(object_id_counter)
+	
+	#object.set_name(object_id_string)
+	object.set_name(uuid)
+	
+	# this "unties" the object from its parent player so it may move freely
+	object.set_as_toplevel(true)
+	
+	add_child(object)
+	
+	#objects[object_id_string] = object
+	objects[uuid] = object
+	
+	#object_id_counter += 1
 
 # function to remove an object
 func remove_object(uuid: String) -> void:
-    var object_to_remove = get_node(uuid)
+	var object_to_remove = get_node(uuid)
 
-    # check if object exists
-    if is_instance_valid(object_to_remove):
-        objects[uuid].queue_free()
-        objects.erase(uuid)
-    else:
-        print("Object " + str(uuid) + " is not available for removal")
+	# check if object exists
+	if is_instance_valid(object_to_remove):
+		objects[uuid].queue_free()
+		objects.erase(uuid)
+	else:
+		print("Object " + str(uuid) + " is not available for removal")
 
 func add_and_return_timed_effect_full(enter_func, enter_args, body_func, body_args, exit_func, exit_args, repeats):
-    var timed_effect = TimedEffect.instance()
-    add_child(timed_effect)
-    timed_effect.init_timer(enter_func, enter_args, body_func, body_args, exit_func, exit_args, repeats)
-    timed_effects.push_back(timed_effect)
-    
+	var timed_effect = TimedEffect.instance()
+	add_child(timed_effect)
+	timed_effect.init_timer(enter_func, enter_args, body_func, body_args, exit_func, exit_args, repeats)
+	timed_effects.push_back(timed_effect)
+	
 func add_and_return_timed_effect_exit(exit_func, exit_args, repeats):
-    add_and_return_timed_effect_full("", [], "", [], exit_func, exit_args, repeats)
+	add_and_return_timed_effect_full("", [], "", [], exit_func, exit_args, repeats)
 
 func add_and_return_timed_effect_body(body_func, body_args, repeats):
-    add_and_return_timed_effect_full("", [], body_func, body_args, "", [], repeats)
+	add_and_return_timed_effect_full("", [], body_func, body_args, "", [], repeats)
 
 # calculates and syncs position/movement
 func _physics_process(delta):
@@ -171,7 +174,11 @@ func _physics_process(delta):
 					gravity2 = 0.1 * gravity_mult
 			#	velocity.y = 10
 		move_and_slide(velocity.rotated(rot_angle + (PI / 2)) + Vector2(0,gravity2), Vector2(0.0, -1.0), true, max_slide_count, max_floor_angle)
-		velocity.x *= (0.95 * abs(velocity.x)) / speed
+		#velocity.x *= (0.95 * abs(velocity.x)) / speed
+		if (abs(velocity.x) / speed) > friction_cliff:
+			velocity.x *= friction_ratio
+		else:
+			velocity.x *= friction_ratio_cliff
 		if is_on_floor():
 			gravity2 = 10
 			#velocity.y = 10
@@ -181,11 +188,11 @@ func _physics_process(delta):
 				gravity2 += gravity_mult * delta
 
 func put_label(text):
-    get_node("Label").set_text(text)
+	get_node("Label").set_text(text)
 
 func sayhi():
-    print("hi")
-    
+	print("hi")
+	
 # ESSENTIAL
 func cooldown(ability_num):
 	print("Making ability " + str(ability_num) + " usable")
@@ -193,9 +200,9 @@ func cooldown(ability_num):
 
 # ESSENTIAL
 func hit(dam):
-    health -= dam as int
-    #send_updated_attribute(str(player_id), "health", health)
-    print("Was hit")
+	health -= dam as int
+	#send_updated_attribute(str(player_id), "health", health)
+	print("Was hit")
 
 func die():
 	is_alive = false
@@ -222,11 +229,11 @@ func respawn():
 	is_alive = true
 
 func ascend():
-    print("ascending")
+	print("ascending")
 
 
 func up():
-    gravity2 = -speed
+	gravity2 = -speed
 
 func down():
 	pass
@@ -245,18 +252,18 @@ func left():
 
 
 func mouse_ability_0(mouse_pos, ability_uuid):
-    pass
+	pass
 
 func mouse_ability_1(mouse_pos, ability_uuid):
-    pass
+	pass
 
 func key_ability_0(ability_uuid):
-    print("key_ability_0 activated on player: " + str(player_id))
-    pass
+	print("key_ability_0 activated on player: " + str(player_id))
+	pass
 
 func key_ability_1(ability_uuid):
-    print("yohoho")
-    pass
+	print("yohoho")
+	pass
 
 func key_ability_2(ability_uuid):
-    pass
+	pass
