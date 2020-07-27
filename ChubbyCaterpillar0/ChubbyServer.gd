@@ -35,7 +35,7 @@ var my_type := "pubert"
 var my_team : int
 var current_map
 var client_uuid_generator = uuid_generator.instance()
-var offline = true
+var offline = false
 var minmap_size = Vector2(1600, 1000)
 
 # keeps track of client physics processing speed, used for interpolating server/client position
@@ -48,10 +48,7 @@ signal minimap_texture_updated(texture, origin)
 signal player_spawned()
 
 func _ready():
-	if offline:
-		start_game_offline()
-	else:
-		$SelectionInput.connect("text_entered", self, "process_selection_input")
+	$SelectionInput.connect("text_entered", self, "process_selection_input")
 
 func _process(delta):
 	if self.has_node(str(client_id)):
@@ -59,10 +56,14 @@ func _process(delta):
 
 func process_selection_input(selection: String):
 	var split_selection = selection.split(",", false)
-	my_team = int(split_selection[0])
-	server_ip = split_selection[1]
+	offline = bool(split_selection[0])
+	my_team = int(split_selection[1])
+	server_ip = split_selection[2]
 	$SelectionInput.queue_free()
-	start_game_multiplayer()
+	if offline:
+		start_game_offline()
+	else:
+		start_game_multiplayer()
 
 func start_game_multiplayer():
 	start_client()
