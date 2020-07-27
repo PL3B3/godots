@@ -234,7 +234,7 @@ func update_node_attribute(node_name: String, attribute_name: String, updated_va
 	var node_to_update = get_node("/root/ChubbyServer/" + node_name)
 	# checks if node exists before attempting to change its properties
 	if is_instance_valid(node_to_update):
-		Interpolator.interpolate_property(node_to_update, attribute_name, node_to_update.get(attribute_name), updated_value, client_delta, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+		Interpolator.interpolate_property(node_to_update, attribute_name, node_to_update.get(attribute_name), updated_value, 5 * client_delta, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 		Interpolator.start()
 
 # used by server to call a method of a node
