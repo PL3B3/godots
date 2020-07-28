@@ -96,6 +96,10 @@ func set_stats(speed, health_cap, regen, xy, player_id):
 
 # there are 6 teams, numbered 0-5, corresponding to the first six layer/mask bits
 func set_team(team_num: int):
+	if team_num < 0:
+		team_num = 0
+	elif team_num > 5:
+		team_num = 5
 	set_collision_layer_bit(team_num, true)
 	
 	for t in range(0,6):
