@@ -25,7 +25,7 @@ func _ready():
 
 func on_timeout_complete():
 	# remove self from player's object dictionary
-	print("Removing self: " + name)
+	# print("Removing self: " + name)
 	$bullet_timer.queue_free()
 	parent.call_and_sync("remove_object", [name])
 
@@ -47,7 +47,7 @@ func _physics_process(delta):
 			velocity.y += gravity
 		if collision:
 			if collision.collider.has_method("hit"):
-				var time_damage_multiplier = log(3 + (2.5 * bullet_life - timer.time_left))
+				var time_damage_multiplier = log(3 + (2.5 * (bullet_life - timer.time_left)))
 				collision.collider.hit(time_damage_multiplier * damage)
 			# remove self from player's object dictionary
 			on_timeout_complete()
