@@ -180,6 +180,7 @@ func _physics_process(delta):
 			velocity.x *= friction_ratio_cliff
 		if is_on_floor():
 			gravity2 = 10
+			velocity.x *= friction_ratio
 			#velocity.y = 10
 		else:
 			rot_angle = -PI / 2
