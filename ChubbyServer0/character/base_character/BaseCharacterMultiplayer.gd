@@ -28,9 +28,11 @@ var velocity = Vector2(0,0)
 var rot_angle := -(PI / 2) # used to orient movement relative to ground angle
 var max_floor_angle = 0.9
 var max_slide_count = 4
-var friction_ratio = 0.99 # Velocity bleedoff before cliff is reached
+var friction_ratio = 0.9 # Velocity bleedoff before cliff is reached
 var friction_cliff = 0.8 # Proportion of speed below which velocity falls off dramatically quickly
-var friction_ratio_cliff = 0.5 # Velocity bleedoff after cliff is reached
+var friction_ratio_cliff = 0.91 # Velocity bleedoff after cliff is reached
+var motion_decay_tracker = 0 # Tracks if player has recently pressed movement keys (positive) or not (negative)
+var ticks_until_slowdown = 10 # How many physics ticks to wait before becoming still
 
 ##
 ## For player mechanics
@@ -158,35 +160,36 @@ func _physics_process(delta):
 		get_child(1).position = get_child(0).position
 		
 		if get_slide_count() > 0:
+			# ensures rot_angle is - PI / 2 if we're only touching a ceiling
 			var rot_angle_cume = Vector2()
+			var only_touching_ceiling = true
 			for i in range(0,get_slide_count()):
 				var slide_normal = get_slide_collision(i).get_normal() 
 				var slide_angle = slide_normal.angle()
 				# If angle isn't a ceiling normal
 				if slide_angle >= (PI / 2) + max_floor_angle or slide_angle <= (PI / 2) - max_floor_angle:
-					 rot_angle_cume += slide_normal
-			rot_angle = rot_angle_cume.angle()
-#			if is_on_floor():
-				# move parrallel with the floor, jump perpendicular, etc...
-#				rot_angle = get_slide_collision(get_slide_count() - 1).get_normal().angle()
-				#gravity2 = 10
-				#velocity.y = 10
-#			if is_on_wall():
-#				rot_angle = get_slide_collision(get_slide_count() - 1).get_normal().angle()
-#				print("I am on wall")
-			if is_on_ceiling():
-				if gravity2 < 0.1 * gravity_mult:
-					gravity2 = 0.1 * gravity_mult
-			#	velocity.y = 10
+					rot_angle_cume += slide_normal
+					only_touching_ceiling = false
+				else:
+					velocity.y = 0
+					if gravity2 < 0.1 * gravity_mult:
+						gravity2 = 0.1 * gravity_mult
+			if only_touching_ceiling:
+				rot_angle = - PI / 2
+			else:
+				rot_angle = rot_angle_cume.angle()
+		
+		# Movement done here
 		move_and_slide(velocity.rotated(rot_angle + (PI / 2)) + Vector2(0,gravity2), Vector2(0.0, -1.0), true, max_slide_count, max_floor_angle)
-		if (abs(velocity.x) / speed) > friction_cliff:
+		
+		# Decrement left and right decay counters. If they reach zero or less, friction should be activated. Otherwise, friction should be turned off
+		motion_decay_tracker -= 1
+		if motion_decay_tracker < 0:
 			velocity.x *= friction_ratio
-		else:
-			velocity.x *= friction_ratio_cliff
+		
+		# Friction
 		if is_on_floor():
 			gravity2 = 10
-			velocity.x *= friction_ratio
-			#velocity.y = 10
 		else:
 			rot_angle = -PI / 2
 			if gravity2 < 4 * speed:
@@ -200,14 +203,11 @@ func sayhi():
 	
 # ESSENTIAL
 func cooldown(ability_num):
-	# print("Making ability " + str(ability_num) + " usable")
 	ability_usable[ability_num] = true
 
 # ESSENTIAL
 func hit(dam):
 	health -= dam as int
-	#send_updated_attribute(str(player_id), "health", health)
-	# print("Was hit")
 
 func die():
 	is_alive = false
@@ -221,8 +221,6 @@ func die():
 	$Sprite.visible = false
 	# move far away
 	print("I died")
-#	yield(get_tree().create_timer(0.08), "timeout")
-#	set_global_position(death_room_position)
 
 func respawn():
 	print("respawning")
@@ -238,22 +236,23 @@ func ascend():
 
 
 func up():
-	gravity2 = -speed
+	gravity2 = -40 * gravity2
 
 func down():
 	pass
-#	velocity.y = 2 * speed
+#   velocity.y = 2 * speed
 
 
 func right():
-	# If velocity is already fast right, do nothing
-	#velocity.x += speed
-	velocity.x = speed
+	motion_decay_tracker = ticks_until_slowdown
+	if velocity.x < speed:
+		velocity.x += 0.05 * speed
 
 
 func left():
-	#velocity.x -= speed
-	velocity.x = -speed
+	motion_decay_tracker = ticks_until_slowdown
+	if velocity.x > -speed:
+		velocity.x -= 0.05 * speed
 
 
 func mouse_ability_0(mouse_pos, ability_uuid):

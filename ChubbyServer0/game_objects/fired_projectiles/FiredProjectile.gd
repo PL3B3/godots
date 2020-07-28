@@ -5,7 +5,7 @@ onready var parent = get_parent()
 var damage = 40
 var velocity = Vector2()
 var timer = null
-var bullet_life = 4
+var bullet_life = 3.5
 var gravity = 7
 var fired = false
 var physics_processing = false
@@ -32,7 +32,7 @@ func on_timeout_complete():
 func fire(center, radius, dir):
 	rotation = dir
 	position = center + Vector2(radius, 0.0).rotated(dir)
-	velocity = Vector2(800, 0).rotated(dir)
+	velocity = Vector2(600, 0).rotated(dir)
 	fired = true
 
 func _physics_process(delta):
