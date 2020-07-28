@@ -200,14 +200,14 @@ func sayhi():
 	
 # ESSENTIAL
 func cooldown(ability_num):
-	print("Making ability " + str(ability_num) + " usable")
+	# print("Making ability " + str(ability_num) + " usable")
 	ability_usable[ability_num] = true
 
 # ESSENTIAL
 func hit(dam):
 	health -= dam as int
 	#send_updated_attribute(str(player_id), "health", health)
-	print("Was hit")
+	# print("Was hit")
 
 func die():
 	is_alive = false

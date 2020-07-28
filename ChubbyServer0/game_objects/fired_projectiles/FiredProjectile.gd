@@ -25,7 +25,7 @@ func _ready():
 
 func on_timeout_complete():
 	# remove self from player's object dictionary
-	print("Removing self: " + name)
+	# print("Removing self: " + name)
 	$bullet_timer.queue_free()
 	parent.call_and_sync("remove_object", [name])
 
