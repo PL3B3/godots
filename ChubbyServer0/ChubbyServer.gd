@@ -75,10 +75,11 @@ func _player_connected(id):
 	
 func _player_disconnected(id):
 	players.erase(id)
+	print("Player " + str(id) + " disconnected")
 	var disconnected_players_phantom = get_node("/root/ChubbyServer/" + str(id))
 	remove_child(disconnected_players_phantom)
 	disconnected_players_phantom.queue_free()
-	rpc("parse_server_rpc", "remove_other_player", [id])
+	send_server_rpc_to_all_players("remove_other_player", [id])
 
 func _connected_ok():
 	print("got a connection")

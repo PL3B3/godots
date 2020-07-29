@@ -70,6 +70,7 @@ func send_updates():
 func hit(dam):
 	.hit(dam)
 	replicate_on_client("hit", [dam])
+	send_updated_attribute(str(player_id), "health", health)
 	if not health > 0:
 		# die
 		call_and_sync("die", [])
