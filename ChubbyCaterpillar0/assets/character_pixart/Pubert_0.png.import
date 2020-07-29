@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Candy_tilesheet.svg-76ace4ab42ee3c823c94db334a4ce68c.stex"
+path="res://.import/Pubert_0.png-6c537af61dce7842f3d9fee576358085.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Candy_tilesheet.svg"
-dest_files=[ "res://.import/Candy_tilesheet.svg-76ace4ab42ee3c823c94db334a4ce68c.stex" ]
+source_file="res://assets/character_pixart/Pubert_0.png"
+dest_files=[ "res://.import/Pubert_0.png-6c537af61dce7842f3d9fee576358085.stex" ]
 
 [params]
 

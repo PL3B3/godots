@@ -29,6 +29,7 @@ const DEFAULT_PORT = 3342
 var server_ip = "127.0.0.1"
 
 # Node2d: client_uuid_generator a utility node which makes uuids...helps catalogue objects/timedeffects
+var client_net = null # the ENet containing the client
 var client_id := 0
 var players = {} # tracks all connected players
 var my_type := "pubert"
@@ -65,12 +66,27 @@ func process_selection_input(selection: String):
 		start_game_multiplayer()
 	$SelectionInput.queue_free()
 
+func _unhandled_key_input(event):
+	# Debug stuff
+	if event is InputEventKey && event.pressed:
+		if event.scancode == KEY_T:
+			if not offline:
+				print(str(client_net.get_connection_status()))
+			elif client_net != null && client_net.get_connection_status() != 1: # client_net exists and isn't attempting connection
+				start_client()
 
 func start_game_multiplayer():
+	client_net = NetworkedMultiplayerENet.new()
 	start_client()
-	client_id = get_tree().get_network_unique_id()
-	print(client_id)
+	# Connect network signals
+	client_net.connect("server_disconnected", self, "_on_disconnect")
+	client_net.connect("connection_failed", self, "_on_disconnect")
+	client_net.connect("connection_succeeded", self, "_on_connection_succeeded")
+	
+	# Adds our player
 	add_a_player(client_id, my_type, my_team)
+	
+	# Add map and do initial processing for minimap
 	var current_map = map2.instance()
 	add_child(current_map)
 	tilemap_to_tex(current_map.get_node("TileMap"))
@@ -128,9 +144,24 @@ func tilemap_to_tex(tmap: TileMap) -> Texture:
 	return tex
 
 func start_client():
-	var client = NetworkedMultiplayerENet.new()
-	client.create_client(server_ip, DEFAULT_PORT)
-	get_tree().set_network_peer(client)
+	# Close and retry connection
+	client_net.close_connection()
+	client_net.create_client(server_ip, DEFAULT_PORT)
+	# Force reset network peer to avoid horrendous reconnection issue
+	# See https://github.com/godotengine/godot/issues/34676
+	get_tree().set_network_peer(null)
+	get_tree().set_network_peer(client_net)
+	if client_id != 0: # If this is a reconnection attempt
+		# Renames player with new client name and updates players dictionary
+		var our_player = players[client_id]
+		players.erase(client_id)
+		client_id = get_tree().get_network_unique_id()
+		our_player.set_name(str(client_id))
+		our_player.set_id(client_id)
+		players[client_id] = our_player
+	else: # This is a first time connection
+		client_id = get_tree().get_network_unique_id()
+	print(client_id)
 	print("client created")
 
 # executes the client function specified by the server
@@ -138,8 +169,16 @@ func start_client():
 # @param args - arguments to pass into the command
 remote func parse_server_rpc(server_cmd, args):
 	#print("Command [" + server_cmd + "] called from server")
-
 	callv(server_cmd, args)
+
+# Called on ongoing or attempted connection failure
+func _on_disconnect():
+	offline = true
+	print("server disconnected")
+
+# Called when a connection attempt succeeds
+func _on_connection_succeeded():
+	offline = false
 
 func say_zx():
 	print("I said zx ok?? My name a ", client_id)

@@ -138,7 +138,7 @@ remote func parse_client_rpc(client_cmd, args):
 remote func parse_player_rpc(player_id, method_name, args) -> void:
 	var caller_id = get_tree().get_rpc_sender_id()
 	
-	#print("Player ", caller_id, " called function ", ability_name)
+	#print("Player ", caller_id, " called function ", method_name)
 	
 	# stops non-player peers from controlling that player
 	if (str(caller_id) == str(player_id)):

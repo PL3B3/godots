@@ -27,12 +27,8 @@ func _unhandled_input(event):
 		if event is InputEventKey:
 			if event.pressed && !event.echo:
 				#or Input.is_key_pressed(KEY_W)
-				if event.scancode == KEY_W:
-					#print("W pressed")
-					$FloorScan.enabled = true
-					if is_on_floor():
-						use_ability_and_notify_server_and_start_cooldown("up", [])
-					$FloorScan.set_enabled(false)
+				if event.scancode == KEY_W && is_on_floor():
+					use_ability_and_notify_server_and_start_cooldown("up", [])
 #				if event.scancode == KEY_D:
 #					use_ability_and_notify_server_and_start_cooldown("right", [])
 #				if event.scancode == KEY_A:
@@ -72,15 +68,15 @@ func _unhandled_input(event):
 var counter = 0
 # gets input
 func _physics_process(delta):
-	counter += 1
 	if is_alive && character_under_my_control:
-		if Input.is_key_pressed(KEY_A):
-			use_ability_and_notify_server_and_start_cooldown("left", [])
-		if Input.is_key_pressed(KEY_D):
-			use_ability_and_notify_server_and_start_cooldown("right", [])
-	if counter % 83 == 0:
-		pass
-#		print(position)
+		counter += 1
+		if counter % 3 == 0:
+			counter = 0
+			if Input.is_key_pressed(KEY_A):
+				use_ability_and_notify_server_and_start_cooldown("left", [])
+			if Input.is_key_pressed(KEY_D):
+				use_ability_and_notify_server_and_start_cooldown("right", [])
+	$Sprite.rotation += 0.1 * ((rot_angle + (PI / 2)) - $Sprite.rotation)
 
 # 1. call the ability with arguments passed in, tba at time of button press
 # 2. tell the server the command given

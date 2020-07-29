@@ -2,11 +2,11 @@ extends KinematicBody2D
 
 onready var parent = get_parent()
 
-var damage = 40
+var damage = 50
 var velocity = Vector2()
 var timer = null
 var bullet_life = 3.5
-var gravity = 7
+var gravity = 9
 var fired = false
 var physics_processing = false
 
