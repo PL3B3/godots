@@ -18,7 +18,3 @@ func mouse_ability_1(mouse_pos: Vector2, ability_uuid: String) -> void:
 	add_child(ray_cast)
 	
 # this hits us for 40 damage on serverside
-
-func key_ability_2(ability_uuid):
-	if client.offline:
-		respawn()
