@@ -219,6 +219,7 @@ func die():
 	$CollisionShape2D.set_deferred("disabled", true)
 	# make invisible
 	$Sprite.visible = false
+	timed_effects = []
 	# move far away
 	print("I died")
 

@@ -1,6 +1,8 @@
 extends "res://character/base_character/ChubbyCharacter.gd"
 
 var FiredProjectile = preload("res://game_objects/fired_projectiles/FiredProjectile.tscn")
+var clip = 3
+var total = 18
 
 func _ready():
 	cooldowns[0] = 2

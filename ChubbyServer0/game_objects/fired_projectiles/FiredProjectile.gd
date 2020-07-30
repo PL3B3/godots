@@ -2,10 +2,12 @@ extends KinematicBody2D
 
 onready var parent = get_parent()
 
-var damage = 50
+var damage = 20
+var speed = 600
 var velocity = Vector2()
 var timer = null
 var bullet_life = 3.5
+var time_damage_factor = 1
 var gravity = 9
 var fired = false
 var physics_processing = false
@@ -15,12 +17,6 @@ func _ready():
 	# should not scan pickups
 	set_collision_mask(parent.get_collision_mask() - 128)
 	$Sprite.modulate = parent.team_colors[parent.team]
-	timer = Timer.new()
-	timer.set_one_shot(true)
-	add_child(timer)
-	timer.start(bullet_life)
-	timer.connect("timeout", self, "on_timeout_complete")
-	timer.set_name("bullet_timer")
 	physics_processing = true
 
 func on_timeout_complete():
@@ -30,9 +26,15 @@ func on_timeout_complete():
 	parent.call_and_sync("remove_object", [name])
 
 func fire(center, radius, dir):
+	timer = Timer.new()
+	timer.set_one_shot(true)
+	add_child(timer)
+	timer.start(bullet_life)
+	timer.connect("timeout", self, "on_timeout_complete")
+	timer.set_name("bullet_timer")
 	rotation = dir
 	position = center + Vector2(radius, 0.0).rotated(dir)
-	velocity = Vector2(600, 0).rotated(dir)
+	velocity = Vector2(speed, 0).rotated(dir)
 	fired = true
 
 func _physics_process(delta):
@@ -47,7 +49,7 @@ func _physics_process(delta):
 			velocity.y += gravity
 		if collision:
 			if collision.collider.has_method("hit"):
-				var time_damage_multiplier = log(3 + (2.5 * (bullet_life - timer.time_left)))
+				var time_damage_multiplier = 1 + time_damage_factor * ((bullet_life - timer.time_left) / bullet_life)
 				collision.collider.hit(time_damage_multiplier * damage)
 			# remove self from player's object dictionary
 			on_timeout_complete()
