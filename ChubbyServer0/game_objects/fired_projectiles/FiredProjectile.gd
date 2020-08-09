@@ -42,12 +42,12 @@ func _physics_process(delta):
 		var collision = move_and_collide(velocity * delta)
 		
 		# updates object on client side 
-		parent.send_updated_attribute(parent.name + "/" + name, "position", position)
+		parent.send_updated_attribute(parent.name + "/" + name, "position", get_global_position())
 		parent.send_updated_attribute(parent.name + "/" + name, "velocity", velocity)
 		
 		if fired:
 			velocity.y += gravity
-		if collision:
+		if collision != null:
 			if collision.collider.has_method("hit"):
 				var time_damage_multiplier = 1 + time_damage_factor * ((bullet_life - timer.time_left) / bullet_life)
 				collision.collider.hit(time_damage_multiplier * damage)

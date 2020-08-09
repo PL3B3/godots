@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=2]
+[gd_scene load_steps=28 format=2]
 
 [ext_resource path="res://Pode.gd" type="Script" id=1]
 [ext_resource path="res://walkAnim.png" type="Texture" id=2]
@@ -24,6 +24,7 @@
 [ext_resource path="res://Run (9).png" type="Texture" id=22]
 [ext_resource path="res://Run (10).png" type="Texture" id=23]
 [ext_resource path="res://AnimatedSprite.gd" type="Script" id=24]
+[ext_resource path="res://Line2D.gd" type="Script" id=25]
 
 [sub_resource type="AtlasTexture" id=1]
 flags = 4
@@ -61,6 +62,9 @@ position = Vector2( 513.228, 284.004 )
 scale = Vector2( 0.5339, 0.540451 )
 frames = SubResource( 2 )
 animation = "run"
-frame = 1
+frame = 8
 playing = true
 script = ExtResource( 24 )
+
+[node name="Line2D" type="Line2D" parent="."]
+script = ExtResource( 25 )

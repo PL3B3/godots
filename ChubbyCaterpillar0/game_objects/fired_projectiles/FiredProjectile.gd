@@ -1,11 +1,14 @@
 extends KinematicBody2D
 
 onready var parent = get_parent()
+var trail = preload("res://game_objects/fired_projectiles/BulletTrail.tscn")
 
-var damage = 50
+var damage = 20
+var speed = 600
 var velocity = Vector2()
 var timer = null
 var bullet_life = 3.5
+var time_damage_factor = 1
 var gravity = 9
 var fired = false
 var physics_processing = false
@@ -26,21 +29,24 @@ func _ready():
 func on_timeout_complete():
 	# no behavior...removal determined by server
 	pass
-	
+
 func fire(center, radius, dir):
 	rotation = dir
 	position = center + Vector2(radius, 0.0).rotated(dir)
-	velocity = Vector2(600, 0).rotated(dir)
+	velocity = Vector2(speed, 0).rotated(dir)
 	fired = true
 	#print("center at %s, position at %s, velocity is %s" % [center, position, velocity])
 
 func _physics_process(delta):
 	if physics_processing:
+		var trail_sprite = trail.instance()
+		trail_sprite.position = global_position
+		get_node("/root/ChubbyServer").add_child(trail_sprite)
 		var collision = move_and_collide(velocity * delta)
 		
 		if fired:
 			velocity.y += gravity
-		if collision:
+		if collision != null:
 			# Removal is fine if you're offline, for performance
 			if get_node("/root/ChubbyServer").offline:
 				parent.remove_object(name)

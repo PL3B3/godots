@@ -3,13 +3,18 @@ TODO list overview:
 
 
 Both
-	-physics needs syncing (chubbyphantom!!!! use .physproc!!)
 	-handling server calls to nonexistent objects on client
 		-most objects will exist on all clients before they get the command to be removed or modified (such as bullets)
 		-essential exceptions such as removals should be handled with a slight delay: if remove fails the first time, then yield 0.5 seconds and do it again
-	-plumplet and pumpqueen: select color, threshold 12, expand region by 4 px...use beige background
+	-(obsolete) plumplet and pumpqueen: select color, threshold 12, expand region by 4 px...use beige background
 	-**theory:
-		-unreliable = aesthetic
+		-Server node handles all broadcasts to clients. Decentralized updates are tougher to manage and will lead to untraceable conflicts
+			-Phantom nodes signal whenever any attribute changes or a SUC method is called. 
+		-Phantom nodes use their own information to determine when change signals are necessary. If velocity or position haven't changed beyond a certain threshold, there's no need to update.
+			-velocity changes when movement keys are pressed or because of friction.
+			-position changes when velocity and gravity2 are nonzero
+			-rotation changes when position changes
+		-unreliable = aesthetic or movement
 		-reliable calls = set and lock.
 		-(SUC) server- universal call: applies on every client | authoritative server stuff
 			-cooldown: 
@@ -19,7 +24,8 @@ Both
 			-all object updates including removal: Serverside objects call their parents to call_and_sync the remove_object function with their name as the parameter
 			-basically any timed thing
 			-map and gamemode-specific updates like winning, health packs, etc
-		-(SPC) server-to-puppet-player-calls: replicates client commands on other clients only | controlled by client
+		-(SPC) server-to-puppet-player-calls: replicates client commands on other clients only | controlled by client 
+			-excludes original client b/c they already called method
 			-ability call
 			-movement
 	-If player calls an ability that hasn't cooled down yet, how does the game respond?

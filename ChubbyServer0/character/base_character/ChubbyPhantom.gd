@@ -12,9 +12,14 @@ extends "res://character/base_character/BaseCharacterMultiplayer.gd"
 
 onready var server = get_parent()
 
+# Sync signal
+signal attribute_updated(attribute_name, value)
+signal method_called(method_name, args)
+
 # for debugging
 # sets global position to 0,0
 func _ready():
+	self.connect("attribute_updated", server, "update_attribute", [name])
 	print("This is the character base class on the server side")
 
 ##
@@ -66,11 +71,16 @@ func send_updates():
 	send_updated_attribute(str(player_id), "velocity", velocity)
 	send_updated_attribute(str(player_id), "position", position)
 	send_updated_attribute(str(player_id), "rot_angle", rot_angle)
+	
+	#emit_signal("attribute_updated", "gravity2", gravity2)
+	#emit_signal("attribute_updated", "velocity", velocity)
+	#emit_signal("attribute_updated", "position", position)
+	#emit_signal("attribute_updated", "rot_angle", rot_angle)
 
 func hit(dam):
 	.hit(dam)
 	replicate_on_client("hit", [dam])
-	send_updated_attribute(str(player_id), "health", health)
+	emit_signal("attribute_updated", "health", health)
 	if not health > 0:
 		# die
 		call_and_sync("die", [])

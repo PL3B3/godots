@@ -52,8 +52,18 @@ func _ready():
 	$SelectionInput.connect("text_entered", self, "process_selection_input")
 
 func _process(delta):
-	if self.has_node(str(client_id)):
-		$MinMapBoi.position = get_node(str(client_id)).position
+	#if self.has_node(str(client_id)):
+	#	$Camera2D.position += 0.08 * (get_node(str(client_id)).position - $Camera2D.position)
+	
+	if Input.is_action_pressed("ui_left"):
+		$Camera2D.position += Vector2(-10,0)
+	if Input.is_action_pressed("ui_right"):
+		$Camera2D.position += Vector2(10,0)
+	if Input.is_action_pressed("ui_up"):
+		$Camera2D.position += Vector2(0,-10)
+	if Input.is_action_pressed("ui_down"):
+		$Camera2D.position += Vector2(0,10)
+	
 
 func process_selection_input(selection: String):
 	var split_selection = selection.split(",", false)
@@ -248,8 +258,6 @@ func add_a_player(id, type, team: int):
 	get_node("/root/ChubbyServer").add_child(player_to_add)
 	players[id] = player_to_add
 
-
-
 func remove_other_player(id):
 	# Checks if not already removed
 	print("Removing player ", id)
@@ -267,14 +275,22 @@ func remove_other_player(id):
 ##
 
 
-# Updates an attribute of a player or object
+# Updates an attribute of a player or object through interpolation
 # The Node's path is relative to ChubbyServer
 func update_node_attribute(node_name: String, attribute_name: String, updated_value) -> void:
 	var node_to_update = get_node("/root/ChubbyServer/" + node_name)
 	# checks if node exists before attempting to change its properties
 	if is_instance_valid(node_to_update):
-		Interpolator.interpolate_property(node_to_update, attribute_name, node_to_update.get(attribute_name), updated_value, 5 * client_delta, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+		Interpolator.interpolate_property(node_to_update, attribute_name, node_to_update.get(attribute_name), updated_value, client_delta, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
 		Interpolator.start()
+
+# Immediately sets an attribute of a node
+# The Node's path is relative to ChubbyServer
+func set_node_attribute(node_name: String, attribute_name: String, updated_value) -> void:
+	var node_to_update = get_node("/root/ChubbyServer/" + node_name)
+	# checks if node exists before attempting to change its properties
+	if is_instance_valid(node_to_update):
+		node_to_update.set(attribute_name, updated_value)
 
 # used by server to call a method of a node
 # The Node's path is relative to ChubbyServer
@@ -285,17 +301,17 @@ func call_node_method(node_name: String, method_name: String, args) -> void:
 		# call the method
 		node_to_call.callv(method_name, args)
 
+
+##
+## Deprecated functions
+##
+
 # used by server to call a method of a player
 func call_player_method(player_id: int, method_name: String, args) -> void:
 	# if we have a player node with the specified name, and that player isn't us
 	if self.has_node(str(player_id)):
 		# call the method of the player with its args
 		players[player_id].callv(method_name, args)
-
-
-##
-## Deprecated functions
-##
 
 func add_other_player(id, type):
 	# checks if the "other player" is in fact our client player to avoid duplicating it

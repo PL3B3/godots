@@ -162,8 +162,20 @@ remote func parse_player_rpc(player_id, method_name, args) -> void:
 				call_player_method_on_client(id, player_id, method_name, args)
 #				send_server_rpc_to_one_player(id, "call_player_method", [player_id, method_name, args])
 
-func call_player_method_on_client(client_id, player_id, method_name, args):
+# Calls a method of player_id's representation on client_id
+func call_player_method_on_client(client_id, player_id: int, method_name: String, args):
 	send_server_rpc_to_one_player(client_id, "call_node_method", [str(player_id), method_name, args])
+	
+func update_attribute(attribute_name: String, new_value, node_name: String) -> void:
+	send_server_rpc_to_all_players_unreliable("update_node_attribute", [node_name, attribute_name, new_value])
+
+func set_attribute(attribute_name: String, new_value, node_name: String) -> void:
+	send_server_rpc_to_all_players_unreliable("set_node_attribute", [node_name, attribute_name, new_value])
+
+# call a method on all this phantom's client instances
+func call_player_method_on_all_clients(method_name: String, args, node_name: String) -> void:
+	send_server_rpc_to_all_players("call_node_method", [node_name, method_name, args])
+
 
 # this function is called upon player_connected, which calls the player to tell this function its id and class type
 remote func add_player(type, team):
