@@ -11,7 +11,7 @@ var TimedEffect = preload("res://character/TimedEffect.tscn")
 ## general player stats
 ##
 
-var speed: float = 300
+var speed: float = 220
 var health_cap : int = 200 # defines the basic "max health" of a character, but overheal and boosts can change this
 var health : int = 200
 var regen: int = 0
@@ -158,10 +158,8 @@ func _physics_process(delta):
 	if is_alive:
 		put_label(str(health as int))
 		get_child(1).position = get_child(0).position
-		
 		if get_slide_count() > 0:
 			# ensures rot_angle is - PI / 2 if we're only touching a ceiling
-			var rot_angle_cume = Vector2()
 			var floor_angle_cume = Vector2()
 			var wall_angle_cume = Vector2()
 			var only_touching_ceiling = true
@@ -170,12 +168,12 @@ func _physics_process(delta):
 				var slide_normal = get_slide_collision(i).get_normal() 
 				var slide_angle = slide_normal.angle()
 				# Angle is ceiling
-				if slide_angle < (PI / 2) + max_floor_angle or slide_angle > (PI / 2) - max_floor_angle:
+				if slide_angle < (PI / 2) + max_floor_angle and slide_angle > (PI / 2) - max_floor_angle:
 					velocity.y = 0
 					if gravity2 < 0.1 * gravity_mult:
 						gravity2 = 0.1 * gravity_mult
 				else:
-					if slide_angle > (-PI / 2) - max_floor_angle or slide_angle < (-PI / 2) + max_floor_angle:
+					if slide_angle < (-PI / 2) - max_floor_angle and slide_angle > (-PI / 2) + max_floor_angle:
 						floor_angle_cume += slide_normal
 					# Angle is wall
 					else:
@@ -187,11 +185,20 @@ func _physics_process(delta):
 			elif touching_wall:
 				rot_angle = wall_angle_cume.angle()
 			else:
-				rot_angle = rot_angle_cume.angle()
-		
+				rot_angle = floor_angle_cume.angle()
+		# floating midair
+		else:
+			# ease rot_angle towards - PI / 2
+			# These angles interpolate normally b/c there's no "angle jump"
+			if rot_angle < PI / 2 and rot_angle > -PI:
+				rot_angle += 0.04 * ((- PI / 2) - rot_angle)
+			# These angles are weird and need to jump between PI and -PI, which represent the same angle
+			else:
+				rot_angle += 0.04 * ((3 * PI / 2) - rot_angle)
+				if rot_angle > PI:
+					rot_angle -= 2 * PI
 		# Movement done here
 		move_and_slide(velocity.rotated(rot_angle + (PI / 2)) + Vector2(0,gravity2), Vector2(0.0, -1.0), true, max_slide_count, max_floor_angle)
-		
 		# Decrement left and right decay counters. If they reach zero or less, friction should be activated. Otherwise, friction should be turned off
 		motion_decay_tracker -= 1
 		if motion_decay_tracker < 0:
@@ -201,7 +208,7 @@ func _physics_process(delta):
 		if is_on_floor():
 			gravity2 = 10
 		else:
-			rot_angle = -PI / 2
+			#rot_angle += 0.1 * ((-PI / 2) - rot_angle)
 			if gravity2 < 4 * speed:
 				gravity2 += gravity_mult * delta
 

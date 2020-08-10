@@ -4,12 +4,12 @@ onready var parent = get_parent()
 var trail = preload("res://game_objects/fired_projectiles/BulletTrail.tscn")
 
 var damage = 20
-var speed = 300
+var speed = 400
 var velocity = Vector2()
 var timer = null
 var bullet_life = 8
 var time_damage_factor = 1
-var gravity = 2
+var gravity = 4
 var fired = false
 var physics_processing = false
 

@@ -79,14 +79,12 @@ func _physics_process(delta):
 				use_ability_and_notify_server_and_start_cooldown("right", [])
 	#$Sprite.rotation += 0.1 * ((rot_angle + (PI / 2)) - $Sprite.rotation)
 	rot_target = increment_angle_towards_target(rot_target, rot_angle)
-	print(rot_angle)
-	print(rot_target)
 	$Sprite.rotation = rot_target + (PI / 2)
 
 # Pushes given angle slightly towards a target angle
 func increment_angle_towards_target(angle: float, target: float) -> float:
 	var diff = target - angle
-	var increment = 0.01 * abs(diff)
+	var increment = 0.05 * min(abs(diff), (2 * PI) - abs(diff))
 	if diff >= PI:
 		angle -= increment
 	elif diff >= 0 and diff < PI:
