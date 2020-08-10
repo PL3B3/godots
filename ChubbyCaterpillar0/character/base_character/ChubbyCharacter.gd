@@ -66,6 +66,7 @@ func _unhandled_input(event):
 					use_ability_and_notify_server_and_start_cooldown("mouse_ability_1", [get_global_mouse_position()])
 
 var counter = 0
+var rot_target:= - PI / 2
 # gets input
 func _physics_process(delta):
 	if is_alive && character_under_my_control:
@@ -76,7 +77,31 @@ func _physics_process(delta):
 				use_ability_and_notify_server_and_start_cooldown("left", [])
 			if Input.is_key_pressed(KEY_D):
 				use_ability_and_notify_server_and_start_cooldown("right", [])
-	$Sprite.rotation += 0.1 * ((rot_angle + (PI / 2)) - $Sprite.rotation)
+	#$Sprite.rotation += 0.1 * ((rot_angle + (PI / 2)) - $Sprite.rotation)
+	rot_target = increment_angle_towards_target(rot_target, rot_angle)
+	print(rot_angle)
+	print(rot_target)
+	$Sprite.rotation = rot_target + (PI / 2)
+
+# Pushes given angle slightly towards a target angle
+func increment_angle_towards_target(angle: float, target: float) -> float:
+	var diff = target - angle
+	var increment = 0.01 * abs(diff)
+	if diff >= PI:
+		angle -= increment
+	elif diff >= 0 and diff < PI:
+		angle += increment
+	elif diff <= -PI:
+		angle += increment
+	else: 
+		angle -= increment
+	
+	if angle > PI:
+		angle -= 2 * PI
+	elif angle < -PI:
+		angle += 2 * PI
+	
+	return angle
 
 # 1. call the ability with arguments passed in, tba at time of button press
 # 2. tell the server the command given

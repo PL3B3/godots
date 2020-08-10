@@ -11,7 +11,7 @@ var TimedEffect = preload("res://character/TimedEffect.tscn")
 ## general player stats
 ##
 
-var speed: float = 350
+var speed: float = 300
 var health_cap : int = 200 # defines the basic "max health" of a character, but overheal and boosts can change this
 var health : int = 200
 var regen: int = 0
@@ -162,20 +162,30 @@ func _physics_process(delta):
 		if get_slide_count() > 0:
 			# ensures rot_angle is - PI / 2 if we're only touching a ceiling
 			var rot_angle_cume = Vector2()
+			var floor_angle_cume = Vector2()
+			var wall_angle_cume = Vector2()
 			var only_touching_ceiling = true
+			var touching_wall = false
 			for i in range(0,get_slide_count()):
 				var slide_normal = get_slide_collision(i).get_normal() 
 				var slide_angle = slide_normal.angle()
-				# If angle isn't a ceiling normal
-				if slide_angle >= (PI / 2) + max_floor_angle or slide_angle <= (PI / 2) - max_floor_angle:
-					rot_angle_cume += slide_normal
-					only_touching_ceiling = false
-				else:
+				# Angle is ceiling
+				if slide_angle < (PI / 2) + max_floor_angle or slide_angle > (PI / 2) - max_floor_angle:
 					velocity.y = 0
 					if gravity2 < 0.1 * gravity_mult:
 						gravity2 = 0.1 * gravity_mult
+				else:
+					if slide_angle > (-PI / 2) - max_floor_angle or slide_angle < (-PI / 2) + max_floor_angle:
+						floor_angle_cume += slide_normal
+					# Angle is wall
+					else:
+						wall_angle_cume += slide_normal
+						touching_wall = true
+					only_touching_ceiling = false
 			if only_touching_ceiling:
 				rot_angle = - PI / 2
+			elif touching_wall:
+				rot_angle = wall_angle_cume.angle()
 			else:
 				rot_angle = rot_angle_cume.angle()
 		

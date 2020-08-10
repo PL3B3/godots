@@ -4,12 +4,12 @@ onready var parent = get_parent()
 var trail = preload("res://game_objects/fired_projectiles/BulletTrail.tscn")
 
 var damage = 20
-var speed = 600
+var speed = 300
 var velocity = Vector2()
 var timer = null
-var bullet_life = 3.5
+var bullet_life = 8
 var time_damage_factor = 1
-var gravity = 9
+var gravity = 2
 var fired = false
 var physics_processing = false
 
@@ -39,9 +39,9 @@ func fire(center, radius, dir):
 
 func _physics_process(delta):
 	if physics_processing:
-		var trail_sprite = trail.instance()
-		trail_sprite.position = global_position
-		get_node("/root/ChubbyServer").add_child(trail_sprite)
+		#var trail_sprite = trail.instance()
+		#trail_sprite.position = global_position
+		#get_node("/root/ChubbyServer").add_child(trail_sprite)
 		var collision = move_and_collide(velocity * delta)
 		
 		if fired:

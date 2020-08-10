@@ -30,6 +30,7 @@ var map2 = preload("res://maps/Map2.tscn")
 var physics_processing = false
 var players = {}
 var server_uuid_generator = uuid_generator.instance()
+var client_delta = 1.0 / (ProjectSettings.get_setting("physics/common/physics_fps"))
 
 func _ready():
 	var server_map = map2.instance()
@@ -165,7 +166,11 @@ remote func parse_player_rpc(player_id, method_name, args) -> void:
 # Calls a method of player_id's representation on client_id
 func call_player_method_on_client(client_id, player_id: int, method_name: String, args):
 	send_server_rpc_to_one_player(client_id, "call_node_method", [str(player_id), method_name, args])
-	
+
+# Updates position of a node on all clients
+func update_position(node_name: String, projected_position: Vector2) -> void:
+	send_server_rpc_to_all_players_unreliable("interpolate_node_position", [node_name, projected_position])
+
 func update_attribute(attribute_name: String, new_value, node_name: String) -> void:
 	send_server_rpc_to_all_players_unreliable("update_node_attribute", [node_name, attribute_name, new_value])
 

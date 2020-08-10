@@ -3,12 +3,12 @@ extends KinematicBody2D
 onready var parent = get_parent()
 
 var damage = 20
-var speed = 600
+var speed = 300
 var velocity = Vector2()
 var timer = null
-var bullet_life = 3.5
+var bullet_life = 8
 var time_damage_factor = 1
-var gravity = 9
+var gravity = 2
 var fired = false
 var physics_processing = false
 
@@ -41,8 +41,9 @@ func _physics_process(delta):
 	if physics_processing:
 		var collision = move_and_collide(velocity * delta)
 		
-		# updates object on client side 
-		parent.send_updated_attribute(parent.name + "/" + name, "position", get_global_position())
+		# updates object on client side
+		parent.server.update_position(parent.name + "/" + name, get_global_position() + (velocity * delta))
+		#parent.send_updated_attribute(parent.name + "/" + name, "position", get_global_position())
 		parent.send_updated_attribute(parent.name + "/" + name, "velocity", velocity)
 		
 		if fired:

@@ -29,11 +29,11 @@ func _ready():
 # UNRELIABLE protocol
 # helper function for updating a node attribute (on clients) based on new server info
 func send_updated_attribute(node_name: String, attribute_name: String, new_value) -> void:
-	server.send_server_rpc_to_all_players_unreliable("update_node_attribute", [node_name, attribute_name, new_value])
+	server.send_server_rpc_to_all_players_unreliable("set_node_attribute", [node_name, attribute_name, new_value])
 
 # call a method on all this phantom's client instances
 func replicate_on_client(method_name: String, args) -> void:
-	server.send_server_rpc_to_all_players("call_node_method", [str(player_id), method_name, args])
+	server.send_server_rpc_to_all_players("call_node_method", [name, method_name, args])
 
 # calls a method on this phantom and all its client instances
 func call_and_sync(method_name: String, args) -> void: 
@@ -67,10 +67,10 @@ func _physics_process(delta):
 
 # updates vital player attributes on all clients
 func send_updates():
-	send_updated_attribute(str(player_id), "gravity2", gravity2)
-	send_updated_attribute(str(player_id), "velocity", velocity)
-	send_updated_attribute(str(player_id), "position", position)
-	send_updated_attribute(str(player_id), "rot_angle", rot_angle)
+	send_updated_attribute(name, "gravity2", gravity2)
+	server.update_position(name, position + (server.client_delta * (velocity.rotated(rot_angle + (PI / 2)) + Vector2(0,gravity2))))
+	send_updated_attribute(name, "velocity", velocity)
+	send_updated_attribute(name, "rot_angle", rot_angle)
 	
 	#emit_signal("attribute_updated", "gravity2", gravity2)
 	#emit_signal("attribute_updated", "velocity", velocity)

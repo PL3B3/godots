@@ -247,6 +247,7 @@ func add_a_player(id, type, team: int):
 		player_to_add.set_network_master(id)
 		
 		# camera follow
+		print("Our character created")
 		var camera = get_node("Camera2D")
 		#camera.make_current()
 		remove_child(camera)
@@ -274,6 +275,12 @@ func remove_other_player(id):
 ## Functions for syncing attributes (such as health, position, etc), objects, and actions
 ##
 
+# Smoothly interpolates a node's position to where it probably will be in the next 1/60th of a second
+func interpolate_node_position(node_name: String, projected_position: Vector2):
+	var node_to_update = get_node("/root/ChubbyServer/" + node_name)
+	# checks if node exists before attempting to change its properties
+	if is_instance_valid(node_to_update):
+		node_to_update.position += 0.1 * (projected_position - node_to_update.position)
 
 # Updates an attribute of a player or object through interpolation
 # The Node's path is relative to ChubbyServer
@@ -281,7 +288,7 @@ func update_node_attribute(node_name: String, attribute_name: String, updated_va
 	var node_to_update = get_node("/root/ChubbyServer/" + node_name)
 	# checks if node exists before attempting to change its properties
 	if is_instance_valid(node_to_update):
-		Interpolator.interpolate_property(node_to_update, attribute_name, node_to_update.get(attribute_name), updated_value, client_delta, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+		Interpolator.interpolate_property(node_to_update, attribute_name, node_to_update.get(attribute_name), updated_value, client_delta, Tween.TRANS_ELASTIC, Tween.EASE_IN_OUT)
 		Interpolator.start()
 
 # Immediately sets an attribute of a node
