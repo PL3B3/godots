@@ -37,7 +37,8 @@ func _ready():
 	
 
 func _per_second():
-	print(health as int)
+	#print(health as int)
+	pass
 
 ##
 ## Syncing functions top level

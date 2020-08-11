@@ -24,7 +24,6 @@ func mouse_ability_0(mouse_pos: Vector2, ability_uuid: String):
 
 func mouse_ability_1(mouse_pos: Vector2, ability_uuid: String):
 	var bullet = make_bullet(mouse_pos, ability_uuid, EffectBullet.instance())
-	bullet.expand()
 	bullet.inflict_slow = true
 	bullet.time_damage_factor = 0
 	bullet.speed = 600

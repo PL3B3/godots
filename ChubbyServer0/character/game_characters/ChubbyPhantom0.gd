@@ -2,7 +2,7 @@ extends "res://character/base_character/ChubbyPhantom.gd"
 
 var FiredProjectile = preload("res://game_objects/fired_projectiles/FiredProjectile.tscn")
 var clip = 4
-var big_bean_mode = false
+var big_bean_mode = true
 var regen_ticks = 5
 
 func _ready():
@@ -19,6 +19,10 @@ func make_bullet(mouse_pos: Vector2, ability_uuid: String) -> KinematicBody2D:
 	bullet_baby.add_collision_exception_with(self)
 	add_object(bullet_baby, ability_uuid)
 	bullet_baby.set_as_toplevel(true)
+	
+	if big_bean_mode:
+		bullet_baby.emit_signal("method_called", "expand", [])
+	
 	return bullet_baby
 
 func mouse_ability_0(mouse_pos: Vector2, ability_uuid: String):

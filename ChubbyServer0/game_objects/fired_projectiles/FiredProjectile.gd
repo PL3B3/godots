@@ -2,20 +2,22 @@ extends KinematicBody2D
 
 onready var parent = get_parent()
 signal attribute_updated(attribute_name, value)
+signal method_called(method_name, args)
 
-var damage = 10
-var speed = 435
+var damage = 12
+var speed = 400
 var velocity = Vector2()
 var timer = null
-var bullet_life = 6
-var time_damage_factor = 11
-var gravity = 4
+var bullet_life = 4
+var time_damage_factor = 9
+var gravity = 3
 var fired = false
 var inflict_slow = false
 var physics_processing = false
 
 func _ready():
 	self.connect("attribute_updated", get_node("/root/ChubbyServer"), "set_attribute", [parent.name + "/" + name])
+	self.connect("method_called", get_node("/root/ChubbyServer"), "call_node_method_universal", [parent.name + "/" + name])
 	set_collision_layer(parent.get_collision_layer())
 	# should not scan pickups
 	set_collision_mask(parent.get_collision_mask() - 128)
@@ -27,6 +29,10 @@ func on_timeout_complete():
 	# print("Removing self: " + name)
 	$bullet_timer.queue_free()
 	parent.call_and_sync("remove_object", [name])
+
+func expand():
+	$CollisionShape2D.set_scale(Vector2(2,2))
+	$Sprite.set_scale(2 * $Sprite.get_scale())
 
 func fire(center, radius, dir):
 	timer = Timer.new()
@@ -53,7 +59,7 @@ func _physics_process(delta):
 			velocity.y += gravity
 		if collision != null:
 			if collision.collider.has_method("hit"):
-				var time_damage_multiplier = 1 + time_damage_factor * ((bullet_life - timer.time_left) / bullet_life)
+				var time_damage_multiplier = 1 + time_damage_factor * pow(((bullet_life - timer.time_left) / bullet_life), 2)
 				collision.collider.emit_signal("method_called", "hit", [time_damage_multiplier * damage])
 				if inflict_slow:
 					collision.collider.emit_signal("attribute_updated", "speed_mult", 0.5)

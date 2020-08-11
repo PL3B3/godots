@@ -17,6 +17,6 @@ shape = SubResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="."]
 rotation = 1.5708
-scale = Vector2( 0.07, 0.07 )
+scale = Vector2( 0.068, 0.075 )
 texture = ExtResource( 2 )
-offset = Vector2( 20, 70 )
+offset = Vector2( 13, 75 )

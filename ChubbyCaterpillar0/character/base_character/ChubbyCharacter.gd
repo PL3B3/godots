@@ -139,7 +139,7 @@ func use_ability_and_notify_server_and_start_cooldown(ability_name, args):
 		# Puts ability on cooldown
 		if not client.offline:
 			ability_usable[ability_num] = false
-			add_and_return_timed_effect_body("notify_cooldown", [ability_name], cooldowns[ability_num])
+			#add_and_return_timed_effect_body("notify_cooldown", [ability_name], cooldowns[ability_num])
 	else: # it's a movement
 		callv(ability_name, args)
 		# use udp b/c movement isn't essential
