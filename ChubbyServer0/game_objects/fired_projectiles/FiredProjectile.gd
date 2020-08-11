@@ -3,12 +3,12 @@ extends KinematicBody2D
 onready var parent = get_parent()
 signal attribute_updated(attribute_name, value)
 
-var damage = 20
-var speed = 400
+var damage = 10
+var speed = 435
 var velocity = Vector2()
 var timer = null
 var bullet_life = 6
-var time_damage_factor = 5
+var time_damage_factor = 11
 var gravity = 4
 var fired = false
 var inflict_slow = false

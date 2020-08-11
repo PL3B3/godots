@@ -2,12 +2,15 @@ extends "res://character/base_character/ChubbyPhantom.gd"
 
 var FiredProjectile = preload("res://game_objects/fired_projectiles/FiredProjectile.tscn")
 var clip = 4
+var big_bean_mode = false
+var regen_ticks = 5
 
 func _ready():
 	health = 40
 	health_cap = 40
+	regen = 4
 	cooldowns[0] = 0.3
-	cooldowns[1] = 10
+	cooldowns[1] = 12
 
 # Creates, adds, and fires bullet, returning the bullet object
 func make_bullet(mouse_pos: Vector2, ability_uuid: String) -> KinematicBody2D:
@@ -25,7 +28,7 @@ func mouse_ability_0(mouse_pos: Vector2, ability_uuid: String):
 	# reduce clip
 	clip -= 1
 	if clip == 1:
-		cooldowns[0] = 15
+		cooldowns[0] = 10
 	if clip == 0:
 		clip = 3
 		cooldowns[0] = 0.3

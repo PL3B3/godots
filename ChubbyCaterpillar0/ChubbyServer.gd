@@ -51,6 +51,7 @@ signal player_spawned()
 func _ready():
 	$SelectionInput.connect("text_entered", self, "process_selection_input")
 
+"""
 func _process(delta):
 	#if self.has_node(str(client_id)):
 	#	$Camera2D.position += 0.08 * (get_node(str(client_id)).position - $Camera2D.position)
@@ -63,7 +64,7 @@ func _process(delta):
 		$Camera2D.position += Vector2(0,-10)
 	if Input.is_action_pressed("ui_down"):
 		$Camera2D.position += Vector2(0,10)
-	
+"""
 
 func process_selection_input(selection: String):
 	var split_selection = selection.split(",", false)

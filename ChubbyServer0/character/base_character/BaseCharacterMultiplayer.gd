@@ -11,7 +11,7 @@ var TimedEffect = preload("res://character/TimedEffect.tscn")
 ## general player stats
 ##
 
-var speed: float = 220
+var speed: float = 180
 var speed_mult: float = 1
 var health_cap : int = 200 # defines the basic "max health" of a character, but overheal and boosts can change this
 var health : int = 200
@@ -24,7 +24,7 @@ var timed_effects = []
 ##
 
 var gravity2 := 0 # downwards movement added per frame while airborne
-var gravity_mult = 300
+var gravity_mult = 200
 var velocity = Vector2(0,0)
 var rot_angle := -(PI / 2) # used to orient movement relative to ground angle
 var max_floor_angle = 0.9
@@ -257,7 +257,7 @@ func ascend():
 
 
 func up():
-	gravity2 = -gravity_mult
+	gravity2 = -1.4 * gravity_mult * speed_mult
 
 func down():
 	pass
