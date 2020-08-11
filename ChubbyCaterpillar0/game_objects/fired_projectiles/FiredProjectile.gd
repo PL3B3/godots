@@ -7,10 +7,11 @@ var damage = 20
 var speed = 400
 var velocity = Vector2()
 var timer = null
-var bullet_life = 8
-var time_damage_factor = 1
+var bullet_life = 6
+var time_damage_factor = 5
 var gravity = 4
 var fired = false
+var inflict_slow = false
 var physics_processing = false
 
 func _ready():

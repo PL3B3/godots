@@ -150,7 +150,7 @@ remote func parse_player_rpc(player_id, method_name, args) -> void:
 		if ability_num != null:
 			if !player_to_call.ability_usable[ability_num]: # ability isn't usable
 				# so end the function here, doing nothing
-				return		
+				return
 		
 		# if we reach this point, the method is either a movement or a legitimate ability call
 		
@@ -174,11 +174,15 @@ func update_position(node_name: String, projected_position: Vector2) -> void:
 func update_attribute(attribute_name: String, new_value, node_name: String) -> void:
 	send_server_rpc_to_all_players_unreliable("update_node_attribute", [node_name, attribute_name, new_value])
 
-func set_attribute(attribute_name: String, new_value, node_name: String) -> void:
-	send_server_rpc_to_all_players_unreliable("set_node_attribute", [node_name, attribute_name, new_value])
+# Used for setting attributes that aren't commonly updated, such as speed_mult or health
+# applies to node here on server and on all clients
+func set_node_attribute_universal(attribute_name: String, new_value, node_name: String) -> void:
+	get_node(node_name).set(attribute_name, new_value)
+	send_server_rpc_to_all_players("set_node_attribute", [node_name, attribute_name, new_value])
 
-# call a method on all this phantom's client instances
-func call_player_method_on_all_clients(method_name: String, args, node_name: String) -> void:
+# call a method on a node here and on all clients
+func call_node_method_universal(method_name: String, args, node_name: String) -> void:
+	get_node(node_name).callv(method_name, args)
 	send_server_rpc_to_all_players("call_node_method", [node_name, method_name, args])
 
 

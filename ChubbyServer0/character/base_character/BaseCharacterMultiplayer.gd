@@ -12,6 +12,7 @@ var TimedEffect = preload("res://character/TimedEffect.tscn")
 ##
 
 var speed: float = 220
+var speed_mult: float = 1
 var health_cap : int = 200 # defines the basic "max health" of a character, but overheal and boosts can change this
 var health : int = 200
 var regen: int = 0
@@ -53,6 +54,7 @@ var respawn_position = Vector2(1500, 0)
 # 4: key_ability_2
 var ability_usable = [true, true, true, true, true]
 var cooldowns = [1, 1, 1, 1, 1]
+var cooldown_timers = [null, null, null, null, null]
 # Used to convert between ability name and its index in the ability_usable array
 const ability_conversions = {
 	"mouse_ability_0" : 0,
@@ -87,6 +89,7 @@ func set_id(id):
 
 func set_stats_default():
 	health = health_cap
+	speed_mult = 1
 
 func set_stats(speed, health_cap, regen, xy, player_id):
 	self.speed = speed
@@ -209,7 +212,7 @@ func _physics_process(delta):
 			gravity2 = 10
 		else:
 			#rot_angle += 0.1 * ((-PI / 2) - rot_angle)
-			if gravity2 < 4 * speed:
+			if gravity2 < 4 * gravity_mult:
 				gravity2 += gravity_mult * delta
 
 func put_label(text):
@@ -263,14 +266,14 @@ func down():
 
 func right():
 	motion_decay_tracker = ticks_until_slowdown
-	if velocity.x < speed:
-		velocity.x += 0.15 * speed
+	if velocity.x < speed * speed_mult:
+		velocity.x += 0.15 * speed * speed_mult
 
 
 func left():
 	motion_decay_tracker = ticks_until_slowdown
-	if velocity.x > -speed:
-		velocity.x -= 0.15 * speed
+	if velocity.x > -speed * speed_mult:
+		velocity.x -= 0.15 * speed * speed_mult
 
 
 func mouse_ability_0(mouse_pos, ability_uuid):

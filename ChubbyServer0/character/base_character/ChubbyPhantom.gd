@@ -19,8 +19,25 @@ signal method_called(method_name, args)
 # for debugging
 # sets global position to 0,0
 func _ready():
-	self.connect("attribute_updated", server, "update_attribute", [name])
+	self.connect("attribute_updated", server, "set_node_attribute_universal", [name])
+	self.connect("method_called", server, "call_node_method_universal", [name])
 	print("This is the character base class on the server side")
+	for i in range(0, cooldowns.size()):
+		var timer = Timer.new()
+		timer.set_one_shot(true)
+		timer.connect("timeout", self, "emit_signal", ["method_called", "cooldown", [i]])
+		add_child(timer)
+		cooldown_timers[i] = timer
+	var ps_timer = Timer.new()
+	ps_timer.set_one_shot(false)
+	add_child(ps_timer)
+	ps_timer.start(1)
+	ps_timer.connect("timeout", self, "_per_second")
+	ps_timer.set_name("per_second_timer")
+	
+
+func _per_second():
+	print(health as int)
 
 ##
 ## Syncing functions top level
@@ -29,7 +46,7 @@ func _ready():
 # UNRELIABLE protocol
 # helper function for updating a node attribute (on clients) based on new server info
 func send_updated_attribute(node_name: String, attribute_name: String, new_value) -> void:
-	server.send_server_rpc_to_all_players_unreliable("set_node_attribute", [node_name, attribute_name, new_value])
+	server.send_server_rpc_to_all_players_unreliable("update_node_attribute", [node_name, attribute_name, new_value])
 
 # call a method on all this phantom's client instances
 func replicate_on_client(method_name: String, args) -> void:
@@ -56,7 +73,11 @@ func use_ability_and_start_cooldown(ability_name, args):
 		callv(ability_name, args)
 		# Puts ability on cooldown
 		ability_usable[ability_num] = false
-		add_and_return_timed_effect_exit("call_and_sync", ["cooldown", [ability_num]], cooldowns[ability_num])
+		#add_and_return_timed_effect_exit("call_and_sync", ["cooldown", [ability_num]], cooldowns[ability_num])
+		#add_and_return_timed_effect_exit("emit_signal", ["method_called", "cooldown", [ability_num]], cooldowns[ability_num])
+		#yield(get_tree().create_timer(cooldowns[ability_num]), "timeout")
+		#emit_signal("method_called", "cooldown", [ability_num])
+		cooldown_timers[ability_num].start(cooldowns[ability_num])
 	else:
 		# simply call the movement function
 		callv(ability_name, args)
@@ -78,13 +99,12 @@ func send_updates():
 	#emit_signal("attribute_updated", "rot_angle", rot_angle)
 
 func hit(dam):
+	print("hit called")
 	.hit(dam)
-	replicate_on_client("hit", [dam])
-	emit_signal("attribute_updated", "health", health)
+	#emit_signal("attribute_updated", "health", health)
 	if not health > 0:
 		# die
-		call_and_sync("die", [])
+		emit_signal("method_called", "die", [])
 		# start respawn timer
 		yield(get_tree().create_timer(5.0), "timeout")
-		call_and_sync("respawn", [])
-		#add_and_return_timed_effect_exit("call_and_sync", ["respawn", []], 5)
+		emit_signal("method_called", "respawn", [])

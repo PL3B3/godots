@@ -1,18 +1,21 @@
 extends KinematicBody2D
 
 onready var parent = get_parent()
+signal attribute_updated(attribute_name, value)
 
 var damage = 20
 var speed = 400
 var velocity = Vector2()
 var timer = null
-var bullet_life = 8
-var time_damage_factor = 1
+var bullet_life = 6
+var time_damage_factor = 5
 var gravity = 4
 var fired = false
+var inflict_slow = false
 var physics_processing = false
 
 func _ready():
+	self.connect("attribute_updated", get_node("/root/ChubbyServer"), "set_attribute", [parent.name + "/" + name])
 	set_collision_layer(parent.get_collision_layer())
 	# should not scan pickups
 	set_collision_mask(parent.get_collision_mask() - 128)
@@ -51,6 +54,10 @@ func _physics_process(delta):
 		if collision != null:
 			if collision.collider.has_method("hit"):
 				var time_damage_multiplier = 1 + time_damage_factor * ((bullet_life - timer.time_left) / bullet_life)
-				collision.collider.hit(time_damage_multiplier * damage)
+				collision.collider.emit_signal("method_called", "hit", [time_damage_multiplier * damage])
+				if inflict_slow:
+					collision.collider.emit_signal("attribute_updated", "speed_mult", 0.5)
+					collision.collider.add_and_return_timed_effect_exit("emit_signal", ["attribute_updated", "speed_mult", 1], 6)
+				#collision.collider.hit(time_damage_multiplier * damage)
 			# remove self from player's object dictionary
 			on_timeout_complete()

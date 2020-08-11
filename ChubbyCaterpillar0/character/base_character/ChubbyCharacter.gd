@@ -20,6 +20,17 @@ func _ready():
 	print("This is the character base class. Prepare muffin.")
 	character_under_my_control = is_network_master()
 	print(Vector2(0,0).angle())
+	
+	var timer = Timer.new()
+	timer.set_one_shot(false)
+	add_child(timer)
+	timer.start(1)
+	timer.connect("timeout", self, "_per_second")
+	timer.set_name("per_second_timer")
+	
+
+func _per_second():
+	pass
 
 func _unhandled_input(event):
 	# Detect up/down/left/right keystate and only move when pressed.
