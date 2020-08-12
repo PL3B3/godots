@@ -75,5 +75,3 @@ func key_ability_2(ability_uuid: String):
 				(player.get_node("CollisionShape2D").get_shape().get_radius() + $CollisionShape2D.get_shape().get_radius()), 0, explosion_radius)
 			if distance < explosion_radius:
 				player.emit_signal("method_called", "hit", [explosion_max_damage * pow(1 - (distance / explosion_radius), 2)])
-
-	#explosion.queue_free()

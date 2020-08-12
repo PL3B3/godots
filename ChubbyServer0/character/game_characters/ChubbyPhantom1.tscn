@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://assets/character_pixart/Squeegee_0.png" type="Texture" id=1]
+[ext_resource path="res://character/base_character/ChubbyPhantom.tscn" type="PackedScene" id=2]
+[ext_resource path="res://character/game_characters/ChubbyPhantom1.gd" type="Script" id=3]
+
+[node name="ChubbyPhantom" instance=ExtResource( 2 )]
+script = ExtResource( 3 )
+
+[node name="Sprite" parent="." index="1"]
+position = Vector2( 0, 0 )
+scale = Vector2( 1, 1 )
+texture = ExtResource( 1 )
+offset = Vector2( 0, 0 )
