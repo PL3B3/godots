@@ -19,12 +19,14 @@ func _ready():
 	# should not scan pickups
 	set_collision_mask(parent.get_collision_mask() - 128)
 	$Sprite.modulate = parent.team_colors[parent.team]
+	"""
 	timer = Timer.new()
 	timer.set_one_shot(true)
 	timer.connect("timeout", self, "on_timeout_complete")
 	timer.set_name("bullet_timer")
 	add_child(timer)
 	timer.start(bullet_life)
+	"""
 	physics_processing = true
 
 func on_timeout_complete():
@@ -55,7 +57,7 @@ func _physics_process(delta):
 		if fired:
 			velocity.y += gravity
 		if collision != null:
-			print(damage * (1 + time_damage_factor * pow(((bullet_life - timer.time_left) / bullet_life), 2)))
+			#print(damage * (1 + time_damage_factor * pow(((bullet_life - timer.time_left) / bullet_life), 2)))
 			# Removal is fine if you're offline, for performance
 			if get_node("/root/ChubbyServer").offline:
 				parent.remove_object(name)

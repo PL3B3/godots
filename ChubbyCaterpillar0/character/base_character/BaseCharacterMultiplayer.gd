@@ -106,6 +106,8 @@ func set_team(team_num: int):
 	elif team_num > 5:
 		team_num = 5
 	
+	team = team_num
+	
 	set_collision_layer_bit(team_num, true)
 	
 	for t in range(0,6):
