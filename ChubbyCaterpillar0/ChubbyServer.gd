@@ -19,7 +19,7 @@ onready var Interpolator = get_node("Interpolator")
 var uuid_generator = preload("res://server_resources/uuid_generator.tscn")
 var ChubbyCharacter = preload("res://character/base_character/ChubbyCharacter.tscn")
 var ChubbyCharacter0 = preload("res://character/game_characters/ChubbyCharacter0.tscn")
-var ChubbyCharacter1 = preload("res://character/experimental_character/ChubbyCharacter_experimental_0.tscn")
+var ChubbyCharacter1 = preload("res://character/game_characters/ChubbyCharacter1.tscn")
 var map = preload("res://maps/Map0.tscn")
 var map2 = preload("res://maps/Map2.tscn")
 var TimeQueue = preload("res://character/base_character/TimeQueue.tscn")
@@ -70,7 +70,11 @@ func process_selection_input(selection: String):
 	var split_selection = selection.split(",", false)
 	offline = bool(int(split_selection[0]))
 	my_team = int(split_selection[1])
-	server_ip = split_selection[2]
+	if split_selection[2] == "0":
+		my_type = "pubert"
+	else:
+		my_type = "squeegee"
+	server_ip = split_selection[3]
 	if offline:
 		start_game_offline()
 	else:
@@ -234,6 +238,8 @@ func add_a_player(id, type, team: int):
 			player_to_add = ChubbyCharacter.instance()
 		"pubert":
 			player_to_add = ChubbyCharacter0.instance()
+		"squeegee":
+			player_to_add = ChubbyCharacter1.instance()
 		_:
 			player_to_add = ChubbyCharacter.instance()
 	

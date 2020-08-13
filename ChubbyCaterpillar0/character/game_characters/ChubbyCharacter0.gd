@@ -48,3 +48,7 @@ func mouse_ability_1(mouse_pos: Vector2, ability_uuid: String):
 func key_ability_0(ability_uuid: String):
 	# pre-emptively makes abilities unusable (in case server sync doesn't come through in time)
 	ability_usable = [false, false, false, false, false]
+	
+func key_ability_1(ability_uuid: String):
+	if client.offline:
+		big_bean_mode = !big_bean_mode

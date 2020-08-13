@@ -15,6 +15,8 @@ var speed: float = 180
 var speed_mult: float = 1
 var health_cap : int = 200 # defines the basic "max health" of a character, but overheal and boosts can change this
 var health : int = 200
+var vulnerability = 1
+var vulnerability_default = 1
 var regen: int = 0
 var is_alive := true
 var timed_effects = []
@@ -90,6 +92,7 @@ func set_id(id):
 func set_stats_default():
 	health = health_cap
 	speed_mult = 1
+	vulnerability = vulnerability_default
 
 func set_stats(speed, health_cap, regen, xy, player_id):
 	self.speed = speed
@@ -229,7 +232,7 @@ func cooldown(ability_num):
 
 # ESSENTIAL
 func hit(dam):
-	health -= dam as int
+	health -= dam * vulnerability as int
 
 func die():
 	is_alive = false

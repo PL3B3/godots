@@ -102,7 +102,7 @@ func send_updates():
 func hit(dam):
 	print("hit called")
 	.hit(dam)
-	#emit_signal("attribute_updated", "health", health)
+	#emit_signal("attribute_updated", "health", health - (dam as int))
 	if not health > 0:
 		# die
 		emit_signal("method_called", "die", [])

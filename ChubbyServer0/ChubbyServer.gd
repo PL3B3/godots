@@ -24,6 +24,7 @@ const ability_conversions = {
 var uuid_generator = preload("res://server_resources/uuid_generator.tscn")
 var ChubbyPhantom = preload("res://character/base_character/ChubbyPhantom.tscn")
 var ChubbyPhantom0 = preload("res://character/game_characters/ChubbyPhantom0.tscn")
+var ChubbyPhantom1 = preload("res://character/game_characters/ChubbyPhantom1.tscn")
 var map = preload("res://maps/Map0.tscn")
 var map2 = preload("res://maps/Map2.tscn")
 
@@ -204,6 +205,9 @@ remote func add_player(type, team):
 		"pubert":
 			player_phantom = ChubbyPhantom0.instance()
 			player_phantom.type = "pubert"
+		"squeegee":
+			player_phantom = ChubbyPhantom1.instance()
+			player_phantom.type = "squeegee"
 		_:
 			print("creating other character")
 			player_phantom = ChubbyPhantom.instance()

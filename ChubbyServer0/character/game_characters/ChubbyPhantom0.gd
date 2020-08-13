@@ -16,6 +16,7 @@ func _ready():
 	cooldowns[1] = 12
 	cooldowns[2] = 26
 	cooldowns[3] = 16
+	cooldowns[4] = 60
 
 func _per_second():
 	if health < 60 and regen_ticks > 0:
@@ -41,7 +42,7 @@ func mouse_ability_0(mouse_pos: Vector2, ability_uuid: String):
 	# reduce clip
 	clip -= 1
 	if clip == 1:
-		cooldowns[0] = 10
+		cooldowns[0] = 8
 	if clip == 0:
 		clip = 3
 		cooldowns[0] = 0.3
@@ -63,7 +64,7 @@ func key_ability_0(ability_uuid: String):
 
 func key_ability_1(ability_uuid: String):
 	emit_signal("attribute_updated", "big_bean_mode", true)
-	add_and_return_timed_effect_exit("emit_signal", ["attribute_updated", "big_bean_mode", false], 4)
+	add_and_return_timed_effect_exit("emit_signal", ["attribute_updated", "big_bean_mode", false], 8)
 
 func key_ability_2(ability_uuid: String):
 	print("BOOM!")
@@ -75,3 +76,4 @@ func key_ability_2(ability_uuid: String):
 				(player.get_node("CollisionShape2D").get_shape().get_radius() + $CollisionShape2D.get_shape().get_radius()), 0, explosion_radius)
 			if distance < explosion_radius:
 				player.emit_signal("method_called", "hit", [explosion_max_damage * pow(1 - (distance / explosion_radius), 2)])
+	emit_signal("method_called", "hit", [30])

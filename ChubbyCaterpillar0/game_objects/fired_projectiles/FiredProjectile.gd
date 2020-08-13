@@ -15,9 +15,7 @@ var inflict_slow = false
 var physics_processing = false
 
 func _ready():
-	set_collision_layer(parent.get_collision_layer())
 	# should not scan pickups
-	set_collision_mask(parent.get_collision_mask() - 128)
 	$Sprite.modulate = parent.team_colors[parent.team]
 	"""
 	timer = Timer.new()
@@ -39,11 +37,17 @@ func fire(center, radius, dir):
 	position = center + Vector2(radius, 0.0).rotated(dir)
 	velocity = Vector2(speed, 0).rotated(dir)
 	fired = true
+	
+	var noclip_time = (32.0 / speed) * (1 + 0.6 * int(parent.big_bean_mode))
+	#print(str(noclip_time))
+	yield(get_tree().create_timer(noclip_time), "timeout")
+	set_collision_layer(parent.get_collision_layer())
+	set_collision_mask(parent.get_collision_mask() - 128)
 	#print("center at %s, position at %s, velocity is %s" % [center, position, velocity])
 
 func expand():
-	$CollisionShape2D.set_scale(Vector2(2,2))
-	$Sprite.set_scale(2 * $Sprite.get_scale())
+	$CollisionShape2D.set_scale(Vector2(3,3))
+	$Sprite.set_scale(3 * $Sprite.get_scale())
 
 func _physics_process(delta):
 	if physics_processing:

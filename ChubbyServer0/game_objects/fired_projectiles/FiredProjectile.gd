@@ -4,7 +4,7 @@ onready var parent = get_parent()
 signal attribute_updated(attribute_name, value)
 signal method_called(method_name, args)
 
-var damage = 12
+var damage = 15
 var speed = 400
 var velocity = Vector2()
 var timer = null
@@ -18,9 +18,7 @@ var physics_processing = false
 func _ready():
 	self.connect("attribute_updated", get_node("/root/ChubbyServer"), "set_attribute", [parent.name + "/" + name])
 	self.connect("method_called", get_node("/root/ChubbyServer"), "call_node_method_universal", [parent.name + "/" + name])
-	set_collision_layer(parent.get_collision_layer())
 	# should not scan pickups
-	set_collision_mask(parent.get_collision_mask() - 128)
 	$Sprite.modulate = parent.team_colors[parent.team]
 	physics_processing = true
 
@@ -31,8 +29,8 @@ func on_timeout_complete():
 	parent.call_and_sync("remove_object", [name])
 
 func expand():
-	$CollisionShape2D.set_scale(Vector2(2,2))
-	$Sprite.set_scale(2 * $Sprite.get_scale())
+	$CollisionShape2D.set_scale(Vector2(3,3))
+	$Sprite.set_scale(3 * $Sprite.get_scale())
 
 func fire(center, radius, dir):
 	timer = Timer.new()
@@ -45,6 +43,14 @@ func fire(center, radius, dir):
 	position = center + Vector2(radius, 0.0).rotated(dir)
 	velocity = Vector2(speed, 0).rotated(dir)
 	fired = true
+	
+	var noclip_time = (32.0 / speed) * (1 + 0.6 * int(parent.big_bean_mode))
+	#print(str(noclip_time))
+	yield(get_tree().create_timer(noclip_time), "timeout")
+	set_collision_layer(parent.get_collision_layer())
+	print(get_collision_layer())
+	set_collision_mask(parent.get_collision_mask() - 128)
+	print(get_collision_mask())
 
 func _physics_process(delta):
 	if physics_processing:
@@ -58,8 +64,9 @@ func _physics_process(delta):
 		if fired:
 			velocity.y += gravity
 		if collision != null:
+			print(str((1 + time_damage_factor * ((bullet_life - timer.time_left) / bullet_life)) * damage))
 			if collision.collider.has_method("hit"):
-				var time_damage_multiplier = 1 + time_damage_factor * pow(((bullet_life - timer.time_left) / bullet_life), 2)
+				var time_damage_multiplier = 1 + time_damage_factor * ((bullet_life - timer.time_left) / bullet_life)
 				collision.collider.emit_signal("method_called", "hit", [time_damage_multiplier * damage])
 				if inflict_slow:
 					collision.collider.emit_signal("attribute_updated", "speed_mult", 0.5)
