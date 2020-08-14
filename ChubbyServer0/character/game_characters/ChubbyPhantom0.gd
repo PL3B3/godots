@@ -65,6 +65,8 @@ func key_ability_0(ability_uuid: String):
 func key_ability_1(ability_uuid: String):
 	emit_signal("attribute_updated", "big_bean_mode", true)
 	add_and_return_timed_effect_exit("emit_signal", ["attribute_updated", "big_bean_mode", false], 8)
+	#emit_signal("method_called", "add_and_return_timed_effect_exit", ["set", ["big_bean_mode", false], 8])
+	#emit_signal("method_called", "add_and_return_timed_effect_exit", ["emit_signal", ["attribute_updated", "big_bean_mode", false], 8])
 
 func key_ability_2(ability_uuid: String):
 	print("BOOM!")

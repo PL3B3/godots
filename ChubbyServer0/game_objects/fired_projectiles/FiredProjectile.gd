@@ -70,7 +70,9 @@ func _physics_process(delta):
 				collision.collider.emit_signal("method_called", "hit", [time_damage_multiplier * damage])
 				if inflict_slow:
 					collision.collider.emit_signal("attribute_updated", "speed_mult", 0.5)
-					collision.collider.add_and_return_timed_effect_exit("emit_signal", ["attribute_updated", "speed_mult", 1], 6)
+					#collision.collider.add_and_return_timed_effect_exit("emit_signal", ["attribute_updated", "speed_mult", 1], 6)
+					collision.collider.emit_signal("method_called", "add_and_return_timed_effect_exit", \
+						["emit_signal", ["attribute_updated", "speed_mult", 1], 6])
 				#collision.collider.hit(time_damage_multiplier * damage)
 			# remove self from player's object dictionary
 			on_timeout_complete()

@@ -28,6 +28,13 @@ Both
 			-excludes original client b/c they already called method
 			-ability call
 			-movement
+	-How linking works (squeegee)
+		-direct signal connection takes care of hit, applying slow, death, etc..
+		-but it won't handle de-applying slow, or timedeffects in general
+		-solution: method sync on serverside also replicates adding timedeffects...
+		-two types of effects
+			-agnostic timedeffects are those which affect an attribute every character has, such as speed_mult.
+			-
 	-If player calls an ability that hasn't cooled down yet, how does the game respond?
 		-what we can assume: cooldown timer is done on client side
 		-Server defers that ability call by COOLDOWN_MARGIN seconds. Around 0.05 seconds or so, just about the max ping variation you expect, since the difference between the two timers is 

@@ -12,9 +12,11 @@ extends "res://character/base_character/BaseCharacterMultiplayer.gd"
 
 onready var server = get_parent()
 
-# Sync signal
-signal attribute_updated(attribute_name, value)
-signal method_called(method_name, args)
+##
+## These are the attributes/methods shared between players that are linked to the squeegee
+##
+var attributes_to_replicate = ["speed_mult", "vulnerability"]
+var methods_to_replicate = ["hit", "die", "add_and_return_timed_effect_exit", "add_and_return_timed_effect_body", "add_and_return_timed_effect_full"]
 
 # for debugging
 # sets global position to 0,0
@@ -54,7 +56,7 @@ func replicate_on_client(method_name: String, args) -> void:
 	server.send_server_rpc_to_all_players("call_node_method", [name, method_name, args])
 
 # calls a method on this phantom and all its client instances
-func call_and_sync(method_name: String, args) -> void: 
+func call_and_sync(method_name: String, args) -> void:
 	callv(method_name, args)
 	replicate_on_client(method_name, args)
 
@@ -109,3 +111,14 @@ func hit(dam):
 		# start respawn timer
 		yield(get_tree().create_timer(5.0), "timeout")
 		emit_signal("method_called", "respawn", [])
+
+##
+## Used to replicate some effects between squeegees and their link targets
+##
+func replicate_attribute_updated(attribute_name: String, new_value, node_name: String):
+	if attributes_to_replicate.has(attribute_name):
+		server.set_node_attribute_universal(attribute_name, new_value, node_name)
+
+func replicate_method_called(method_name: String, args, node_name: String):
+	if methods_to_replicate.has(method_name):
+		server.call_node_method_universal(method_name, args, node_name)

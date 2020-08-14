@@ -44,6 +44,14 @@ var ticks_until_slowdown = 10 # How many physics ticks to wait before becoming s
 var death_room_position = Vector2(0, 500) # where players go when dead
 var respawn_position = Vector2(1500, 0)
 
+
+##
+## Change-tracking signals
+##
+
+signal attribute_updated(attribute_name, value)
+signal method_called(method_name, args)
+
 ##
 ## tracks if an ability is on cooldown
 ##
@@ -256,6 +264,7 @@ func respawn():
 	position = respawn_position
 	ability_usable = [true, true, true, true, true]
 	is_alive = true
+
 
 func ascend():
 	print("ascending")
