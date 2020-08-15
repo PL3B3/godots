@@ -88,7 +88,7 @@ func _unhandled_key_input(event):
 			if not offline:
 				print(str(client_net.get_connection_status()))
 			elif client_net != null && client_net.get_connection_status() != 1: # client_net exists and isn't attempting connection
-				start_client()
+				reconnect()
 
 func start_game_multiplayer():
 	client_net = NetworkedMultiplayerENet.new()
@@ -159,6 +159,15 @@ func tilemap_to_tex(tmap: TileMap) -> Texture:
 	return tex
 
 func start_client():
+	# Start connection
+	client_net.create_client(server_ip, DEFAULT_PORT)
+	# Set client as our network peer
+	get_tree().set_network_peer(client_net)
+	client_id = get_tree().get_network_unique_id()
+	print(client_id)
+	print("client created")
+
+func reconnect():
 	# Close and retry connection
 	client_net.close_connection()
 	client_net.create_client(server_ip, DEFAULT_PORT)
@@ -166,18 +175,27 @@ func start_client():
 	# See https://github.com/godotengine/godot/issues/34676
 	get_tree().set_network_peer(null)
 	get_tree().set_network_peer(client_net)
-	if client_id != 0: # If this is a reconnection attempt
-		# Renames player with new client name and updates players dictionary
-		var our_player = players[client_id]
-		players.erase(client_id)
-		client_id = get_tree().get_network_unique_id()
-		our_player.set_name(str(client_id))
-		our_player.set_id(client_id)
-		players[client_id] = our_player
-	else: # This is a first time connection
-		client_id = get_tree().get_network_unique_id()
-	print(client_id)
-	print("client created")
+	
+	# Save old client id
+	var old_client_id = client_id
+	# Update client_id
+	client_id = get_tree().get_network_unique_id()
+	# Find our player with old client_id
+	var our_player = players[old_client_id]
+	# Update our player's name and id
+	our_player.set_name(str(client_id))
+	our_player.set_id(client_id)
+	
+	# Remove all but our player from the players dictionary 
+	for id in players:
+		if id != old_client_id:
+			players[id].queue_free()
+	
+	# Clear the players dictionary
+	players = {}
+	
+	# Re-add our player to the players dictionary
+	players[client_id] = our_player
 
 # executes the client function specified by the server
 # @param server_cmd - client function to call 
@@ -222,8 +240,7 @@ func send_player_rpc(id, command, args):
 func send_player_rpc_unreliable(id, command, args):
 	# prevents cheating by faking commands from other players
 	if id == client_id:
-		rpc_unreliable_id(1, "parse_player_rpc", id, command, args) 
-
+		rpc_unreliable_id(1, "parse_player_rpc", id, command, args)
 
 
 # adds a character to the local (client) scenetree
@@ -232,7 +249,7 @@ func send_player_rpc_unreliable(id, command, args):
 # bool: mine whether or not this is our player
 func add_a_player(id, type, team: int):
 	var player_to_add
-
+	
 	match type:
 		"base":
 			player_to_add = ChubbyCharacter.instance()
@@ -264,6 +281,7 @@ func add_a_player(id, type, team: int):
 	
 	# adds player node
 	get_node("/root/ChubbyServer").add_child(player_to_add)
+	
 	players[id] = player_to_add
 
 func remove_other_player(id):
@@ -288,6 +306,19 @@ func interpolate_node_position(node_name: String, projected_position: Vector2):
 	# checks if node exists before attempting to change its properties
 	if is_instance_valid(node_to_update):
 		node_to_update.position += 0.1 * (projected_position - node_to_update.position)
+
+var position_jump_limit = 60
+func interpolate_player_position(player_id: int, projected_position: Vector2):
+	var node_to_update = players[player_id]
+	# checks if node exists before attempting to change its properties
+	if is_instance_valid(node_to_update):
+		# Calculate distance between client and server position
+		if(node_to_update.position.distance_to(projected_position) > position_jump_limit):
+			# jump to server position if we're too far
+			node_to_update.position = projected_position
+		else:
+			# Interpolate if we're pretty close
+			node_to_update.position += 0.1 * (projected_position - node_to_update.position)
 
 # Updates an attribute of a player or object through interpolation
 # The Node's path is relative to ChubbyServer

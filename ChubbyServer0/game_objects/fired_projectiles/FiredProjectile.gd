@@ -25,7 +25,6 @@ func _ready():
 func on_timeout_complete():
 	# remove self from player's object dictionary
 	# print("Removing self: " + name)
-	$bullet_timer.queue_free()
 	parent.call_and_sync("remove_object", [name])
 
 func expand():
@@ -52,14 +51,20 @@ func fire(center, radius, dir):
 	set_collision_mask(parent.get_collision_mask() - 128)
 	print(get_collision_mask())
 
+var counter = 0
 func _physics_process(delta):
 	if physics_processing:
 		var collision = move_and_collide(velocity * delta)
 		
-		# updates object on client side
-		parent.server.update_position(parent.name + "/" + name, get_global_position() + (velocity * delta))
-		#parent.send_updated_attribute(parent.name + "/" + name, "position", get_global_position())
-		parent.send_updated_attribute(parent.name + "/" + name, "velocity", velocity)
+		# every half second
+		if counter == 45:
+			# updates object on client side
+			parent.server.update_position(parent.name + "/" + name, get_global_position() + (velocity * delta))
+			#parent.send_updated_attribute(parent.name + "/" + name, "position", get_global_position())
+			parent.send_updated_attribute(parent.name + "/" + name, "velocity", velocity)
+			counter = 0
+		
+		counter += 1
 		
 		if fired:
 			velocity.y += gravity

@@ -89,17 +89,50 @@ func _physics_process(delta):
 	if is_alive:
 		send_updates()
 
+var counter : int = 0
+var last_position : Vector2
+var last_gravity2 : float
+var last_velocity : Vector2
+var last_rot_angle : float
+var position_update_delta_limit = 1
+var gravity2_update_delta_limit = 1
+var velocity_update_delta_limit = 3
+var rot_angle_update_delta_limit = 0.01
 # updates vital player attributes on all clients
 func send_updates():
-	send_updated_attribute(name, "gravity2", gravity2)
-	server.update_position(name, position + (server.client_delta * (velocity.rotated(rot_angle + (PI / 2)) + Vector2(0,gravity2))))
-	send_updated_attribute(name, "velocity", velocity)
-	send_updated_attribute(name, "rot_angle", rot_angle)
-	
+	# 30 times a second
+	if counter % 3 == 0:
+		#send_updated_attribute(name, "gravity2", gravity2)
+		#send_updated_attribute(name, "velocity", velocity)
+		#send_updated_attribute(name, "rot_angle", rot_angle)
+		if position.distance_to(last_position) > position_update_delta_limit:
+			server.update_player_position(player_id, position + (server.client_delta * (velocity.rotated(rot_angle + (PI / 2)) + Vector2(0,gravity2))))
+	# 6 times a second
+	if counter % 15 == 0:
+		# sync gravity, rot angle, and velocity to client if they've changed substantially in the last 6th of a second
+		if abs(gravity2 - last_gravity2) > gravity2_update_delta_limit:
+			print("grav2 changed from: " + str(last_gravity2) + " to " + str(gravity2))
+			send_updated_attribute(name, "gravity2", gravity2)
+		if velocity.distance_to(last_velocity) > velocity_update_delta_limit:
+			print("velocity changed from: " + str(last_velocity) + " to " + str(velocity))
+			send_updated_attribute(name, "velocity", velocity)
+		if abs(rot_angle - last_rot_angle) > rot_angle_update_delta_limit and abs(rot_angle - last_rot_angle) < (2 * PI - rot_angle_update_delta_limit):
+			print("rot_angle changed from: " + str(last_rot_angle) + " to " + str(rot_angle))
+			send_updated_attribute(name, "rot_angle", rot_angle)
+		
+		# update attribute trackers
+		last_position = position
+		last_gravity2 = gravity2
+		last_velocity = velocity
+		last_rot_angle = rot_angle
+		
+		
+		counter = 0
 	#emit_signal("attribute_updated", "gravity2", gravity2)
 	#emit_signal("attribute_updated", "velocity", velocity)
 	#emit_signal("attribute_updated", "position", position)
 	#emit_signal("attribute_updated", "rot_angle", rot_angle)
+	counter += 1
 
 func hit(dam):
 	print("hit called")

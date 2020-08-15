@@ -33,8 +33,8 @@ Both
 		-but it won't handle de-applying slow, or timedeffects in general
 		-solution: method sync on serverside also replicates adding timedeffects...
 		-two types of effects
-			-agnostic timedeffects are those which affect an attribute every character has, such as speed_mult.
-			-
+			-agnostic timedeffects are those which affect an attribute every character has, such as speed_mult. These timedeffects should be copied by link target, and are thus called by an "emit...method called"
+			-non-agnostic timedeffects are specific to one character, such as pubert resetting big bean mode. These are added with add_timed_effect functions or delinking functions and are not synced with client because a. client shouldn't have timedeffects dragging performance, b. not vital for UI b/c no way for client to know which timedeffect measures which reset timer, c. 
 	-If player calls an ability that hasn't cooled down yet, how does the game respond?
 		-what we can assume: cooldown timer is done on client side
 		-Server defers that ability call by COOLDOWN_MARGIN seconds. Around 0.05 seconds or so, just about the max ping variation you expect, since the difference between the two timers is 

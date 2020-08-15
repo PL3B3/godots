@@ -119,8 +119,11 @@ func set_team(team_num: int):
 	
 	team = team_num
 	
-	set_collision_layer_bit(team_num, true)
+	# Set collision layer to team_num only
+	for l in range(0,6):
+		set_collision_layer_bit(l, l == team_num)
 	
+	# Set mask to include all but our team
 	for t in range(0,6):
 		set_collision_mask_bit(t, t != team_num)
 	
@@ -149,7 +152,6 @@ func add_object(object, uuid):
 # function to remove an object
 func remove_object(uuid: String) -> void:
 	var object_to_remove = get_node(uuid)
-
 	# check if object exists
 	if is_instance_valid(object_to_remove):
 		objects[uuid].queue_free()

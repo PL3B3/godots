@@ -172,6 +172,10 @@ func call_player_method_on_client(client_id, player_id: int, method_name: String
 func update_position(node_name: String, projected_position: Vector2) -> void:
 	send_server_rpc_to_all_players_unreliable("interpolate_node_position", [node_name, projected_position])
 
+# Updates position of a player on all clients
+func update_player_position(player_id: int, projected_position: Vector2) -> void:
+	send_server_rpc_to_all_players_unreliable("interpolate_player_position", [player_id, projected_position])
+
 func update_attribute(attribute_name: String, new_value, node_name: String) -> void:
 	send_server_rpc_to_all_players_unreliable("update_node_attribute", [node_name, attribute_name, new_value])
 
