@@ -18,6 +18,10 @@ onready var server = get_parent()
 var attributes_to_replicate = ["speed_mult", "vulnerability"]
 var methods_to_replicate = ["hit", "die", "add_and_return_timed_effect_exit", "add_and_return_timed_effect_body", "add_and_return_timed_effect_full"]
 
+# Dictionary of clients who we should transmit our updates to
+# int (id), bool: yes or no sync
+var clients_to_sync_with = {}
+
 # for debugging
 # sets global position to 0,0
 func _ready():

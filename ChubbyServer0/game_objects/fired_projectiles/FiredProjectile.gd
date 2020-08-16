@@ -4,6 +4,10 @@ onready var parent = get_parent()
 signal attribute_updated(attribute_name, value)
 signal method_called(method_name, args)
 
+# Dictionary of clients who we should transmit our updates to
+# int (id), bool: yes or no sync
+var clients_to_sync_with = {}
+
 var damage = 15
 var speed = 400
 var velocity = Vector2()

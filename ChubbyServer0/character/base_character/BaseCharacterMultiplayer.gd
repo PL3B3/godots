@@ -86,7 +86,7 @@ var team_colors = [Color(0,0.7,1), Color(1,1,0.1), Color(1,0.1,0.3), Color(0.9,0
 var objects = {}
 
 func _ready():
-	position = Vector2(1000, 0)
+	position = respawn_position
 	# sets masks to check fauna, pickups, and environment
 	for b in range(6, 9):
 		set_collision_mask_bit(b, true)

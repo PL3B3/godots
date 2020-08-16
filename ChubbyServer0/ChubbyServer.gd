@@ -124,6 +124,16 @@ func send_server_rpc_to_one_player(player_id, server_cmd, args):
 # udp (unreliable) equivalent to above
 func send_server_rpc_to_one_player_unreliable(player_id, server_cmd, args):
 	rpc_unreliable_id(player_id, "parse_server_rpc", server_cmd, args)
+	
+func send_server_rpc_to_specified_players(sync_dict, server_cmd, args):
+	for id in sync_dict:
+		if sync_dict[id]:
+			send_server_rpc_to_one_player(id, server_cmd, args)
+	
+func send_server_rpc_to_specified_players_unreliable(sync_dict, server_cmd, args):
+	for id in sync_dict:
+		if sync_dict[id]:
+			send_server_rpc_to_one_player_unreliable(id, server_cmd, args)
 
 ##
 ## the following 3 functions handle all direct calls from the client
@@ -224,11 +234,21 @@ remote func add_player(type, team):
 	player_phantom.team = team
 	player_phantom.set_team(team)
 
+	# new player should sync with every other existing player who is within range (800) of their spawn position
+	# old players should sync with new player if they're within range
+	for other_player in players.values():
+		var should_sync = other_player.position.distance_to(player_phantom.respawn_position) < 800
+		player_phantom.clients_to_sync_with[other_player.id] = should_sync
+		other_player.clients_to_sync_with[id] = should_sync
+
 	# add player to the dictionary containing all player representations
 	players[id] = player_phantom
+	
 
 	# add player to scene tree, specifically ChubbyServer. MUST BE SAME SCENE STRUCTURE AS CLIENT. ADD ALL CLIENT PLAYERS TO root/chubbyserver TOO
 	get_node("/root/ChubbyServer").add_child(player_phantom)
+
+
 	
 	# @d
 	print("These are the children ", get_children())
