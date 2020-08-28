@@ -11,8 +11,10 @@ var TimedEffect = preload("res://character/TimedEffect.tscn")
 ## general player stats
 ##
 
-var speed: float = 120
+var speed: float = 90
 var speed_mult: float = 1
+var jump_factor = 1
+var fall_factor = 0.1
 var health_cap : int = 200 # defines the basic "max health" of a character, but overheal and boosts can change this
 var health : int = 200
 var vulnerability = 1
@@ -36,7 +38,7 @@ var friction_cliff = 0.8 # Proportion of speed below which velocity falls off dr
 var friction_ratio_cliff = 0.91 # Velocity bleedoff after cliff is reached
 var motion_decay_tracker = 0 # Tracks if player has recently pressed movement keys (positive) or not (negative)
 var ticks_until_slowdown = 10 # How many physics ticks to wait before becoming still
-var wall_climb_factor = 1 # The higher this is, the more a player is able to wall climb
+var wall_climb_factor = 2 # The higher this is, the more a player is able to wall climb
 var wall_climb_bank = 0
 
 ##
@@ -256,7 +258,7 @@ func _physics_process(delta):
 				print(velocity.y)
 				if is_on_floor():
 					velocity.y = 0
-				velocity.y -= (abs(velocity.x) / (speed * speed_mult)) * (velocity.y + (2 * gravity_mult * speed_mult)) * wall_climb_factor * delta
+				velocity.y -= (abs(velocity.x) / (speed * speed_mult)) * (velocity.y + (gravity_mult * speed_mult)) * wall_climb_factor * delta
 				print(velocity.y)
 				wall_climb_bank -= 1
 			#velocity.y -= gravity_mult * 0.8 * delta
@@ -309,17 +311,17 @@ func ascend():
 
 
 func up():
-	velocity.y = -1.4 * gravity_mult * speed_mult
+	velocity.y = -1 * jump_factor * gravity_mult * speed_mult
 	#velocity.y = -1.4 * gravity_mult * speed_mult
 
 func down():
 	if velocity.y < 2 * gravity_mult * speed_mult:
-		velocity.y += 0.1 * gravity_mult * speed_mult
+		velocity.y += fall_factor * gravity_mult * speed_mult
 	
 	#fall through oneways
-	var map_tiles = get_node("/root/ChubbyServer").current_map.get_node("TileMap")
-	var cell_below_id = map_tiles.get_cellv(map_tiles.world_to_map(position + Vector2(0, 30)))
-	print(cell_below_id)
+	#var map_tiles = get_node("/root/ChubbyServer").current_map.get_node("TileMap")
+	#var cell_below_id = map_tiles.get_cellv(map_tiles.world_to_map(position + Vector2(0, 30)))
+	#print(cell_below_id)
 	#if map_tiles.tile_set.tile_get_shape_one_way(cell_below_id, cell_below_id):
 	if is_on_floor():
 		position += Vector2(0, 1)
