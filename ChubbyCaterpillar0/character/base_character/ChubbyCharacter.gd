@@ -44,8 +44,8 @@ func _unhandled_input(event):
 #					use_ability_and_notify_server_and_start_cooldown("right", [])
 #				if event.scancode == KEY_A:
 #					use_ability_and_notify_server_and_start_cooldown("left", [])
-				if event.scancode == KEY_S:
-					use_ability_and_notify_server_and_start_cooldown("down", [])
+#				if event.scancode == KEY_S:
+#					use_ability_and_notify_server_and_start_cooldown("down", [])
 				if event.scancode == KEY_E && ability_usable[2]:
 					use_ability_and_notify_server_and_start_cooldown("key_ability_0", [])
 				# key_ability_1
@@ -82,15 +82,33 @@ var rot_target:= - PI / 2
 func _physics_process(delta):
 	if is_alive && character_under_my_control:
 		counter += 1
-		if counter % 3 == 0:
+		if counter % 4 == 0:
 			counter = 0
 			if Input.is_key_pressed(KEY_A):
 				use_ability_and_notify_server_and_start_cooldown("left", [])
 			if Input.is_key_pressed(KEY_D):
 				use_ability_and_notify_server_and_start_cooldown("right", [])
+			if Input.is_key_pressed(KEY_S):
+				use_ability_and_notify_server_and_start_cooldown("down", [])
 	#$Sprite.rotation += 0.1 * ((rot_angle + (PI / 2)) - $Sprite.rotation)
 	rot_target = increment_angle_towards_target(rot_target, rot_angle)
 	$Sprite.rotation = rot_target + (PI / 2)
+	
+	#Interpolation for position and velocity
+	if position_interp_buffer > 0:
+		if(position.distance_to(position_from_server) > position_jump_limit):
+			# jump to server position if we're too far
+			position = position_from_server
+		else:
+			# Interpolate if we're pretty close
+			position += 0.1 * (position_from_server - position)
+
+var position_jump_limit = 60
+var position_from_server : Vector2
+var velocity_from_server : Vector2
+# How many physics frames to interpolate towards the latest position or velocity
+var position_interp_buffer : int = 0
+var cume_velocity_interp_buffer : int = 0
 
 # Pushes given angle slightly towards a target angle
 func increment_angle_towards_target(angle: float, target: float) -> float:

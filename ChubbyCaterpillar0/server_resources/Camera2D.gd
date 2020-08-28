@@ -15,6 +15,7 @@ func _ready():
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
+
 func _physics_process(delta):
 	var parent = get_parent()
 	var new_transform = get_transform()

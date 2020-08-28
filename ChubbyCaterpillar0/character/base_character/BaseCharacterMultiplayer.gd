@@ -11,7 +11,7 @@ var TimedEffect = preload("res://character/TimedEffect.tscn")
 ## general player stats
 ##
 
-var speed: float = 180
+var speed: float = 120
 var speed_mult: float = 1
 var health_cap : int = 200 # defines the basic "max health" of a character, but overheal and boosts can change this
 var health : int = 200
@@ -31,11 +31,13 @@ var velocity = Vector2(0,0)
 var rot_angle := -(PI / 2) # used to orient movement relative to ground angle
 var max_floor_angle = 0.9
 var max_slide_count = 4
-var friction_ratio = 0.9 # Velocity bleedoff before cliff is reached
+var friction_ratio = 0.94 # Velocity bleedoff before cliff is reached
 var friction_cliff = 0.8 # Proportion of speed below which velocity falls off dramatically quickly
 var friction_ratio_cliff = 0.91 # Velocity bleedoff after cliff is reached
 var motion_decay_tracker = 0 # Tracks if player has recently pressed movement keys (positive) or not (negative)
 var ticks_until_slowdown = 10 # How many physics ticks to wait before becoming still
+var wall_climb_factor = 1 # The higher this is, the more a player is able to wall climb
+var wall_climb_bank = 0
 
 ##
 ## For player mechanics
@@ -175,6 +177,7 @@ func add_and_return_timed_effect_body(body_func, body_args, repeats):
 func _physics_process(delta):
 	if is_alive:
 		put_label(str(health as int))
+		"""
 		get_child(1).position = get_child(0).position
 		if get_slide_count() > 0:
 			# ensures rot_angle is - PI / 2 if we're only touching a ceiling
@@ -204,6 +207,7 @@ func _physics_process(delta):
 				rot_angle = wall_angle_cume.angle()
 			else:
 				rot_angle = floor_angle_cume.angle()
+		
 		# floating midair
 		else:
 			# ease rot_angle towards - PI / 2
@@ -215,20 +219,52 @@ func _physics_process(delta):
 				rot_angle += 0.04 * ((3 * PI / 2) - rot_angle)
 				if rot_angle > PI:
 					rot_angle -= 2 * PI
+		"""
 		# Movement done here
-		move_and_slide(velocity.rotated(rot_angle + (PI / 2)) + Vector2(0,gravity2), Vector2(0.0, -1.0), true, max_slide_count, max_floor_angle)
+		move_and_slide(velocity.rotated(rot_angle + (PI / 2)), Vector2(0.0, -1.0), true, max_slide_count, max_floor_angle)
 		# Decrement left and right decay counters. If they reach zero or less, friction should be activated. Otherwise, friction should be turned off
 		motion_decay_tracker -= 1
 		if motion_decay_tracker < 0:
 			velocity.x *= friction_ratio
 		
-		# Friction
+		# gravity
+		if is_on_ceiling():
+			velocity.y = 0
+		
+		
 		if is_on_floor():
-			gravity2 = 10
+			wall_climb_bank = 90
+			velocity.y = speed * speed_mult * 0.08
+			rot_angle = get_floor_normal().angle()
 		else:
 			#rot_angle += 0.1 * ((-PI / 2) - rot_angle)
-			if gravity2 < 4 * gravity_mult:
-				gravity2 += gravity_mult * delta
+			if velocity.y < 1.5 * gravity_mult:
+				velocity.y += gravity_mult * delta
+			
+			# ease rot_angle towards - PI / 2
+			# These angles interpolate normally b/c there's no "angle jump"
+			if rot_angle < PI / 2 and rot_angle > -PI:
+				rot_angle += 0.04 * ((- PI / 2) - rot_angle)
+			# These angles are weird and need to jump between PI and -PI, which represent the same angle
+			else:
+				rot_angle += 0.04 * ((3 * PI / 2) - rot_angle)
+				if rot_angle > PI:
+					rot_angle -= 2 * PI
+		
+		if is_on_wall():
+			if wall_climb_bank > 0:
+				print(velocity.y)
+				if is_on_floor():
+					velocity.y = 0
+				velocity.y -= (abs(velocity.x) / (speed * speed_mult)) * (velocity.y + (2 * gravity_mult * speed_mult)) * wall_climb_factor * delta
+				print(velocity.y)
+				wall_climb_bank -= 1
+			#velocity.y -= gravity_mult * 0.8 * delta
+			#if velocity.y > 0.5 * gravity_mult:
+			#	velocity.y += 0.02 * ((0.5 * gravity_mult) - velocity.y)
+			#move_and_slide(Vector2(0, -(abs(velocity.x) / (speed * speed_mult)) * wall_climb_factor * gravity_mult), Vector2(0.0, -1.0), true, max_slide_count, max_floor_angle)
+
+
 
 func put_label(text):
 	get_node("Label").set_text(text)
@@ -273,11 +309,21 @@ func ascend():
 
 
 func up():
-	gravity2 = -1.4 * gravity_mult * speed_mult
+	velocity.y = -1.4 * gravity_mult * speed_mult
+	#velocity.y = -1.4 * gravity_mult * speed_mult
 
 func down():
-	pass
-#   velocity.y = 2 * speed
+	if velocity.y < 2 * gravity_mult * speed_mult:
+		velocity.y += 0.1 * gravity_mult * speed_mult
+	
+	#fall through oneways
+	var map_tiles = get_node("/root/ChubbyServer").current_map.get_node("TileMap")
+	var cell_below_id = map_tiles.get_cellv(map_tiles.world_to_map(position + Vector2(0, 30)))
+	print(cell_below_id)
+	#if map_tiles.tile_set.tile_get_shape_one_way(cell_below_id, cell_below_id):
+	if is_on_floor():
+		position += Vector2(0, 1)
+
 
 
 func right():

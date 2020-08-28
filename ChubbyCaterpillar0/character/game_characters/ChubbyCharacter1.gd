@@ -41,4 +41,5 @@ func mouse_ability_0(mouse_pos: Vector2, ability_uuid: String):
 func key_ability_0(ability_uuid: String):
 	# toggles health absorption
 	#absorbing_health = !absorbing_health
-	pass
+	if client.offline:
+		position = Vector2(400, 700)
