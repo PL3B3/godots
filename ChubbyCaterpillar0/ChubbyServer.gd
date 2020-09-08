@@ -23,6 +23,7 @@ var ChubbyCharacter0 = preload("res://character/game_characters/ChubbyCharacter0
 var ChubbyCharacter1 = preload("res://character/game_characters/ChubbyCharacter1.tscn")
 var map = preload("res://maps/Map0.tscn")
 var map2 = preload("res://maps/Map2.tscn")
+var map3 = preload("res://maps/Map3.tscn")
 var TimeQueue = preload("res://character/base_character/TimeQueue.tscn")
 
 # hard coded. please change
@@ -93,6 +94,8 @@ func _unhandled_key_input(event):
 
 func start_game_multiplayer():
 	client_net = NetworkedMultiplayerENet.new()
+	# compressing data packets -> big speed
+	client_net.set_compression_mode(NetworkedMultiplayerENet.COMPRESS_ZSTD)
 	start_client()
 	# Connect network signals
 	client_net.connect("server_disconnected", self, "_on_disconnect")
@@ -100,17 +103,17 @@ func start_game_multiplayer():
 	client_net.connect("connection_succeeded", self, "_on_connection_succeeded")
 	
 	# Adds our player
-	add_a_player(client_id, my_type, my_team)
+	add_a_player(client_id, my_type, my_team, {})
 	
 	# Add map and do initial processing for minimap
-	var current_map = map2.instance()
+	var current_map = map3.instance()
 	add_child(current_map)
 	tilemap_to_tex(current_map.get_node("TileMap"))
 
 func start_game_offline():
 	$SelectionInput.queue_free()
-	add_a_player(client_id, my_type, my_team)
-	current_map = map2.instance()
+	add_a_player(client_id, my_type, my_team, {})
+	current_map = map3.instance()
 	add_child(current_map)
 	tilemap_to_tex(current_map.get_node("TileMap"))
 	#$MinMapBoi.texture = tilemap_to_tex(current_map.get_node("TileMap"))
@@ -248,7 +251,7 @@ func send_player_rpc_unreliable(id, command, args):
 # int: id the player's network id
 # string: type the player's class
 # bool: mine whether or not this is our player
-func add_a_player(id, type, team: int):
+func add_a_player(id, type, team: int, initialization_values):
 	var player_to_add
 	
 	match type:
@@ -261,11 +264,13 @@ func add_a_player(id, type, team: int):
 		_:
 			player_to_add = ChubbyCharacter.instance()
 	
-	# sets player node's name and id and team
+	# sets player attributes
 	player_to_add.set_id(id)
 	player_to_add.set_name(str(id))
 	player_to_add.team = team
 	player_to_add.set_team(team)
+	player_to_add.position = player_to_add.respawn_position
+	player_to_add.set_initialization_values(initialization_values)
 	
 	# sets my player as network master
 	if id == client_id:
@@ -281,9 +286,11 @@ func add_a_player(id, type, team: int):
 		emit_signal("player_spawned")
 	
 	# adds player node
-	get_node("/root/ChubbyServer").add_child(player_to_add)
+	add_child(player_to_add)
 	
 	players[id] = player_to_add
+
+
 
 func remove_other_player(id):
 	# Checks if not already removed
@@ -308,7 +315,7 @@ func interpolate_node_position(node_name: String, projected_position: Vector2):
 	if is_instance_valid(node_to_update):
 		node_to_update.position += 0.1 * (projected_position - node_to_update.position)
 
-var position_jump_limit = 60
+var position_jump_limit = 50
 func interpolate_player_position(player_id: int, projected_position: Vector2):
 	var node_to_update = players[player_id]
 	# checks if node exists before attempting to change its properties
@@ -319,7 +326,7 @@ func interpolate_player_position(player_id: int, projected_position: Vector2):
 			node_to_update.position = projected_position
 		else:
 			# Interpolate if we're pretty close
-			node_to_update.position += 0.1 * (projected_position - node_to_update.position)
+			node_to_update.position += 0.3 * (projected_position - node_to_update.position)
 
 # Updates an attribute of a player or object through interpolation
 # The Node's path is relative to ChubbyServer

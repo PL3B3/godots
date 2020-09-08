@@ -27,7 +27,6 @@ func _ready():
 	timer.start(1)
 	timer.connect("timeout", self, "_per_second")
 	timer.set_name("per_second_timer")
-	
 
 func _per_second():
 	pass
@@ -81,6 +80,9 @@ var rot_target:= - PI / 2
 # gets input
 func _physics_process(delta):
 	if is_alive && character_under_my_control:
+		motion_decay_tracker -= 1
+		if motion_decay_tracker < 0:
+			friction = true
 		counter += 1
 		if counter % 4 == 0:
 			counter = 0
@@ -138,7 +140,7 @@ func use_ability_and_notify_server_and_start_cooldown(ability_name, args):
 	# converts ability name to its enumeration
 	var ability_num = ability_conversions.get(ability_name)
 	
-	# checks to see if the "ability" is an actual ability or just movement	
+	# checks to see if the "ability" is an actual ability or just movement
 	if (ability_num != null): # it's an ability
 		# generates a uuid to track the command, adds it to args
 		var ability_uuid = uuid_generator.v4()
@@ -158,7 +160,11 @@ func use_ability_and_notify_server_and_start_cooldown(ability_name, args):
 		if not client.offline:
 			ability_usable[ability_num] = false
 			#add_and_return_timed_effect_body("notify_cooldown", [ability_name], cooldowns[ability_num])
-	else: # it's a movement
+	elif ability_name == "up": # jumps must be reliable b/c they're one-shot and depend on a condition
+		if not client.offline:
+			client.send_player_rpc(player_id, ability_name, args)
+		callv(ability_name, args)
+	else: # it's left right or down
 		callv(ability_name, args)
 		# use udp b/c movement isn't essential
 		if not client.offline:

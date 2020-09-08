@@ -27,6 +27,7 @@ var ChubbyPhantom0 = preload("res://character/game_characters/ChubbyPhantom0.tsc
 var ChubbyPhantom1 = preload("res://character/game_characters/ChubbyPhantom1.tscn")
 var map = preload("res://maps/Map0.tscn")
 var map2 = preload("res://maps/Map2.tscn")
+var map3 = preload("res://maps/Map3.tscn")
 
 var physics_processing = false
 var players = {}
@@ -34,7 +35,7 @@ var server_uuid_generator = uuid_generator.instance()
 var client_delta = 1.0 / (ProjectSettings.get_setting("physics/common/physics_fps"))
 
 func _ready():
-	var server_map = map2.instance()
+	var server_map = map3.instance()
 	
 	start_server()
 
@@ -54,7 +55,7 @@ func start_server():
 	var server = NetworkedMultiplayerENet.new()
 	
 	# compressing data packets -> big speed
-	# server.set_compression_mode(NetworkedMultiplayerENet.COMPRESS_ZLIB)
+	server.set_compression_mode(NetworkedMultiplayerENet.COMPRESS_ZSTD)
 
 	var err = server.create_server(DEFAULT_PORT, MAX_PLAYERS)
 	if not err == OK:
@@ -72,9 +73,8 @@ func _player_connected(id):
 	# call the recently connected player to send its class type
 	rpc_id(id, "parse_server_rpc", "send_blueprint", [])
 	# rpc_id(id, "parse"say_zx")
-
 	print(get_tree().get_network_connected_peers())
-	
+
 func _player_disconnected(id):
 	players.erase(id)
 	print("Player " + str(id) + " disconnected")
@@ -85,7 +85,7 @@ func _player_disconnected(id):
 
 func _connected_ok():
 	print("got a connection")
-	
+
 func _connected_fail():
 	pass
 
@@ -135,6 +135,9 @@ func send_server_rpc_to_specified_players_unreliable(sync_dict, server_cmd, args
 		if sync_dict[id]:
 			send_server_rpc_to_one_player_unreliable(id, server_cmd, args)
 
+func add_to_sync_with():
+	pass
+
 ##
 ## the following 3 functions handle all direct calls from the client
 ## the first function is for player commands to the server as a whole
@@ -156,23 +159,24 @@ remote func parse_player_rpc(player_id, method_name, args) -> void:
 	# stops non-player peers from controlling that player
 	if (str(caller_id) == str(player_id)):
 		var ability_num = ability_conversions.get(method_name)
-		var player_to_call = players[player_id]
+		var player_to_call = players.get(player_id)
+		if player_to_call == null:
+			return
 		# if this is an actual ability, not just movement, 
 		if ability_num != null:
 			if !player_to_call.ability_usable[ability_num]: # ability isn't usable
 				# so end the function here, doing nothing
 				return
+			# we only need to send ability commands, not movement
+			for id in players:
+				if id != player_id:
+					call_player_method_on_client(id, player_id, method_name, args)
+#					send_server_rpc_to_one_player(id, "call_player_method", [player_id, method_name, args])
 		
 		# if we reach this point, the method is either a movement or a legitimate ability call
 		
 		# we call it
 		player_to_call.callv("use_ability_and_start_cooldown", [method_name, args])
-		
-		# sends this command to other clients
-		for id in players:
-			if id != player_id:
-				call_player_method_on_client(id, player_id, method_name, args)
-#				send_server_rpc_to_one_player(id, "call_player_method", [player_id, method_name, args])
 
 # Calls a method of player_id's representation on client_id
 func call_player_method_on_client(client_id, player_id: int, method_name: String, args):
@@ -189,20 +193,30 @@ func update_player_position(player_id: int, projected_position: Vector2) -> void
 func update_attribute(attribute_name: String, new_value, node_name: String) -> void:
 	send_server_rpc_to_all_players_unreliable("update_node_attribute", [node_name, attribute_name, new_value])
 
+# reliable, signal connected
 # Used for setting attributes that aren't commonly updated, such as speed_mult or health
 # applies to node here on server and on all clients
 func set_node_attribute_universal(attribute_name: String, new_value, node_name: String) -> void:
 	get_node(node_name).set(attribute_name, new_value)
+	set_node_attribute_on_clients(attribute_name, new_value, node_name)
+
+# reliable
+func set_node_attribute_on_clients(attribute_name: String, new_value, node_name: String):
 	send_server_rpc_to_all_players("set_node_attribute", [node_name, attribute_name, new_value])
 
+# reliable, signal connected
 # call a method on a node here and on all clients
 func call_node_method_universal(method_name: String, args, node_name: String) -> void:
 	get_node(node_name).callv(method_name, args)
+	call_node_method_on_clients(method_name, args, node_name)
+
+# reliable
+func call_node_method_on_clients(method_name: String, args, node_name: String) -> void:
 	send_server_rpc_to_all_players("call_node_method", [node_name, method_name, args])
 
 
 # this function is called upon player_connected, which calls the player to tell this function its id and class type
-remote func add_player(type, team):
+func add_player(type, team):
 	var id = get_tree().get_rpc_sender_id()
 	
 	var player_phantom
@@ -230,36 +244,30 @@ remote func add_player(type, team):
 	# set player node name
 	player_phantom.set_name(str(id))
 	
-	# sets player team
+	# sets player team and spawn
 	player_phantom.team = team
 	player_phantom.set_team(team)
+	player_phantom.position = player_phantom.respawn_position
 
 	# new player should sync with every other existing player who is within range (800) of their spawn position
 	# old players should sync with new player if they're within range
 	for other_player in players.values():
 		var should_sync = other_player.position.distance_to(player_phantom.respawn_position) < 800
-		player_phantom.clients_to_sync_with[other_player.id] = should_sync
+		player_phantom.clients_to_sync_with[other_player.player_id] = should_sync
 		other_player.clients_to_sync_with[id] = should_sync
-
 	# add player to the dictionary containing all player representations
 	players[id] = player_phantom
 	
-
 	# add player to scene tree, specifically ChubbyServer. MUST BE SAME SCENE STRUCTURE AS CLIENT. ADD ALL CLIENT PLAYERS TO root/chubbyserver TOO
 	get_node("/root/ChubbyServer").add_child(player_phantom)
-
-
 	
 	# @d
 	print("These are the children ", get_children())
-
 	# set new player's id, so that it has an internal reference to it
 	players[id].set_id(id)
 	
-
 	# turn on the server's physics simulation FOR THIS PLAYER SPECIFICALLY if not already on
 	#players[id].physics_processing = true
-
 	# ensures all other clients have a copy of this player and vice versa
 	add_new_player_to_current_clients_and_old_players_to_new_client(id, type, team)
 
@@ -269,14 +277,16 @@ func generate_player_id():
 
 # when a new player is added, it should be replicated in other clients' scenetrees
 # also, existing players must be added to the new client
+# positions have to be synced.
 func add_new_player_to_current_clients_and_old_players_to_new_client(new_player_id, new_player_type, new_player_team):
 	for player_id in players:
 		# avoids redundantly adding our new player to its own client
 		if (player_id != new_player_id):
 			# add new player to existing clients
-			send_server_rpc_to_one_player(player_id, "add_a_player", [new_player_id, new_player_type, new_player_team])
+			send_server_rpc_to_one_player(player_id, "add_a_player", [new_player_id, new_player_type, new_player_team, players[new_player_id].get_initialization_values()])
 			# add existing players to new client
-			send_server_rpc_to_one_player(new_player_id, "add_a_player", [player_id, players[player_id].type, players[player_id].team])
+			send_server_rpc_to_one_player(new_player_id, "add_a_player", [player_id, players[player_id].type, players[player_id].team, players[player_id].get_initialization_values()])
+
 
 # sends another client's commands in a dictionary
 func send_other_client_commands(id, other_id, their_command):

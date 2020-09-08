@@ -7,6 +7,7 @@ signal method_called(method_name, args)
 # Dictionary of clients who we should transmit our updates to
 # int (id), bool: yes or no sync
 var clients_to_sync_with = {}
+var initialization_attributes = ["position", "velocity"]
 
 var damage = 15
 var speed = 400
@@ -65,7 +66,7 @@ func _physics_process(delta):
 			# updates object on client side
 			parent.server.update_position(parent.name + "/" + name, get_global_position() + (velocity * delta))
 			#parent.send_updated_attribute(parent.name + "/" + name, "position", get_global_position())
-			parent.send_updated_attribute(parent.name + "/" + name, "velocity", velocity)
+			#parent.send_updated_attribute(parent.name + "/" + name, "velocity")
 			counter = 0
 		
 		counter += 1
