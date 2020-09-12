@@ -30,3 +30,7 @@ material/0 = null
 
 [node name="Camera" type="Camera" parent="CameraOrigin"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.31917, 0 )
+
+[node name="RayCast" type="RayCast" parent="."]
+enabled = true
+cast_to = Vector3( 0, -2, 0 )

@@ -1,11 +1,20 @@
 extends KinematicBody
 
-
+onready var client = get_node("/root/Client")
 onready var camera_origin = $CameraOrigin
 onready var camera = $CameraOrigin/Camera
 
+var periodic_timer = Timer.new()
+var periodic_timer_period = 0.5
+
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	add_child(periodic_timer)
+	periodic_timer.start(periodic_timer_period)
+	periodic_timer.connect("timeout", self, "_periodic")
+
+func _periodic():
+	client.current_map.get_ground_name(transform.origin)
 
 # ----------------------------------------------------------------------Movement
 export var speed = 20
@@ -29,9 +38,7 @@ func _physics_process(delta):
 		velocity -= gravity * floor_normal
 		ticks_since_grounded = 0
 		up_dir = floor_normal
-		print("on floor")
 	else:
-		print("not on floor")
 		velocity.y -= gravity
 		ticks_since_grounded += 1
 	
@@ -63,8 +70,6 @@ func _input(event):
 		transform.origin = Vector3(0, 40, 0)
 
 
-
-
 func collect_inputs():
 	var camera_origin_basis = camera_origin.get_global_transform().basis
 	
@@ -81,3 +86,6 @@ func collect_inputs():
 		direction += camera_origin_basis.x
 	
 	direction = direction.normalized()
+
+
+# -----------------------------------------------------------------------Utility
