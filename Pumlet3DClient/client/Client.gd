@@ -12,8 +12,9 @@ extends Node
 ##
 
 const DEFAULT_PORT = 3342
-enum Species {PUBERT, SQUEEGEE, PUMBITA, JINGLING, SHIMMER, CAPIND, PUMPQUEEN, }
+enum Species {BASE, PUBERT, SQUEEGEE, PUMBITA, JINGLING, SHIMMER, CAPIND, PUMPQUEEN}
 enum Sign {TERROR, ERRANT, VULN}
+enum Map {PODUNK}
 
 var server_ip = "127.0.0.1"
 var client_net = null # the ENet containing the client
@@ -25,17 +26,31 @@ var current_map
 var offline = false
 var minmap_size = Vector2(1600, 1000)
 
+##
+## Preloaded resources
+##
+
+var base_character = preload("res://characters/base/BaseCharacter.tscn")
+var base_env = preload("res://envs/base/BaseEnv.tscn")
+var podunk = preload("res://envs/impl_envs/Podunk.tscn")
+
 # keeps track of client physics processing speed, used for interpolating server/client position
 var client_delta = 1.0 / (ProjectSettings.get_setting("physics/common/physics_fps"))
 
 ##
 ## Signals
 ##
+
 signal minimap_texture_updated(texture, origin)
 signal player_spawned()
 
 func _ready():
-	$SelectionInput.connect("text_entered", self, "process_selection_input")
+	current_map = podunk.instance()
+	add_child(current_map)
+	var player = base_character.instance()
+	player.transform.origin = Vector3(0, 40, 0)
+	add_child(player)
+	#$SelectionInput.connect("text_entered", self, "process_selection_input")
 
 func process_selection_input(selection: String):
 	var split_selection = selection.split(",", false)
@@ -52,6 +67,7 @@ func process_selection_input(selection: String):
 		start_game_multiplayer()
 	$SelectionInput.queue_free()
 
+"""
 func _unhandled_key_input(event):
 	# Debug stuff
 	if event is InputEventKey && event.pressed:
@@ -60,6 +76,7 @@ func _unhandled_key_input(event):
 				print(str(client_net.get_connection_status()))
 			elif client_net != null && client_net.get_connection_status() != 1: # client_net exists and isn't attempting connection
 				reconnect()
+"""
 
 func start_game_multiplayer():
 	client_net = NetworkedMultiplayerENet.new()
@@ -81,7 +98,6 @@ func start_game_multiplayer():
 func start_game_offline():
 	$SelectionInput.queue_free()
 	add_a_player(client_id, my_type, my_team, {})
-	current_map = map3.instance()
 	add_child(current_map)
 	tilemap_to_tex(current_map.get_node("TileMap"))
 	#$MinMapBoi.texture = tilemap_to_tex(current_map.get_node("TileMap"))
@@ -224,13 +240,7 @@ func add_a_player(id, type, team: int, initialization_values):
 	
 	match type:
 		"base":
-			player_to_add = ChubbyCharacter.instance()
-		"pubert":
-			player_to_add = ChubbyCharacter0.instance()
-		"squeegee":
-			player_to_add = ChubbyCharacter1.instance()
-		_:
-			player_to_add = ChubbyCharacter.instance()
+			player_to_add = base_character.instance()
 	
 	# sets player attributes
 	player_to_add.set_id(id)
@@ -302,8 +312,7 @@ func update_node_attribute(node_name: String, attribute_name: String, updated_va
 	var node_to_update = get_node("/root/ChubbyServer/" + node_name)
 	# checks if node exists before attempting to change its properties
 	if is_instance_valid(node_to_update):
-		Interpolator.interpolate_property(node_to_update, attribute_name, node_to_update.get(attribute_name), updated_value, client_delta, Tween.TRANS_ELASTIC, Tween.EASE_IN_OUT)
-		Interpolator.start()
+		pass
 
 # Immediately sets an attribute of a node
 # The Node's path is relative to ChubbyServer
@@ -321,56 +330,3 @@ func call_node_method(node_name: String, method_name: String, args) -> void:
 	if is_instance_valid(node_to_call):
 		# call the method
 		node_to_call.callv(method_name, args)
-
-
-##
-## Deprecated functions
-##
-
-# used by server to call a method of a player
-func call_player_method(player_id: int, method_name: String, args) -> void:
-	# if we have a player node with the specified name, and that player isn't us
-	if self.has_node(str(player_id)):
-		# call the method of the player with its args
-		players[player_id].callv(method_name, args)
-
-func add_other_player(id, type):
-	# checks if the "other player" is in fact our client player to avoid duplicating it
-	if (id != client_id):
-		var other_player
-		
-		match type:
-			"base":
-				other_player = ChubbyCharacter.instance()
-			_:
-				other_player = ChubbyCharacter.instance()
-		other_player.set_id(id)
-		other_player.set_name(str(id))
-		get_node("/root/ChubbyServer").add_child(other_player)
-		players[id] = other_player
-
-# unused
-# called by server to remove a player object, such as a projectile. client can't remove them by itself
-func remove_player_object(player_id: int, object_uuid: String) -> void:
-	if self.has_node(str(player_id)):
-		players[player_id].callv("remove_object", [object_uuid])
-
-# updates position of a player based on recent server info
-func parse_updated_player_position_from_server(id, latest_server_position):
-	# Interpolates between client position and server position using client_delta, aka physics processing rate, to determine a smooth speed
-	Interpolator.interpolate_property(get_node("/root/ChubbyServer/" + str(id)), "position", players[id].get_global_position(), latest_server_position, client_delta, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-	Interpolator.start()
-#	get_node("/root/ChubbyServer/" + str(id)).set("position", latest_server_position) 
-
-
-# Linearly interpolates a NON-ESSENTIAL player attribute based on latest server information
-func update_player_attribute(player_id: int, attribute_name: String, latest_server_info) -> void:
-	# Interpolates between client position and server position using client_delta, aka physics processing rate, to determine a smooth speed
-	Interpolator.interpolate_property(get_node("/root/ChubbyServer/" + str(player_id)), attribute_name, players[player_id].get(attribute_name), latest_server_info, client_delta * 5, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-	Interpolator.start()
-	#get_node("/root/ChubbyServer/" + str(player_id)).set(attribute_name, latest_server_info)
-
-
-# Immediately sets an ESSENTIAL player attribute based on latest server information
-func set_player_attribute(player_id: int, attribute_name: String, latest_server_info) -> void:
-	get_node("/root/ChubbyServer/" + str(player_id)).set(attribute_name, latest_server_info)
