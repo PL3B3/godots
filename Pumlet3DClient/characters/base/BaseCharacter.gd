@@ -107,7 +107,7 @@ func _input(event):
 			flashlight.show()
 	
 	if event.is_action_pressed("primary_action"):
-		shotgun.fire()
+		shotgun.fire(0, [camera.get_global_transform()])
 		display_ammo_reserves()
 
 
