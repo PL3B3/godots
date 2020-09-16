@@ -19,7 +19,6 @@ shape = SubResource( 1 )
 
 [node name="MeshInstance" type="MeshInstance" parent="BodyCollisionShape"]
 transform = Transform( 1, 0, 0, 0, -1.62921e-07, -1, 0, 1, -1.62921e-07, 0, 0, 0 )
-visible = false
 mesh = SubResource( 2 )
 material/0 = null
 
@@ -32,7 +31,7 @@ __meta__ = {
 }
 
 [node name="Shotgun" parent="CameraOrigin/Camera" instance=ExtResource( 2 )]
-transform = Transform( -3.25841e-07, 0, -8, 0, 4, 0, 2, 0, -1.30337e-06, 0, -0.554819, -0.307068 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.554819, -0.307068 )
 
 [node name="Flashlight" type="SpotLight" parent="CameraOrigin/Camera"]
 light_energy = 4.0
