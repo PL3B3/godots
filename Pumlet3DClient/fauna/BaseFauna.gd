@@ -9,15 +9,15 @@ func hit(damage):
 	health -= damage
 	print(health)
 
-#func _physics_process(delta):
-#	velocity.y -= gravity
-#
-#	velocity = velocity.linear_interpolate(0.5 * velocity, delta)
-#
-#	velocity = move_and_slide(
-#		velocity,
-#		Vector3.UP,
-#		true)
+func _physics_process(delta):
+	velocity.y -= gravity
+	
+	velocity = velocity.linear_interpolate(Vector3(), 2 * delta)
+	
+	velocity = move_and_slide(
+		velocity,
+		Vector3.UP,
+		true)
 
 func dash(direction: Vector3, speed: float, ticks: int):
 	var dash_ticks_remaining = ticks

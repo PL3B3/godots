@@ -1,12 +1,35 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://fauna/BaseFauna.gd" type="Script" id=1]
+[ext_resource path="res://characters/assets/Tiles_036_SD/Tiles_036_roughness.jpg" type="Texture" id=2]
+[ext_resource path="res://characters/assets/Tiles_036_SD/Tiles_036_ambientOcclusion.jpg" type="Texture" id=3]
+[ext_resource path="res://characters/assets/Tiles_036_SD/Tiles_036_normal.jpg" type="Texture" id=4]
+[ext_resource path="res://characters/assets/Tiles_036_SD/Tiles_036_basecolor.jpg" type="Texture" id=5]
 
-[sub_resource type="CapsuleShape" id=1]
-height = 2.0
+[sub_resource type="SphereShape" id=1]
 
-[sub_resource type="CapsuleMesh" id=2]
-mid_height = 2.0
+[sub_resource type="SpatialMaterial" id=3]
+albedo_color = Color( 1, 1, 1, 0.486275 )
+albedo_texture = ExtResource( 5 )
+metallic = 0.1
+metallic_specular = 0.2
+roughness_texture = ExtResource( 2 )
+emission_enabled = true
+emission = Color( 0.596078, 0.482353, 0.243137, 1 )
+emission_energy = 0.48
+emission_operator = 0
+emission_on_uv2 = false
+normal_enabled = true
+normal_scale = 1.0
+normal_texture = ExtResource( 4 )
+ao_enabled = true
+ao_light_affect = 0.0
+ao_texture = ExtResource( 3 )
+ao_on_uv2 = false
+ao_texture_channel = 0
+
+[sub_resource type="SphereMesh" id=2]
+material = SubResource( 3 )
 
 [node name="BaseFauna" type="KinematicBody"]
 collision_layer = 128

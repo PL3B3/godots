@@ -169,16 +169,18 @@ func collect_inputs():
 
 func display_ammo_reserves():
 	ui_ammo_reserves.set_text(str(shotgun.ammo_remaining))
+	print(100 * float(shotgun.clip_remaining) / shotgun.clip_size_default)
 	ui_ammo_gauge.set_value(100 * float(shotgun.clip_remaining) / shotgun.clip_size_default)
 
 func display_reload_progress():
+	if shotgun.ammo_remaining == 0:
+		return
 	var period = shotgun.reload_time_default
-	var tick = 0.015
+	var tick = float(period) / 100
 	var num_ticks = int(period / tick)
 	var progress = 0
-	print(period)
-	for i in range(num_ticks):
-		progress += 100 / num_ticks
+	for i in range(100):
+		progress += 1
 		ui_ammo_gauge.set_value(progress)
 		yield(get_tree().create_timer(tick), "timeout")
 

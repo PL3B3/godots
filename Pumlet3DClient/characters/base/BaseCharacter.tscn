@@ -1,25 +1,33 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://characters/base/BaseCharacter.gd" type="Script" id=1]
 [ext_resource path="res://arms/Shotgun.tscn" type="PackedScene" id=2]
 [ext_resource path="res://characters/base/UI.tscn" type="PackedScene" id=3]
+[ext_resource path="res://characters/assets/ser_arthur_less_wide.png" type="Texture" id=4]
 
 [sub_resource type="SphereShape" id=1]
 radius = 1.2
 
+[sub_resource type="SpatialMaterial" id=3]
+albedo_texture = ExtResource( 4 )
+roughness = 0.17
+rim_enabled = true
+rim = 1.0
+rim_tint = 0.23
+
 [sub_resource type="SphereMesh" id=2]
+material = SubResource( 3 )
 radius = 1.2
 height = 2.4
 
 [node name="BaseCharacter" type="KinematicBody"]
-collision_mask = 254
 script = ExtResource( 1 )
 
 [node name="BodyCollisionShape" type="CollisionShape" parent="."]
 shape = SubResource( 1 )
 
 [node name="MeshInstance" type="MeshInstance" parent="BodyCollisionShape"]
-transform = Transform( 1, 0, 0, 0, -1.62921e-07, -1, 0, 1, -1.62921e-07, 0, 0, 0 )
+transform = Transform( 0.996976, -0.029976, 0.0716992, 0.0189767, 0.988589, 0.14944, -0.0753606, -0.147627, 0.986168, 0, 0, 0 )
 mesh = SubResource( 2 )
 material/0 = null
 
@@ -32,7 +40,6 @@ __meta__ = {
 }
 
 [node name="Shotgun" parent="CameraOrigin/Camera" instance=ExtResource( 2 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.554819, -0.307068 )
 
 [node name="Flashlight" type="SpotLight" parent="CameraOrigin/Camera"]
 light_energy = 4.0

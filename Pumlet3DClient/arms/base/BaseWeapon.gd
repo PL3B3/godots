@@ -33,7 +33,7 @@ func fire(fire_mode: int, fire_parameters):
 		ammo_remaining -= 1
 		var fire_transform = Transform()
 		fire_transform.basis = get_global_transform().basis
-		fire_transform.origin = fire_point.get_global_transform().origin
+		fire_transform.origin = get_global_transform().origin
 		match fire_mode:
 			0:
 				primary_fire(fire_transform, fire_parameters)
@@ -60,7 +60,7 @@ func tertiary_fire(fire_transform: Transform, fire_parameters):
 	print("Fired weapon in tertiary mode")
 
 func _load_next_shot():
-	if clip_remaining == 0:
-		clip_remaining = clip_size_default
+	if clip_remaining == 0 and ammo_remaining > 0:
+		clip_remaining = min(clip_size_default, ammo_remaining)
 	can_fire = true
 	emit_signal("clip_changed")

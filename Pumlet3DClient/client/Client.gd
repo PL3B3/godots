@@ -52,7 +52,7 @@ func _ready():
 	player.transform.origin = Vector3(0, 40, 0)
 	add_child(player)
 	var target = base_fauna.instance()
-	target.transform.origin = Vector3(0, 30, 0)
+	target.transform.origin = Vector3(0, 14, 0)
 	add_child(target)
 	#$SelectionInput.connect("text_entered", self, "process_selection_input")
 
