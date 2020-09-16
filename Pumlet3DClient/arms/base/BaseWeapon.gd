@@ -1,6 +1,7 @@
 extends Spatial
 
 onready var fire_point = $FirePoint
+onready var interpolator = $Interpolator
 var next_shot_timer = Timer.new()
 
 var fire_rate_default = 0.3

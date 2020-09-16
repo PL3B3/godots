@@ -50,6 +50,7 @@ var fire_mode_settings = [
 	}]
 var push_ticks = 10
 var fire_mode_phys_processing = [false, false, false]
+var ignored_objects = []
 
 
 signal recoil(direction, speed, ticks)
@@ -113,14 +114,14 @@ func hitscan_fire(mode: int) -> Dictionary:
 		var collision = physics_state.intersect_ray(
 			fire_transform.origin,
 			fire_direction,
-			[self])
+			ignored_objects)
 		
 		collision_dict[offset] = collision
 		fire_lines.append(fire_direction)
 		
 		if not collision.empty():
 			if collision.collider.has_method("hit"):
-				collision.collider.callv("hit", damage)
+				collision.collider.callv("hit", [damage])
 			if collision.collider.has_method("dash"):
 				collision.collider.callv("dash", [
 					fire_direction.normalized(),
@@ -132,6 +133,7 @@ func hitscan_fire(mode: int) -> Dictionary:
 		fire_transform.basis.z,
 		fire_settings["self_push_speed"],
 		push_ticks)
+	animate_recoil(fire_settings["self_push_speed"])
 	
 	create_fire_lines_representation(fire_transform.origin, fire_lines)
 	
@@ -147,14 +149,20 @@ func create_fire_lines_representation(origin, fire_lines):
 	for vert in verts:
 		fire_line_mesh.add_vertex(vert)
 	fire_line_mesh.end()
-	fire_line_clear_timer.start(fire_rate_default * 4)
+	fire_line_clear_timer.start(fire_rate_default)
 
-func animate_recoil():
-	var interpolator = Tween.new()
-	interpolator.interpolate_property(mesh)
-	
+func animate_recoil(power: float):
+	var idle_position = mesh.get_translation()
+	var recoiled_position = idle_position + Vector3(0, 0, sqrt(power / 10))
+	interpolator.interpolate_property(mesh, "translation", idle_position, recoiled_position, fire_rate_default / 2, Tween.TRANS_CUBIC)
+	interpolator.start()
+	yield(interpolator,"tween_completed")
+	interpolator.interpolate_property(mesh, "translation", recoiled_position, idle_position, fire_rate_default / 2, Tween.TRANS_CUBIC)
+	interpolator.start()
+
 func _clear_fire_lines():
 	fire_line_mesh.clear()
+	get_node("/root").remove_child(fire_line_mesh)
 
 func _physics_process(delta):
 	for mode in range(len(fire_mode_phys_processing)):

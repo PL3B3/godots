@@ -11,6 +11,8 @@ script = ExtResource( 3 )
 mesh_library = ExtResource( 1 )
 cell_size = Vector3( 1, 1, 1 )
 cell_scale = 0.01
+collision_layer = 64
+collision_mask = 447
 data = {
 "cells": PoolIntArray(  )
 }

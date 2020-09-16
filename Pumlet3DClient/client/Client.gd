@@ -31,6 +31,7 @@ var minmap_size = Vector2(1600, 1000)
 ##
 
 var base_character = preload("res://characters/base/BaseCharacter.tscn")
+var base_fauna = preload("res://fauna/BaseFauna.tscn")
 var base_env = preload("res://envs/base/BaseEnv.tscn")
 var podunk = preload("res://envs/impl_envs/Podunk.tscn")
 
@@ -50,6 +51,9 @@ func _ready():
 	var player = base_character.instance()
 	player.transform.origin = Vector3(0, 40, 0)
 	add_child(player)
+	var target = base_fauna.instance()
+	target.transform.origin = Vector3(0, 30, 0)
+	add_child(target)
 	#$SelectionInput.connect("text_entered", self, "process_selection_input")
 
 func process_selection_input(selection: String):

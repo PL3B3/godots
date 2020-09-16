@@ -26,6 +26,7 @@ func _ready():
 	shotgun.connect("clip_changed", self, "display_ammo_reserves")
 	shotgun.connect("recoil", self, "dash")
 	shotgun.connect("reload_started", self, "display_reload_progress")
+	shotgun.ignored_objects.append(self)
 
 func _periodic():
 	display_health()

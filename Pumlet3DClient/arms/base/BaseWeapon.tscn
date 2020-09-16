@@ -6,3 +6,5 @@
 script = ExtResource( 1 )
 
 [node name="FirePoint" type="Spatial" parent="."]
+
+[node name="Interpolator" type="Tween" parent="."]
