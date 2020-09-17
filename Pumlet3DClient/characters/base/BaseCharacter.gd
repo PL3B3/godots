@@ -9,6 +9,12 @@ onready var ui_ammo_reserves = $UI/Stats/Bars/Ammo/AmmoLabel/Background/Reserves
 onready var ui_ammo_gauge = $UI/Stats/Bars/Ammo/AmmoGauge
 onready var ui_health_label = $UI/Stats/Bars/Health/HealthLabel/Background/Number
 onready var ui_health_gauge = $UI/Stats/Bars/Health/HealthGauge
+onready var ui_dealt_damage_label = $UI/Stats/Bars2/DealtDamageLabel
+
+var ui_meg_damage_color = Color.turquoise
+var ui_big_damage_color = Color.salmon
+var ui_mid_damage_color = Color.purple
+var ui_lil_damage_color = Color.gray
 
 var periodic_timer = Timer.new()
 var periodic_timer_period = 0.5
@@ -26,6 +32,7 @@ func _ready():
 	shotgun.connect("clip_changed", self, "display_ammo_reserves")
 	shotgun.connect("recoil", self, "dash")
 	shotgun.connect("reload_started", self, "display_reload_progress")
+	shotgun.connect("dealt_damage", self, "display_damage_dealt")
 	shotgun.ignored_objects.append(self)
 
 func _periodic():
@@ -169,7 +176,6 @@ func collect_inputs():
 
 func display_ammo_reserves():
 	ui_ammo_reserves.set_text(str(shotgun.ammo_remaining))
-	print(100 * float(shotgun.clip_remaining) / shotgun.clip_size_default)
 	ui_ammo_gauge.set_value(100 * float(shotgun.clip_remaining) / shotgun.clip_size_default)
 
 func display_reload_progress():
@@ -187,3 +193,14 @@ func display_reload_progress():
 func display_health():
 	ui_health_label.set_text(str(health))
 	ui_health_gauge.set_value(health)
+
+func display_damage_dealt(damage):
+	ui_dealt_damage_label.set_text(str(int(damage)))
+	if damage > 60:
+		ui_dealt_damage_label.set("custom_colors/font_color", ui_meg_damage_color)
+	elif damage > 40:
+		ui_dealt_damage_label.set("custom_colors/font_color", ui_big_damage_color)
+	elif damage > 15:
+		ui_dealt_damage_label.set("custom_colors/font_color", ui_mid_damage_color)
+	else:
+		ui_dealt_damage_label.set("custom_colors/font_color", ui_lil_damage_color)

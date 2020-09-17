@@ -14,6 +14,7 @@ var can_fire = true
 
 signal clip_changed()
 signal reload_started()
+signal dealt_damage(damage)
 
 
 func _ready():

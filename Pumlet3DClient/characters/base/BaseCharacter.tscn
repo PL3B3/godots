@@ -26,15 +26,11 @@ script = ExtResource( 1 )
 [node name="BodyCollisionShape" type="CollisionShape" parent="."]
 shape = SubResource( 1 )
 
-[node name="MeshInstance" type="MeshInstance" parent="BodyCollisionShape"]
-transform = Transform( 0.996976, -0.029976, 0.0716992, 0.0189767, 0.988589, 0.14944, -0.0753606, -0.147627, 0.986168, 0, 0, 0 )
-mesh = SubResource( 2 )
-material/0 = null
-
 [node name="CameraOrigin" type="Spatial" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.569643, 0 )
 
 [node name="Camera" type="Camera" parent="CameraOrigin"]
+current = true
 __meta__ = {
 "_editor_description_": ""
 }
@@ -47,5 +43,10 @@ spot_range = 30.0
 spot_attenuation = 0.517633
 spot_angle = 30.0
 spot_angle_attenuation = 0.574349
+
+[node name="MeshInstance" type="MeshInstance" parent="CameraOrigin/Camera"]
+transform = Transform( 0.996976, -0.029976, 0.0716992, 0.0189767, 0.988589, 0.14944, -0.0753606, -0.147627, 0.986168, 0, -0.3, 0 )
+mesh = SubResource( 2 )
+material/0 = null
 
 [node name="UI" parent="." instance=ExtResource( 3 )]

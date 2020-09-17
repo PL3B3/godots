@@ -8,35 +8,38 @@ var fire_line_clear_timer
 var fire_mode_settings = [
 	{
 		"pattern": {
-			Vector3(0, 0, 0): 10,
-			Vector3(-0.035, 0, 0): 5,
+			Vector3(0, 0, 0): 12,
+			Vector3(-0.035, 0, 0): 6,
 			Vector3(-0.0125, 0.0125, 0): 8,
-			Vector3(0, 0.035, 0): 5,
+			Vector3(0, 0.035, 0): 6,
 			Vector3(-0.0125, -0.0125, 0): 8,
-			Vector3(0.035, 0, 0): 5,
+			Vector3(0.035, 0, 0): 6,
 			Vector3(0.0125, 0.0125, 0): 8,
-			Vector3(0, -0.035, 0): 5,
+			Vector3(0, -0.035, 0): 6,
 			Vector3(0.0125, -0.0125, 0): 8},
 		"transform": null,
 		"parameters": [],
 		"range": 30,
+		"falloff": 0.3,
 		"self_push_speed": 1,
 		"target_push_speed": 0.3
 	},
 	{
 		"pattern": {
-			Vector3(-.20, 0, 0): 10,
-			Vector3(-0.15, 0, 0): 10,
-			Vector3(-0.10, 0, 0): 10,
-			Vector3(-0.05, 0, 0): 10,
-			Vector3(0, 0, 0): 10,
-			Vector3(0.2, 0, 0): 10,
-			Vector3(0.15, 0, 0): 10,
-			Vector3(0.1, 0, 0): 10,
-			Vector3(0.05, 0, 0): 10},
+			Vector3(-.20, 0, 0): 20,
+			Vector3(-0.15, 0, 0): 20,
+			Vector3(-0.10, 0, 0): 20,
+			Vector3(-0.05, 0, 0): 20,
+			Vector3(-0.015, 0, 0): 20,
+			Vector3(0.015, 0, 0): 20,
+			Vector3(0.2, 0, 0): 20,
+			Vector3(0.15, 0, 0): 20,
+			Vector3(0.1, 0, 0): 20,
+			Vector3(0.05, 0, 0): 20},
 		"transform": null,
 		"parameters": [],
 		"range": 15,
+		"falloff": 4,
 		"self_push_speed": 6,
 		"target_push_speed": 1
 	},
@@ -46,8 +49,9 @@ var fire_mode_settings = [
 		"transform": null,
 		"parameters": [],
 		"range": 60,
+		"falloff": 5,
 		"self_push_speed": 0,
-		"target_push_speed": 0
+		"target_push_speed": -10
 	}]
 var push_ticks = 10
 var fire_mode_phys_processing = [false, false, false]
@@ -72,9 +76,9 @@ func _ready():
 func init():
 	fire_rate_default = 0.6
 	reload_time_default = 1.6
-	clip_size_default = 2
+	clip_size_default = 10
 	clip_remaining = clip_size_default
-	ammo_default = 40
+	ammo_default = 400
 	ammo_remaining = ammo_default
 
 func _process(delta):
@@ -99,6 +103,7 @@ func hitscan_fire(mode: int) -> Dictionary:
 	
 	var collision_dict = {}
 	var fire_lines = []
+	var total_damage = 0
 	
 	var fire_settings = fire_mode_settings[mode]
 	var fire_transform = fire_settings["transform"]
@@ -107,7 +112,6 @@ func hitscan_fire(mode: int) -> Dictionary:
 	print(fire_transform.basis.z)
 	
 	for offset in fire_pattern:
-		var damage = fire_pattern[offset]
 		var fire_direction = -fire_settings["range"] * (
 			fire_transform.basis.z + 
 			fire_transform.basis.x * offset.x +
@@ -120,32 +124,42 @@ func hitscan_fire(mode: int) -> Dictionary:
 			ignored_objects)
 		
 		collision_dict[offset] = collision
-		fire_lines.append(fire_direction)
+		#fire_lines.append(fire_direction)
 		
 		if not collision.empty():
 			fire_lines.append(collision.position - fire_transform.origin)
 			#print("collided with " + collision.collider.name)
 			if collision.collider.has_method("hit"):
-				collision.collider.callv("hit", [damage])
+				var dist_ratio = (
+					(collision.position - fire_transform.origin).length() / 
+					fire_settings["range"])
+				var damage = fire_pattern[offset] * exp(-1 * fire_settings["falloff"] * dist_ratio)
+				total_damage += damage
+				collision.collider.callv(
+					"hit", 
+					[damage])
 			if collision.collider.has_method("dash"):
 				collision.collider.callv("dash", [
-					-collision.normal,
+					fire_direction.normalized(),
 					fire_settings["target_push_speed"],
 					push_ticks
 				])
-	
 	
 	emit_signal("recoil",
 		fire_transform.basis.z,
 		fire_settings["self_push_speed"],
 		push_ticks)
 	animate_recoil(fire_settings["self_push_speed"])
-	
 	create_fire_lines_representation(fire_transform.origin, fire_lines)
+	
+	print("This shot dealt " + str(total_damage) + " damage")
+	emit_signal("dealt_damage", total_damage)
 	
 	return collision_dict
 
 func create_fire_lines_representation(origin, fire_lines):
+	if not fire_lines:
+		return
 	var verts = PoolVector3Array()
 	get_node("/root").add_child(fire_line_mesh)
 	for line in fire_lines:
