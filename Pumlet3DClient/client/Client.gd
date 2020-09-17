@@ -26,6 +26,10 @@ var current_map
 var offline = false
 var minmap_size = Vector2(1600, 1000)
 
+# -----------------------------------------------------------Functionality Nodes
+
+onready var wap = $WorldAudioPlayer
+
 ##
 ## Preloaded resources
 ##
@@ -54,6 +58,7 @@ func _ready():
 	var target = base_fauna.instance()
 	target.transform.origin = Vector3(0, 14, 0)
 	add_child(target)
+	wap.play()
 	#$SelectionInput.connect("text_entered", self, "process_selection_input")
 
 func process_selection_input(selection: String):

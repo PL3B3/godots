@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/166181__logicmoon__alienicer.wav-bad7e0d5e67eb7e81eaf8aec4674d958.sample"
+
+[deps]
+
+source_file="res://client/music/166181__logicmoon__alienicer.wav"
+dest_files=[ "res://.import/166181__logicmoon__alienicer.wav-bad7e0d5e67eb7e81eaf8aec4674d958.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop=false
+compress/mode=0

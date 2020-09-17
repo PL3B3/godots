@@ -1,14 +1,16 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://fauna/BaseFauna.gd" type="Script" id=1]
 [ext_resource path="res://characters/assets/Tiles_036_SD/Tiles_036_roughness.jpg" type="Texture" id=2]
 [ext_resource path="res://characters/assets/Tiles_036_SD/Tiles_036_ambientOcclusion.jpg" type="Texture" id=3]
 [ext_resource path="res://characters/assets/Tiles_036_SD/Tiles_036_normal.jpg" type="Texture" id=4]
-[ext_resource path="res://characters/assets/Tiles_036_SD/Tiles_036_basecolor.jpg" type="Texture" id=5]
+[ext_resource path="res://fauna/fauna_assets/biggerpyro.png" type="Texture" id=5]
+[ext_resource path="res://fauna/fauna_assets/Pyro_painsevere01.wav" type="AudioStream" id=6]
 
 [sub_resource type="SphereShape" id=1]
+radius = 0.9
 
-[sub_resource type="SpatialMaterial" id=3]
+[sub_resource type="SpatialMaterial" id=2]
 albedo_color = Color( 1, 1, 1, 0.486275 )
 albedo_texture = ExtResource( 5 )
 metallic = 0.1
@@ -28,8 +30,10 @@ ao_texture = ExtResource( 3 )
 ao_on_uv2 = false
 ao_texture_channel = 0
 
-[sub_resource type="SphereMesh" id=2]
-material = SubResource( 3 )
+[sub_resource type="SphereMesh" id=3]
+material = SubResource( 2 )
+radius = 0.9
+height = 1.8
 
 [node name="BaseFauna" type="KinematicBody"]
 collision_layer = 128
@@ -40,5 +44,10 @@ script = ExtResource( 1 )
 shape = SubResource( 1 )
 
 [node name="MeshInstance" type="MeshInstance" parent="CollisionShape"]
-mesh = SubResource( 2 )
+mesh = SubResource( 3 )
 material/0 = null
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource( 6 )
+unit_db = 25.0
+unit_size = 0.5

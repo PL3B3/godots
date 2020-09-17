@@ -1,22 +1,22 @@
 [gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://characters/base/BaseCharacter.gd" type="Script" id=1]
-[ext_resource path="res://arms/Shotgun.tscn" type="PackedScene" id=2]
+[ext_resource path="res://arms/base/BaseHitscanWeapon.tscn" type="PackedScene" id=2]
 [ext_resource path="res://characters/base/UI.tscn" type="PackedScene" id=3]
 [ext_resource path="res://characters/assets/ser_arthur_less_wide.png" type="Texture" id=4]
 
 [sub_resource type="SphereShape" id=1]
 radius = 1.2
 
-[sub_resource type="SpatialMaterial" id=3]
+[sub_resource type="SpatialMaterial" id=2]
 albedo_texture = ExtResource( 4 )
 roughness = 0.17
 rim_enabled = true
 rim = 1.0
 rim_tint = 0.23
 
-[sub_resource type="SphereMesh" id=2]
-material = SubResource( 3 )
+[sub_resource type="SphereMesh" id=3]
+material = SubResource( 2 )
 radius = 1.2
 height = 2.4
 
@@ -35,7 +35,7 @@ __meta__ = {
 "_editor_description_": ""
 }
 
-[node name="Shotgun" parent="CameraOrigin/Camera" instance=ExtResource( 2 )]
+[node name="Weapon" parent="CameraOrigin/Camera" instance=ExtResource( 2 )]
 
 [node name="Flashlight" type="SpotLight" parent="CameraOrigin/Camera"]
 light_energy = 4.0
@@ -46,7 +46,7 @@ spot_angle_attenuation = 0.574349
 
 [node name="MeshInstance" type="MeshInstance" parent="CameraOrigin/Camera"]
 transform = Transform( 0.996976, -0.029976, 0.0716992, 0.0189767, 0.988589, 0.14944, -0.0753606, -0.147627, 0.986168, 0, -0.3, 0 )
-mesh = SubResource( 2 )
+mesh = SubResource( 3 )
 material/0 = null
 
 [node name="UI" parent="." instance=ExtResource( 3 )]

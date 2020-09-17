@@ -2,6 +2,9 @@ extends Spatial
 
 onready var fire_point = $FirePoint
 onready var interpolator = $Interpolator
+onready var fire_audio_player = $FirePoint/FireAudioPlayer
+onready var load_audio_player = $FirePoint/LoadAudioPlayer
+var animation_helper = preload("res://client/utils/AnimationHelper.gd")
 var next_shot_timer = Timer.new()
 
 var fire_rate_default = 0.3
@@ -32,9 +35,10 @@ func fire(fire_mode: int, fire_parameters):
 	if can_fire and clip_remaining > 0 and ammo_remaining > 0:
 		clip_remaining -= 1
 		ammo_remaining -= 1
+		emit_signal("clip_changed")
 		var fire_transform = Transform()
 		fire_transform.basis = get_global_transform().basis
-		fire_transform.origin = get_global_transform().origin
+		fire_transform.origin = fire_point.get_global_transform().origin
 		match fire_mode:
 			0:
 				primary_fire(fire_transform, fire_parameters)
@@ -48,6 +52,7 @@ func fire(fire_mode: int, fire_parameters):
 		if clip_remaining == 0:
 			next_shot_timer.start(reload_time_default)
 			emit_signal("reload_started")
+			animate_reload()
 		else:
 			next_shot_timer.start(fire_rate_default)
 
@@ -64,4 +69,8 @@ func _load_next_shot():
 	if clip_remaining == 0 and ammo_remaining > 0:
 		clip_remaining = min(clip_size_default, ammo_remaining)
 	can_fire = true
-	emit_signal("clip_changed")
+
+func animate_reload():
+	pass
+
+	pass

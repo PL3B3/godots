@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/Pyro_painsevere01.wav-064d6c0a134d84c589a673980969cb64.sample"
+
+[deps]
+
+source_file="res://fauna/fauna_assets/Pyro_painsevere01.wav"
+dest_files=[ "res://.import/Pyro_painsevere01.wav-064d6c0a134d84c589a673980969cb64.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop=false
+compress/mode=0

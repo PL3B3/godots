@@ -4,7 +4,7 @@ onready var client = get_node("/root/Client")
 onready var camera_origin = $CameraOrigin
 onready var camera = $CameraOrigin/Camera
 onready var flashlight = $CameraOrigin/Camera/Flashlight
-onready var shotgun = $CameraOrigin/Camera/Shotgun
+onready var weapon = $CameraOrigin/Camera/Weapon
 onready var ui_ammo_reserves = $UI/Stats/Bars/Ammo/AmmoLabel/Background/Reserves
 onready var ui_ammo_gauge = $UI/Stats/Bars/Ammo/AmmoGauge
 onready var ui_health_label = $UI/Stats/Bars/Health/HealthLabel/Background/Number
@@ -12,13 +12,14 @@ onready var ui_health_gauge = $UI/Stats/Bars/Health/HealthGauge
 onready var ui_dealt_damage_label = $UI/Stats/Bars2/DealtDamageLabel
 
 var ui_meg_damage_color = Color.turquoise
-var ui_big_damage_color = Color.salmon
-var ui_mid_damage_color = Color.purple
+var ui_big_damage_color = Color.purple
+var ui_mid_damage_color = Color.salmon
 var ui_lil_damage_color = Color.gray
 
 var periodic_timer = Timer.new()
 var periodic_timer_period = 0.5
 var interpolator = Tween.new()
+var animation_helper = preload("res://client/utils/AnimationHelper.gd")
 
 var health = 100
 var fire_mode = 0
@@ -29,18 +30,18 @@ func _ready():
 	periodic_timer.start(periodic_timer_period)
 	periodic_timer.connect("timeout", self, "_periodic")
 	add_child(interpolator)
-	shotgun.connect("clip_changed", self, "display_ammo_reserves")
-	shotgun.connect("recoil", self, "dash")
-	shotgun.connect("reload_started", self, "display_reload_progress")
-	shotgun.connect("dealt_damage", self, "display_damage_dealt")
-	shotgun.ignored_objects.append(self)
+	weapon.connect("clip_changed", self, "display_ammo_reserves")
+	weapon.connect("recoil", self, "dash")
+	weapon.connect("reload_started", self, "display_reload_progress")
+	weapon.connect("dealt_damage", self, "display_damage_dealt")
+	weapon.ignored_objects.append(self)
 
 func _periodic():
 	display_health()
 
 
 # ----------------------------------------------------------------------Movement
-export var speed = 10
+export var speed = 8
 export var acceleration = 3
 export var deceleration = 3
 export var gravity = 0.8
@@ -95,7 +96,7 @@ func _physics_process(delta):
 		ticks_since_grounded += 1
 
 func jump():
-	dash(Vector3(0, 1, 0), gravity * 8, 14)
+	dash(Vector3(0, 1, 0), gravity * 7, 14)
 
 func dash(direction: Vector3, speed: float, ticks: int):
 	var dash_ticks_remaining = ticks
@@ -136,8 +137,7 @@ func _input(event):
 			flashlight.show()
 	
 	if event.is_action_pressed("primary_action"):
-		shotgun.fire(fire_mode, [camera.get_global_transform()])
-		display_ammo_reserves()
+		weapon.fire(fire_mode, [camera.get_global_transform()])
 	
 	if event.is_action_pressed("select_fire_mode_0"):
 		fire_mode = 0
@@ -168,6 +168,7 @@ func collect_inputs():
 	else:
 		sprinting = false
 	
+	
 	direction = direction.normalized()
 
 
@@ -175,19 +176,17 @@ func collect_inputs():
 # ----------------------------------------------------------------------------UI
 
 func display_ammo_reserves():
-	ui_ammo_reserves.set_text(str(shotgun.ammo_remaining))
-	ui_ammo_gauge.set_value(100 * float(shotgun.clip_remaining) / shotgun.clip_size_default)
+	ui_ammo_reserves.set_text(str(weapon.ammo_remaining))
+	ui_ammo_gauge.set_value(100 * float(weapon.clip_remaining) / weapon.clip_size_default)
 
 func display_reload_progress():
-	if shotgun.ammo_remaining == 0:
+	if weapon.ammo_remaining == 0:
 		return
-	var period = shotgun.reload_time_default
+	var period = weapon.reload_time_default
 	var tick = float(period) / 100
 	var num_ticks = int(period / tick)
-	var progress = 0
 	for i in range(100):
-		progress += 1
-		ui_ammo_gauge.set_value(progress)
+		ui_ammo_gauge.set_value(ui_ammo_gauge.get_value() + 1)
 		yield(get_tree().create_timer(tick), "timeout")
 
 func display_health():
@@ -196,11 +195,20 @@ func display_health():
 
 func display_damage_dealt(damage):
 	ui_dealt_damage_label.set_text(str(int(damage)))
-	if damage > 60:
+	if damage > 66:
 		ui_dealt_damage_label.set("custom_colors/font_color", ui_meg_damage_color)
+		var ui_new_position = ui_dealt_damage_label.rect_position - Vector2(0, 50)
+		animation_helper.interpolate_symmetric(
+			interpolator,
+			ui_dealt_damage_label,
+			"rect_position",
+			ui_new_position,
+			0.4)
 	elif damage > 40:
 		ui_dealt_damage_label.set("custom_colors/font_color", ui_big_damage_color)
 	elif damage > 15:
 		ui_dealt_damage_label.set("custom_colors/font_color", ui_mid_damage_color)
 	else:
 		ui_dealt_damage_label.set("custom_colors/font_color", ui_lil_damage_color)
+
+

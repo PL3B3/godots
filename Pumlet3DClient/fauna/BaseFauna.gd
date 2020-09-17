@@ -2,7 +2,7 @@ extends KinematicBody
 
 var health = 2000
 
-var gravity = 5
+var gravity = 15
 var velocity = Vector3()
 var direction = Vector3()
 var speed = 4
@@ -20,15 +20,30 @@ func _ready():
 
 func hit(damage):
 	health -= damage
+	var rand = rng.randf_range(0, 1)
+	var sound_rsrc = null
+	if rand > 0.8:
+		sound_rsrc = load("res://fauna/fauna_assets/Pyro_paincrticialdeath03.wav")
+	elif rand > 0.6:
+		sound_rsrc = load("res://fauna/fauna_assets/Pyro_painsevere01.wav")
+	elif rand > 0.4:
+		sound_rsrc = load("res://fauna/fauna_assets/Pyro_painsevere02.wav")
+	elif rand > 0.2:
+		sound_rsrc = load("res://fauna/fauna_assets/Pyro_painsevere06.wav")
+	else:
+		sound_rsrc = load("res://fauna/fauna_assets/Pyro_painsharp03.wav")
+	$AudioStreamPlayer3D.set_stream(sound_rsrc)
+	$AudioStreamPlayer3D.play()
 	#print(health)
 
 func _physics_process(delta):
 	if movement_enabled:
 		velocity.y -= gravity * delta
 		
-		velocity = velocity.linear_interpolate(direction * speed, 2 * delta)
+		look_at(transform.origin + Vector3(velocity.x, 0, velocity.z), Vector3(0, 1, 0))
+		velocity = velocity.linear_interpolate(direction * speed, delta)
 		
-		velocity = move_and_slide(
+		move_and_slide(
 			velocity,
 			Vector3.UP,
 			true)
@@ -41,8 +56,8 @@ func dash(direction: Vector3, speed: float, ticks: int):
 		dash_ticks_remaining -= 1
 
 func _change_direction():
-	direction = Vector3(rng.randf_range(-1, 1), rng.randf_range(-3, 3), 0).normalized()
+	direction = Vector3(rng.randf_range(-1, 1), 0, rng.randf_range(-1, 1)).normalized()
 	var rnum = rng.randf_range(0, 1)
 	if rnum > 0.9:
-		dash(Vector3(0, 1, 0), 3, 10)
+		dash(Vector3(0, 1, 0), 4, 5)
 	periodic_timer.start(rng.randf_range(0.3, 2))
