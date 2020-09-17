@@ -20,9 +20,11 @@ var fire_mode_settings = [
 		"transform": null,
 		"parameters": [],
 		"range": 30,
-		"falloff": 0.3,
+		"damage_falloff": 0.3,
+		"push_force_falloff": 0.3,
 		"self_push_speed": 1,
-		"target_push_speed": 0.3
+		"target_push_speed": 0.2,
+		"velocity_push_factor": 0.1
 	},
 	{
 		"pattern": {
@@ -39,9 +41,11 @@ var fire_mode_settings = [
 		"transform": null,
 		"parameters": [],
 		"range": 15,
-		"falloff": 4,
+		"damage_falloff": 4,
+		"push_force_falloff": 4,
 		"self_push_speed": 6,
-		"target_push_speed": 1
+		"target_push_speed": 0.5,
+		"velocity_push_factor": 0.2
 	},
 	{
 		"pattern": {
@@ -49,14 +53,16 @@ var fire_mode_settings = [
 		"transform": null,
 		"parameters": [],
 		"range": 60,
-		"falloff": 5,
+		"damage_falloff": 5,
+		"push_force_falloff": -2,
 		"self_push_speed": 0,
-		"target_push_speed": -10
+		"target_push_speed": -3,
+		"velocity_push_factor": 0.3
 	}]
 var push_ticks = 10
 var fire_mode_phys_processing = [false, false, false]
 var ignored_objects = []
-
+var velocity_push_factor_universal = 10
 
 signal recoil(direction, speed, ticks)
 
@@ -133,20 +139,28 @@ func hitscan_fire(mode: int) -> Dictionary:
 		
 		if not collision.empty():
 			fire_lines.append(collision.position - fire_transform.origin)
+			var dist_ratio = (
+				(collision.position - fire_transform.origin).length() / 
+				fire_settings["range"])
 			#print("collided with " + collision.collider.name)
 			if collision.collider.has_method("hit"):
-				var dist_ratio = (
-					(collision.position - fire_transform.origin).length() / 
-					fire_settings["range"])
-				var damage = fire_pattern[offset] * exp(-1 * fire_settings["falloff"] * dist_ratio)
+				var damage_falloff = exp(-1 * fire_settings["damage_falloff"] * dist_ratio)
+				var damage = fire_pattern[offset] * damage_falloff
 				total_damage += damage
 				collision.collider.callv(
 					"hit", 
 					[damage])
 			if collision.collider.has_method("dash"):
+				var push_force_falloff = exp(-1 * fire_settings["push_force_falloff"] * dist_ratio)
+				var push_speed = fire_settings["target_push_speed"] * push_force_falloff
 				collision.collider.callv("dash", [
-					fire_direction.normalized(),
-					fire_settings["target_push_speed"],
+					(fire_direction.normalized() + (
+						(
+							velocity * 
+							(push_speed / abs(push_speed)) /
+							velocity_push_factor_universal) * 
+						fire_settings["velocity_push_factor"])),
+					push_speed,
 					push_ticks
 				])
 		else:
@@ -212,7 +226,12 @@ func _clear_fire_lines():
 	fire_line_mesh.clear()
 	get_node("/root").remove_child(fire_line_mesh)
 
+var last_position = Vector3()
+var velocity = 0
 func _physics_process(delta):
+	var current_position = get_global_transform().origin
+	velocity = (current_position - last_position) / delta
+	last_position = current_position
 	for mode in range(len(fire_mode_phys_processing)):
 		if fire_mode_phys_processing[mode]:
 			hitscan_fire(mode)

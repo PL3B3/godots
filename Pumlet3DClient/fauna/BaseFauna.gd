@@ -5,7 +5,8 @@ var health = 2000
 var gravity = 15
 var velocity = Vector3()
 var direction = Vector3()
-var speed = 4
+var speed = 16
+var jump_prob = 0.4
 var movement_enabled = true
 
 var periodic_timer = Timer.new()
@@ -43,10 +44,12 @@ func _physics_process(delta):
 		look_at(transform.origin + Vector3(velocity.x, 0, velocity.z), Vector3(0, 1, 0))
 		velocity = velocity.linear_interpolate(direction * speed, delta)
 		
-		move_and_slide(
-			velocity,
-			Vector3.UP,
-			true)
+		velocity = velocity.linear_interpolate(
+			move_and_slide(
+				velocity,
+				Vector3.UP,
+				true),
+			12 * delta)
 
 func dash(direction: Vector3, speed: float, ticks: int):
 	var dash_ticks_remaining = ticks
@@ -58,6 +61,6 @@ func dash(direction: Vector3, speed: float, ticks: int):
 func _change_direction():
 	direction = Vector3(rng.randf_range(-1, 1), 0, rng.randf_range(-1, 1)).normalized()
 	var rnum = rng.randf_range(0, 1)
-	if rnum > 0.9:
+	if rnum > 1 - jump_prob:
 		dash(Vector3(0, 1, 0), 4, 5)
 	periodic_timer.start(rng.randf_range(0.3, 2))
