@@ -23,7 +23,9 @@ var fire_mode_settings = [
 		"damage_falloff": 0.3,
 		"push_force_falloff": 0.3,
 		"self_push_speed": 1,
+		"self_push_ticks": 10,
 		"target_push_speed": 0.2,
+		"target_push_ticks": 10,
 		"velocity_push_factor": 0.1
 	},
 	{
@@ -44,7 +46,9 @@ var fire_mode_settings = [
 		"damage_falloff": 4,
 		"push_force_falloff": 4,
 		"self_push_speed": 6,
+		"self_push_ticks": 10,
 		"target_push_speed": 0.5,
+		"target_push_ticks": 10,
 		"velocity_push_factor": 0.2
 	},
 	{
@@ -55,11 +59,12 @@ var fire_mode_settings = [
 		"range": 60,
 		"damage_falloff": 5,
 		"push_force_falloff": -2,
-		"self_push_speed": 0,
-		"target_push_speed": -3,
+		"self_push_speed": -2,
+		"self_push_ticks": 20,
+		"target_push_speed": -2,
+		"target_push_ticks": 10,
 		"velocity_push_factor": 0.3
 	}]
-var push_ticks = 10
 var fire_mode_phys_processing = [false, false, false]
 var ignored_objects = []
 var velocity_push_factor_universal = 10
@@ -161,7 +166,7 @@ func hitscan_fire(mode: int) -> Dictionary:
 							velocity_push_factor_universal) * 
 						fire_settings["velocity_push_factor"])),
 					push_speed,
-					push_ticks
+					fire_settings["target_push_ticks"]
 				])
 		else:
 			fire_lines.append(fire_direction)
@@ -169,7 +174,7 @@ func hitscan_fire(mode: int) -> Dictionary:
 	emit_signal("recoil",
 		fire_transform.basis.z,
 		fire_settings["self_push_speed"],
-		push_ticks)
+		fire_settings["self_push_ticks"])
 	animate_fire(fire_settings["self_push_speed"])
 	create_fire_lines_representation(fire_transform.origin, fire_lines)
 	
@@ -195,7 +200,7 @@ func create_fire_lines_representation(origin, fire_lines):
 	fire_line_clear_timer.start(fire_rate_default)
 
 func animate_fire(power: float):
-	var recoiled_position = mesh.get_translation() + Vector3(0, 0, sqrt(power / 10))
+	var recoiled_position = mesh.get_translation() + Vector3(0, 0, sqrt(abs(power) / 10))
 	animation_helper.interpolate_symmetric(
 		interpolator,
 		mesh,

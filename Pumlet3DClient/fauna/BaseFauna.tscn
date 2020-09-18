@@ -1,37 +1,20 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://fauna/BaseFauna.gd" type="Script" id=1]
-[ext_resource path="res://characters/assets/Tiles_036_SD/Tiles_036_roughness.jpg" type="Texture" id=2]
-[ext_resource path="res://characters/assets/Tiles_036_SD/Tiles_036_ambientOcclusion.jpg" type="Texture" id=3]
-[ext_resource path="res://characters/assets/Tiles_036_SD/Tiles_036_normal.jpg" type="Texture" id=4]
 [ext_resource path="res://fauna/fauna_assets/biggerpyro.png" type="Texture" id=5]
 [ext_resource path="res://fauna/fauna_assets/Pyro_painsevere01.wav" type="AudioStream" id=6]
 
 [sub_resource type="SphereShape" id=1]
 radius = 0.9
 
-[sub_resource type="SpatialMaterial" id=2]
-albedo_color = Color( 1, 1, 1, 0.486275 )
+[sub_resource type="SpatialMaterial" id=4]
 albedo_texture = ExtResource( 5 )
-metallic = 0.1
-metallic_specular = 0.2
-roughness_texture = ExtResource( 2 )
-emission_enabled = true
-emission = Color( 0.596078, 0.482353, 0.243137, 1 )
-emission_energy = 0.48
-emission_operator = 0
-emission_on_uv2 = false
-normal_enabled = true
-normal_scale = 1.0
-normal_texture = ExtResource( 4 )
-ao_enabled = true
-ao_light_affect = 0.0
-ao_texture = ExtResource( 3 )
-ao_on_uv2 = false
-ao_texture_channel = 0
+roughness = 0.59
+rim_enabled = true
+rim = 1.0
+rim_tint = 0.0
 
 [sub_resource type="SphereMesh" id=3]
-material = SubResource( 2 )
 radius = 0.9
 height = 1.8
 
@@ -44,6 +27,7 @@ script = ExtResource( 1 )
 shape = SubResource( 1 )
 
 [node name="MeshInstance" type="MeshInstance" parent="CollisionShape"]
+material_override = SubResource( 4 )
 mesh = SubResource( 3 )
 material/0 = null
 
@@ -51,3 +35,10 @@ material/0 = null
 stream = ExtResource( 6 )
 unit_db = 25.0
 unit_size = 0.5
+
+[node name="HealthLight" type="OmniLight" parent="."]
+light_color = Color( 0, 1, 0.392157, 1 )
+light_energy = 3.0
+light_indirect_energy = 0.0
+omni_range = 1.0
+omni_attenuation = 2.0

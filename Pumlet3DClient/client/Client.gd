@@ -55,11 +55,19 @@ func _ready():
 	var player = base_character.instance()
 	player.transform.origin = Vector3(0, 40, 0)
 	add_child(player)
-	var target = base_fauna.instance()
-	target.transform.origin = Vector3(0, 4, 0)
-	add_child(target)
+	spawn_targets(1)
 	wap.play()
 	#$SelectionInput.connect("text_entered", self, "process_selection_input")
+
+func spawn_targets(num_targets):
+	for i in range(num_targets):
+		var target = base_fauna.instance()
+		target.transform.origin = (
+			Vector3(0, 4, 0) + 
+			5 * (
+				Vector3(cos(2 * PI * float(i) / num_targets), 0, sin(2 * PI * float(i) / num_targets))
+			))
+		add_child(target)
 
 func process_selection_input(selection: String):
 	var split_selection = selection.split(",", false)

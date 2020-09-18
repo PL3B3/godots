@@ -10,6 +10,7 @@ onready var ui_ammo_gauge = $UI/Stats/Bars/Ammo/AmmoGauge
 onready var ui_health_label = $UI/Stats/Bars/Health/HealthLabel/Background/Number
 onready var ui_health_gauge = $UI/Stats/Bars/Health/HealthGauge
 onready var ui_dealt_damage_label = $UI/Stats/Bars2/DealtDamageLabel
+onready var time_queue = $TimeQueue
 
 var ui_meg_damage_color = Color.turquoise
 var ui_big_damage_color = Color.purple
@@ -35,6 +36,7 @@ func _ready():
 	weapon.connect("reload_started", self, "display_reload_progress")
 	weapon.connect("dealt_damage", self, "display_damage_dealt")
 	weapon.ignored_objects.append(self)
+	time_queue.init_time_queue(0.01)
 
 func _periodic():
 	display_health()
@@ -58,13 +60,17 @@ var jumps_left = 0
 var up_dir = Vector3()
 var sprinting = false
 
+var delta_position : Vector3 = Vector3()
+var last_position : Vector3 = Vector3()
 
 func _physics_process(delta):
-	var accel = acceleration
-	if velocity.x * direction.x + velocity.z * direction.z < 0:
-		accel = deceleration
+	var current_position = get_global_transform().origin
+	delta_position = current_position - last_position
+	last_position = current_position
 	
-	velocity = velocity.linear_interpolate(direction * speed * (1 + 2 * int(sprinting)), accel * delta)
+	velocity = velocity.linear_interpolate(
+		direction * speed * (1 + 2 * int(sprinting)),
+		acceleration * delta)
 	
 	collect_inputs()
 	
@@ -88,6 +94,7 @@ func _physics_process(delta):
 		Vector3.UP,
 		true)
 	
+	
 	if is_on_floor():
 		ticks_since_grounded = 0
 		ticks_spent_wall_climbing = 0
@@ -102,7 +109,7 @@ func dash(direction: Vector3, speed: float, ticks: int):
 	var dash_ticks_remaining = ticks
 	while dash_ticks_remaining > 0:
 		velocity += direction.normalized() * speed * (float(dash_ticks_remaining) / ticks)
-		yield(get_tree().create_timer(0.015),"timeout")
+		yield(get_tree().create_timer(0.02),"timeout")
 		dash_ticks_remaining -= 1
 
 # -------------------------------------------------------------------------Input
@@ -146,7 +153,6 @@ func _input(event):
 	if event.is_action_pressed("select_fire_mode_2"):
 		fire_mode = 2
 
-
 # Run per physics frame
 func collect_inputs():
 	var camera_origin_basis = camera_origin.get_global_transform().basis
@@ -171,8 +177,8 @@ func collect_inputs():
 	
 	direction = direction.normalized()
 
-
 # -----------------------------------------------------------------------Utility
+
 # ----------------------------------------------------------------------------UI
 
 func display_ammo_reserves():
@@ -211,4 +217,6 @@ func display_damage_dealt(damage):
 	else:
 		ui_dealt_damage_label.set("custom_colors/font_color", ui_lil_damage_color)
 
-
+# --------------------------------------------------------------------Networking
+func take_snapshot() -> Vector3:
+	return delta_position

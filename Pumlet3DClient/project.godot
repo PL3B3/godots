@@ -104,6 +104,7 @@ select_fire_mode_2={
 
 [physics]
 
+common/physics_jitter_fix=0.2
 3d/physics_engine="GodotPhysics"
 
 [rendering]

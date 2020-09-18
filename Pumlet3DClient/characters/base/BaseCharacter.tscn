@@ -1,9 +1,10 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://characters/base/BaseCharacter.gd" type="Script" id=1]
 [ext_resource path="res://arms/base/BaseHitscanWeapon.tscn" type="PackedScene" id=2]
 [ext_resource path="res://characters/base/UI.tscn" type="PackedScene" id=3]
 [ext_resource path="res://characters/assets/ser_arthur_less_wide.png" type="Texture" id=4]
+[ext_resource path="res://client/utils/TimeQueue.tscn" type="PackedScene" id=5]
 
 [sub_resource type="SphereShape" id=1]
 radius = 1.2
@@ -50,3 +51,5 @@ mesh = SubResource( 3 )
 material/0 = null
 
 [node name="UI" parent="." instance=ExtResource( 3 )]
+
+[node name="TimeQueue" parent="." instance=ExtResource( 5 )]

@@ -1,6 +1,7 @@
 extends KinematicBody
 
-var health = 2000
+var health_default = 2000
+var health = health_default
 
 var gravity = 15
 var velocity = Vector3()
@@ -13,6 +14,7 @@ var periodic_timer = Timer.new()
 var rng = RandomNumberGenerator.new()
 
 func _ready():
+	rng.randomize()
 	periodic_timer.connect("timeout", self, "_change_direction")
 	periodic_timer.set_one_shot(true)
 	add_child(periodic_timer)
@@ -22,6 +24,7 @@ func _ready():
 func hit(damage):
 	health -= damage
 	var rand = rng.randf_range(0, 1)
+	$HealthLight.set_color(Color(1 - (health / health_default), health / health_default, 0.3))
 	var sound_rsrc = null
 	if rand > 0.8:
 		sound_rsrc = load("res://fauna/fauna_assets/Pyro_paincrticialdeath03.wav")
@@ -35,6 +38,8 @@ func hit(damage):
 		sound_rsrc = load("res://fauna/fauna_assets/Pyro_painsharp03.wav")
 	$AudioStreamPlayer3D.set_stream(sound_rsrc)
 	$AudioStreamPlayer3D.play()
+	if health < 0:
+		queue_free()
 	#print(health)
 
 func _physics_process(delta):
