@@ -32,7 +32,7 @@ func add_to_queue(snapshot):
 	# if we've run out of space, start over!
 	if not current_queue_tail < queue_length:
 		current_queue_tail = 0
-	queue[current_queue_tail] = snapshot
+	queue.insert(current_queue_tail, snapshot)
 	current_queue_tail += 1
 	ticks_since_start += 1
 

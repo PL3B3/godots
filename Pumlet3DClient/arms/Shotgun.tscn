@@ -1,0 +1,17 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://arms/arms_assets/m0DefaultMaterial.material" type="Material" id=1]
+[ext_resource path="res://arms/arms_assets/shotgun_mesh.tres" type="ArrayMesh" id=2]
+[ext_resource path="res://arms/base/BaseWeapon.tscn" type="PackedScene" id=3]
+[ext_resource path="res://arms/Shotgun.gd" type="Script" id=4]
+
+[node name="BaseWeapon" instance=ExtResource( 3 )]
+script = ExtResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="." index="0"]
+transform = Transform( -3.25841e-07, 8, 6.51683e-07, 0, -1.30337e-06, 4, 2, 1.30337e-06, 1.06173e-13, 0, 0, 0 )
+mesh = ExtResource( 2 )
+material/0 = ExtResource( 1 )
+
+[node name="FirePoint" parent="." index="1"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.361968, -0.334085 )
