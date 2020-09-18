@@ -3,7 +3,7 @@ extends Node
 var mtq = preload("res://client/utils/MotionTimeQueue.tscn")
 
 func _ready():
-	test_mtq()
+	test_mtq_performance()
 
 func test_mtq():
 	var mtq_0 = mtq.instance()
@@ -27,3 +27,15 @@ func test_mtq():
 	print(mtq_0.calculate_delta_p_prior_to_latest_physics_step(3.3))
 	print(mtq_0.rolling_delta_p_sum)
 	print(mtq_0.calculate_delta_p_prior_to_latest_physics_step_rolling(7.2))
+
+func test_mtq_performance():
+	var mtq_0 = mtq.instance()
+	add_child(mtq_0)
+	mtq_0.init_time_queue(0.3, 200)
+	for i in range(2 * mtq_0.queue_length):
+		mtq_0.add_to_queue(Vector3(3.4, 0, 0))
+	mtq_0.update_rolling_sum_ticks(40)
+	var begin_time = OS.get_ticks_msec()
+	for i in range(1000000):
+		mtq_0.calculate_delta_p_prior_to_latest_physics_step(7.2)
+	print(OS.get_ticks_msec() - begin_time)

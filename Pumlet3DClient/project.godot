@@ -16,7 +16,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Pumlet3DClient"
-run/main_scene="res://client/utils/Tester.tscn"
+run/main_scene="res://client/Client.tscn"
 config/icon="res://icon.png"
 
 [debug]

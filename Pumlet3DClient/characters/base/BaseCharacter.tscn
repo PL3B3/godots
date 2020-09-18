@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://characters/base/BaseCharacter.gd" type="Script" id=1]
-[ext_resource path="res://arms/Shotgun.tscn" type="PackedScene" id=2]
+[ext_resource path="res://arms/base/BaseHitscanWeapon.tscn" type="PackedScene" id=2]
 [ext_resource path="res://characters/base/UI.tscn" type="PackedScene" id=3]
+[ext_resource path="res://client/utils/MotionTimeQueue.tscn" type="PackedScene" id=4]
 
 [sub_resource type="SphereShape" id=1]
 radius = 1.2
@@ -27,12 +28,10 @@ material/0 = null
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.569643, 0 )
 
 [node name="Camera" type="Camera" parent="CameraOrigin"]
+current = true
 __meta__ = {
 "_editor_description_": ""
 }
-
-[node name="Shotgun" parent="CameraOrigin/Camera" instance=ExtResource( 2 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.554819, -0.307068 )
 
 [node name="Flashlight" type="SpotLight" parent="CameraOrigin/Camera"]
 light_energy = 4.0
@@ -41,4 +40,8 @@ spot_attenuation = 0.517633
 spot_angle = 30.0
 spot_angle_attenuation = 0.574349
 
+[node name="Weapon" parent="CameraOrigin/Camera" instance=ExtResource( 2 )]
+
 [node name="UI" parent="." instance=ExtResource( 3 )]
+
+[node name="MotionTimeQueue" parent="." instance=ExtResource( 4 )]

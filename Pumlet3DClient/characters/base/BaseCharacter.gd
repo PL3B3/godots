@@ -10,7 +10,7 @@ onready var ui_ammo_gauge = $UI/Stats/Bars/Ammo/AmmoGauge
 onready var ui_health_label = $UI/Stats/Bars/Health/HealthLabel/Background/Number
 onready var ui_health_gauge = $UI/Stats/Bars/Health/HealthGauge
 onready var ui_dealt_damage_label = $UI/Stats/Bars2/DealtDamageLabel
-onready var time_queue = $TimeQueue
+onready var motion_time_queue = $MotionTimeQueue
 
 var ui_meg_damage_color = Color.turquoise
 var ui_big_damage_color = Color.purple
@@ -36,10 +36,11 @@ func _ready():
 	weapon.connect("reload_started", self, "display_reload_progress")
 	weapon.connect("dealt_damage", self, "display_damage_dealt")
 	weapon.ignored_objects.append(self)
-	time_queue.init_time_queue(0.01)
+	motion_time_queue.init_time_queue()
 
 func _periodic():
 	display_health()
+	print(get_motion_since(0.5))
 
 
 # ----------------------------------------------------------------------Movement
@@ -62,11 +63,15 @@ var sprinting = false
 
 var delta_position : Vector3 = Vector3()
 var last_position : Vector3 = Vector3()
+var last_physics_frame_timestamp = 0
 
 func _physics_process(delta):
 	var current_position = get_global_transform().origin
 	delta_position = current_position - last_position
 	last_position = current_position
+	
+	last_physics_frame_timestamp = OS.get_ticks_msec()
+	motion_time_queue.add_to_queue(delta_position)
 	
 	velocity = velocity.linear_interpolate(
 		direction * speed * (1 + 2 * int(sprinting)),
@@ -220,3 +225,12 @@ func display_damage_dealt(damage):
 # --------------------------------------------------------------------Networking
 func take_snapshot() -> Vector3:
 	return delta_position
+
+func get_motion_since(lag_time):
+	var seconds_since_last_physics_step = (
+		0.001 * 
+		(OS.get_ticks_msec() - last_physics_frame_timestamp))
+	return (
+		velocity * 
+		seconds_since_last_physics_step +
+		motion_time_queue.calculate_delta_p_prior_to_latest_physics_step(lag_time - seconds_since_last_physics_step))
