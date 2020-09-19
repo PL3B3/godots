@@ -14,7 +14,7 @@ onready var ui_dealt_damage_label = $UI/Stats/Bars2/DealtDamageLabel
 onready var motion_time_queue = $MotionTimeQueue
 
 var periodic_timer = Timer.new()
-var periodic_timer_period = 0.1
+var periodic_timer_period = 0.2
 var interpolator = Tween.new()
 var animation_helper = preload("res://client/utils/AnimationHelper.gd")
 
@@ -48,7 +48,9 @@ var sprinting = false
 var delta_position : Vector3 = Vector3()
 var last_position : Vector3 = Vector3()
 var last_queue_add_timestamp = 0
+var tick_length
 var phys_counter = 0
+var physics_tick_length = 1.0 / Engine.iterations_per_second
 
 
 # --------------------------------------------------------------------Input Vars
@@ -67,7 +69,8 @@ func _ready():
 	periodic_timer.connect("timeout", self, "_periodic")
 	periodic_timer.start(periodic_timer_period)
 	
-	motion_time_queue.init_time_queue()
+	print(physics_tick_length)
+	motion_time_queue.init_time_queue(physics_tick_length, int(4 / physics_tick_length))
 	
 	add_child(interpolator)
 	
@@ -79,38 +82,35 @@ func _ready():
 
 var last_period_position = Vector3()
 var error_avg = 0
-var new_error_weight = 0.3
+var new_error_weight = 0.1
 func _periodic():
-	pass
 #	display_health()
-#	var real_dist_moved = get_global_transform().origin - last_period_position
-#	var error = get_global_transform().origin - (last_period_position + get_motion_since(periodic_timer_period))
-#	if real_dist_moved.length() > 0:
-#		var pcnt_error = 100 * error.length() / real_dist_moved.length()
-#		#print(pcnt_error)
-#		if error_avg == 0:
-#			#print("first_error")
-#			error_avg = pcnt_error
-#		else:
-#			error_avg = (error_avg + (new_error_weight * pcnt_error)) / (1 + new_error_weight)
-#	print("%" + str(error_avg) + " error")
-#	last_period_position = get_global_transform().origin
+	var real_dist_moved = get_global_transform().origin - last_period_position
+	var error = real_dist_moved - get_motion_since(periodic_timer_period * 1000000)
+	print(get_motion_since(periodic_timer_period * 1000000))
+	print(real_dist_moved)
+	if real_dist_moved.length() > 0:
+		var pcnt_error = 100 * error.length() / real_dist_moved.length()
+		#print(pcnt_error)
+		if error_avg == 0:
+			print("first_error")
+			error_avg = pcnt_error
+		else:
+			error_avg = (error_avg + (new_error_weight * pcnt_error)) / (1 + new_error_weight)
+	print("%" + str(error_avg) + " error")
+	last_period_position = get_global_transform().origin
+#	print(phys_tick_avg)
 
 # ----------------------------------------------------------------------Movement
 var next_frame_velocities_to_add = []
+var max_phys_tick_length = -100
+var min_phys_tick_length = 100
+var phys_tick_avg = 0
+# leftover velocity from last frame, which is built upon 
+# next frame by dashes, gravity, etc
+var last_frame_final_velocity : Vector3 
 func _physics_process(delta):
-#	if phys_start_time_us == -1:
-#		phys_start_time_us = OS.get_ticks_usec()
-#		start_pos = get_global_transform().origin
-	
 	update_and_add_delta_p()
-	
-#	var real_dist_moved = get_global_transform().origin - start_pos
-#	var error = real_dist_moved - get_motion_since(0.003 + (OS.get_ticks_usec() - phys_start_time_us) / 1000000)
-#	if real_dist_moved.length() > 0:
-#		var pcnt_error = 100 * error.length() / real_dist_moved.length()
-#		if pcnt_error < 100:
-#			print(pcnt_error)
 	
 	velocity = velocity.linear_interpolate(
 		direction * speed * (1 + 2 * int(sprinting)),
@@ -137,10 +137,15 @@ func _physics_process(delta):
 		velocity += velocity_component
 	next_frame_velocities_to_add = []
 	
+#	last_queue_add_timestamp = OS.get_ticks_usec()
+#	motion_time_queue.add_to_queue(velocity * delta)
+	
 	velocity = move_and_slide(
 		velocity,
 		Vector3.UP,
 		true)
+	
+	last_frame_final_velocity = velocity
 	
 	if is_on_floor():
 		ticks_since_grounded = 0
@@ -148,6 +153,21 @@ func _physics_process(delta):
 		jumps_left = jump_cap
 	else:
 		ticks_since_grounded += 1
+
+func get_velocity_at_end_of_physics_frame() -> Vector3:
+	var projected_velocity = last_frame_final_velocity.linear_interpolate(
+		direction * speed * (1 + 2 * int(sprinting)),
+		acceleration * physics_tick_length)
+	
+	if ticks_since_walled < 4:
+		if ticks_spent_wall_climbing < wall_climb_tick_limit:
+			projected_velocity.y += wall_climb_speed
+	projected_velocity -= gravity * up_dir
+	
+	for velocity_component in next_frame_velocities_to_add:
+		projected_velocity += velocity_component
+	
+	return projected_velocity
 
 func jump():
 	dash(Vector3(0, 1, 0), gravity * 7, 14)
@@ -257,10 +277,6 @@ func _input(event):
 			cumulative_rot_y - (event.relative.y * mouse_sensitivity),
 			-90,
 			90)
-#		cumulative_rot_y = clamp(
-#			cumulative_rot_y - (event.relative.y * mouse_sensitivity),
-#			-90, 
-#			90)
 		var camera_origin_rot_basis = Basis() # reset rotation
 		var camera_rot_basis = Basis()
 		camera_rot_basis = camera_rot_basis.rotated(Vector3(1, 0, 0), deg2rad(cumulative_rot_y)) # then rotate around X axis
@@ -331,20 +347,30 @@ func take_snapshot() -> Vector3:
 	return delta_position
 
 func update_and_add_delta_p():
+	var current_time = OS.get_ticks_usec()
+	tick_length = current_time - last_queue_add_timestamp
+	last_queue_add_timestamp = current_time
+	
 	var current_position = get_global_transform().origin
 	delta_position = current_position - last_position
 	last_position = current_position
-	last_queue_add_timestamp = OS.get_ticks_usec()
-	motion_time_queue.add_to_queue(delta_position)
+	motion_time_queue.add_to_queue([tick_length, delta_position])
 
+# using get_velocity_at_end_of_physics_frame is on average:
+# ~%1.5 better than raw velocity for high-activity movement
+# ~%3.5 better than raw velocity for medium-activity movement
+# ~%2.7 better than no velocity for high-activity movement
+# ~%7.0 better than no velocity for medium-activity movement
 func get_motion_since(lag_time):
 	var seconds_since_last_queue_add = (
 		(OS.get_ticks_usec() - last_queue_add_timestamp) /
 		1000000)
 	return (
-		velocity * 
+		get_velocity_at_end_of_physics_frame() * 
 		seconds_since_last_queue_add +
 		motion_time_queue.calculate_delta_p_prior_to_latest_physics_step(lag_time - seconds_since_last_queue_add))
+
+
 
 # ----------------------------------------------------------------------------UI
 
