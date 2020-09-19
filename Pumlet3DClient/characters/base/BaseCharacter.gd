@@ -1,5 +1,6 @@
 extends KinematicBody
 
+# ------------------------------------------------------------------Helper Nodes
 onready var client = get_node("/root/Client")
 onready var camera_origin = $CameraOrigin
 onready var camera = $CameraOrigin/Camera
@@ -12,41 +13,24 @@ onready var ui_health_gauge = $UI/Stats/Bars/Health/HealthGauge
 onready var ui_dealt_damage_label = $UI/Stats/Bars2/DealtDamageLabel
 onready var motion_time_queue = $MotionTimeQueue
 
+var periodic_timer = Timer.new()
+var periodic_timer_period = 0.1
+var interpolator = Tween.new()
+var animation_helper = preload("res://client/utils/AnimationHelper.gd")
+
+# -----------------------------------------------------------------------UI Vars
 var ui_meg_damage_color = Color.turquoise
 var ui_big_damage_color = Color.purple
 var ui_mid_damage_color = Color.salmon
 var ui_lil_damage_color = Color.gray
 
-var periodic_timer = Timer.new()
-var periodic_timer_period = 0.5
-var interpolator = Tween.new()
-var animation_helper = preload("res://client/utils/AnimationHelper.gd")
-
+# ---------------------------------------------------------------------Game Vars
 var health = 100
-var fire_mode = 0
 
-func _ready():
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	add_child(periodic_timer)
-	periodic_timer.start(periodic_timer_period)
-	periodic_timer.connect("timeout", self, "_periodic")
-	add_child(interpolator)
-	weapon.connect("clip_changed", self, "display_ammo_reserves")
-	weapon.connect("recoil", self, "dash")
-	weapon.connect("reload_started", self, "display_reload_progress")
-	weapon.connect("dealt_damage", self, "display_damage_dealt")
-	weapon.ignored_objects.append(self)
-	motion_time_queue.init_time_queue()
-
-func _periodic():
-	display_health()
-	print(get_motion_since(0.5))
-
-
-# ----------------------------------------------------------------------Movement
+# -----------------------------------------------------------------Movement Vars
+enum DIRECTION {NORTH, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST, NORTHWEST}
 export var speed = 8
 export var acceleration = 3
-export var deceleration = 3
 export var gravity = 0.8
 export var jump_cap = 1
 export var jump_tick_limit = 40
@@ -63,15 +47,70 @@ var sprinting = false
 
 var delta_position : Vector3 = Vector3()
 var last_position : Vector3 = Vector3()
-var last_physics_frame_timestamp = 0
+var last_queue_add_timestamp = 0
+var phys_counter = 0
 
-func _physics_process(delta):
-	var current_position = get_global_transform().origin
-	delta_position = current_position - last_position
-	last_position = current_position
+
+# --------------------------------------------------------------------Input Vars
+export var mouse_sensitivity = 0.05
+var cumulative_rot_x = 0
+var cumulative_rot_y = 0
+var fire_mode = 0
+
+#var phys_start_time_us = -1
+#var start_pos
+
+func _ready():
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	
-	last_physics_frame_timestamp = OS.get_ticks_msec()
-	motion_time_queue.add_to_queue(delta_position)
+	add_child(periodic_timer)
+	periodic_timer.connect("timeout", self, "_periodic")
+	periodic_timer.start(periodic_timer_period)
+	
+	motion_time_queue.init_time_queue()
+	
+	add_child(interpolator)
+	
+	weapon.connect("clip_changed", self, "display_ammo_reserves")
+	weapon.connect("recoil", self, "dash")
+	weapon.connect("reload_started", self, "display_reload_progress")
+	weapon.connect("dealt_damage", self, "display_damage_dealt")
+	weapon.ignored_objects.append(self)
+
+var last_period_position = Vector3()
+var error_avg = 0
+var new_error_weight = 0.3
+func _periodic():
+	pass
+#	display_health()
+#	var real_dist_moved = get_global_transform().origin - last_period_position
+#	var error = get_global_transform().origin - (last_period_position + get_motion_since(periodic_timer_period))
+#	if real_dist_moved.length() > 0:
+#		var pcnt_error = 100 * error.length() / real_dist_moved.length()
+#		#print(pcnt_error)
+#		if error_avg == 0:
+#			#print("first_error")
+#			error_avg = pcnt_error
+#		else:
+#			error_avg = (error_avg + (new_error_weight * pcnt_error)) / (1 + new_error_weight)
+#	print("%" + str(error_avg) + " error")
+#	last_period_position = get_global_transform().origin
+
+# ----------------------------------------------------------------------Movement
+var next_frame_velocities_to_add = []
+func _physics_process(delta):
+#	if phys_start_time_us == -1:
+#		phys_start_time_us = OS.get_ticks_usec()
+#		start_pos = get_global_transform().origin
+	
+	update_and_add_delta_p()
+	
+#	var real_dist_moved = get_global_transform().origin - start_pos
+#	var error = real_dist_moved - get_motion_since(0.003 + (OS.get_ticks_usec() - phys_start_time_us) / 1000000)
+#	if real_dist_moved.length() > 0:
+#		var pcnt_error = 100 * error.length() / real_dist_moved.length()
+#		if pcnt_error < 100:
+#			print(pcnt_error)
 	
 	velocity = velocity.linear_interpolate(
 		direction * speed * (1 + 2 * int(sprinting)),
@@ -94,11 +133,14 @@ func _physics_process(delta):
 			ticks_spent_wall_climbing += 1
 	velocity -= gravity * up_dir
 	
+	for velocity_component in next_frame_velocities_to_add:
+		velocity += velocity_component
+	next_frame_velocities_to_add = []
+	
 	velocity = move_and_slide(
 		velocity,
 		Vector3.UP,
 		true)
-	
 	
 	if is_on_floor():
 		ticks_since_grounded = 0
@@ -109,25 +151,127 @@ func _physics_process(delta):
 
 func jump():
 	dash(Vector3(0, 1, 0), gravity * 7, 14)
+	jumps_left -= 1
 
 func dash(direction: Vector3, speed: float, ticks: int):
 	var dash_ticks_remaining = ticks
 	while dash_ticks_remaining > 0:
-		velocity += direction.normalized() * speed * (float(dash_ticks_remaining) / ticks)
-		yield(get_tree().create_timer(0.02),"timeout")
+		next_frame_velocities_to_add.append(direction.normalized() * speed * (float(dash_ticks_remaining) / ticks))
+		yield(get_tree(),"physics_frame")
 		dash_ticks_remaining -= 1
 
 # -------------------------------------------------------------------------Input
-export var mouse_sensitivity = 0.05
-var camera_x_rotation = 0
+func call_and_return(method_name: String, args):
+	callv(method_name, args)
+	return [method_name, args]
+
+func rotate_camera(relative_x: float, relative_y: float):
+	pass
+
+func set_camera_rotation():
+	pass
+
+func toggle_mouse_mode():
+	if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	elif Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE:
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+func teleport():
+	transform.origin = Vector3(0, 15, 0)
+
+func toggle_flashlight():
+	if flashlight.is_visible_in_tree():
+		flashlight.hide()
+	else:
+		flashlight.show()
+
+func primary_action(fire_parameters):
+	weapon.fire(0, fire_parameters)
+
+func secondary_action(fire_parameters):
+	weapon.fire(1, fire_parameters)
+
+func tertiary_action(fire_parameters):
+	weapon.fire(2, fire_parameters)
+
+func set_movement():
+	pass
+"""
+func handle_query_input(event: InputEvent):
+	if event is InputEventMouseMotion && Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+		return call_and_return("rotate_camera", [event.relative.x, event.relative.y])
+	
+	elif event.is_action_pressed("toggle_mouse_mode"):
+		toggle_mouse_mode()
+		return []
+	
+	elif event.is_action_pressed("teleport"):
+		return call_and_return("teleport", [])
+	
+	elif (event.is_action_pressed("jump") and 
+		jumps_left > 0 and 
+		ticks_since_grounded < jump_tick_limit):
+		return call_and_return("jump", [])
+	
+	elif event.is_action_pressed("toggle_flashlight"):
+		return call_and_return("toggle_flashlight", [])
+	
+	elif event.is_action_pressed("primary_action"):
+		return call_and_return("primary_action", [[camera.get_global_transform()]])
+	
+	elif event.is_action_pressed("secondary_action"):
+		return call_and_return("secondary_action", [[camera.get_global_transform()]])
+	
+	elif event.is_action_pressed("tertiary_action"):
+		return call_and_return("tertiary_action", [[camera.get_global_transform()]])
+
+func handle_poll_input():
+	var camera_origin_basis = camera_origin.get_global_transform().basis
+	
+	direction = Vector3()
+	
+	if Input.is_action_pressed("move_forwards"):
+		direction -= camera_origin_basis.z
+	elif Input.is_action_pressed("move_backwards"):
+		direction += camera_origin_basis.z
+	
+	if Input.is_action_pressed("move_left"):
+		direction -= camera_origin_basis.x
+	elif Input.is_action_pressed("move_right"):
+		direction += camera_origin_basis.x
+	
+	if Input.is_action_pressed("sprint"):
+		sprinting = true
+	else:
+		sprinting = false
+	
+	
+	direction = direction.normalized()
+"""
 
 func _input(event):
 	if event is InputEventMouseMotion && Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-		camera_origin.rotate_y(deg2rad(-event.relative.x * mouse_sensitivity))
-		var x_delta = event.relative.y * mouse_sensitivity
-		if camera_x_rotation + x_delta > -90 and camera_x_rotation + x_delta < 90: 
-			camera.rotate_x(deg2rad(-x_delta))
-			camera_x_rotation += x_delta
+		cumulative_rot_x -= event.relative.x * mouse_sensitivity
+		cumulative_rot_y = clamp(
+			cumulative_rot_y - (event.relative.y * mouse_sensitivity),
+			-90,
+			90)
+#		cumulative_rot_y = clamp(
+#			cumulative_rot_y - (event.relative.y * mouse_sensitivity),
+#			-90, 
+#			90)
+		var camera_origin_rot_basis = Basis() # reset rotation
+		var camera_rot_basis = Basis()
+		camera_rot_basis = camera_rot_basis.rotated(Vector3(1, 0, 0), deg2rad(cumulative_rot_y)) # then rotate around X axis
+		camera_origin_rot_basis = camera_origin_rot_basis.rotated(Vector3(0, 1, 0), deg2rad(cumulative_rot_x)) # then rotate around Y axis
+		camera_origin.transform.basis = camera_origin_rot_basis
+		camera.transform.basis = camera_rot_basis
+#		camera_origin.rotate_y(deg2rad(-event.relative.x * mouse_sensitivity))
+#		var x_delta = event.relative.y * mouse_sensitivity
+#		if camera_x_rotation + x_delta > -90 and camera_x_rotation + x_delta < 90: 
+#			camera.rotate_x(deg2rad(-x_delta))
+#			camera_x_rotation += x_delta
 	
 	if event.is_action_pressed("ui_cancel"):
 		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
@@ -183,6 +327,24 @@ func collect_inputs():
 	direction = direction.normalized()
 
 # -----------------------------------------------------------------------Utility
+func take_snapshot() -> Vector3:
+	return delta_position
+
+func update_and_add_delta_p():
+	var current_position = get_global_transform().origin
+	delta_position = current_position - last_position
+	last_position = current_position
+	last_queue_add_timestamp = OS.get_ticks_usec()
+	motion_time_queue.add_to_queue(delta_position)
+
+func get_motion_since(lag_time):
+	var seconds_since_last_queue_add = (
+		(OS.get_ticks_usec() - last_queue_add_timestamp) /
+		1000000)
+	return (
+		velocity * 
+		seconds_since_last_queue_add +
+		motion_time_queue.calculate_delta_p_prior_to_latest_physics_step(lag_time - seconds_since_last_queue_add))
 
 # ----------------------------------------------------------------------------UI
 
@@ -223,14 +385,3 @@ func display_damage_dealt(damage):
 		ui_dealt_damage_label.set("custom_colors/font_color", ui_lil_damage_color)
 
 # --------------------------------------------------------------------Networking
-func take_snapshot() -> Vector3:
-	return delta_position
-
-func get_motion_since(lag_time):
-	var seconds_since_last_physics_step = (
-		0.001 * 
-		(OS.get_ticks_msec() - last_physics_frame_timestamp))
-	return (
-		velocity * 
-		seconds_since_last_physics_step +
-		motion_time_queue.calculate_delta_p_prior_to_latest_physics_step(lag_time - seconds_since_last_physics_step))

@@ -47,7 +47,8 @@ var client_delta = 1.0 / (ProjectSettings.get_setting("physics/common/physics_fp
 ##
 
 signal minimap_texture_updated(texture, origin)
-signal player_spawned()
+signal our_player_spawned(our_player_node)
+signal player_spawned(player_node)
 
 func _ready():
 	current_map = podunk.instance()
@@ -55,9 +56,10 @@ func _ready():
 	var player = base_character.instance()
 	player.transform.origin = Vector3(0, 40, 0)
 	add_child(player)
-	spawn_targets(1)
+	spawn_targets(10)
 	wap.play()
 	#$SelectionInput.connect("text_entered", self, "process_selection_input")
+	
 
 func spawn_targets(num_targets):
 	for i in range(num_targets):

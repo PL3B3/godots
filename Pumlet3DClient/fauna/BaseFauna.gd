@@ -1,12 +1,12 @@
 extends KinematicBody
 
-var health_default = 2000
+var health_default = 500
 var health = health_default
 
 var gravity = 15
 var velocity = Vector3()
 var direction = Vector3()
-var speed = 16
+var speed = 10
 var jump_prob = 0.4
 var movement_enabled = true
 
@@ -46,7 +46,8 @@ func _physics_process(delta):
 	if movement_enabled:
 		velocity.y -= gravity * delta
 		
-		look_at(transform.origin + Vector3(velocity.x, 0, velocity.z), Vector3(0, 1, 0))
+		if not Vector3(velocity.x, 0, velocity.z) == Vector3():
+			look_at(transform.origin + Vector3(velocity.x, 0, velocity.z), Vector3(0, 1, 0))
 		velocity = velocity.linear_interpolate(direction * speed, delta)
 		
 		velocity = velocity.linear_interpolate(

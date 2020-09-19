@@ -37,7 +37,7 @@ func fire(fire_mode: int, fire_parameters):
 		ammo_remaining -= 1
 		emit_signal("clip_changed")
 		var fire_transform = Transform()
-		fire_transform.basis = get_global_transform().basis
+		fire_transform.basis = fire_parameters[0].basis
 		fire_transform.origin = fire_point.get_global_transform().origin
 		match fire_mode:
 			0:

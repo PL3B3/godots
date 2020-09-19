@@ -7,4 +7,10 @@ script = ExtResource( 1 )
 
 [node name="FirePoint" type="Spatial" parent="."]
 
+[node name="FireAudioPlayer" type="AudioStreamPlayer3D" parent="FirePoint"]
+unit_db = 10.0
+
+[node name="LoadAudioPlayer" type="AudioStreamPlayer3D" parent="FirePoint"]
+unit_db = 10.0
+
 [node name="Interpolator" type="Tween" parent="."]

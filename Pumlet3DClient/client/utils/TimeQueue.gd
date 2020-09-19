@@ -18,9 +18,9 @@ func init_time_queue(tick_time=0.016666666666, queue_length=120, data_source=par
 	self.tick_time = tick_time
 	self.queue_length = queue_length
 	self.data_source = data_source
-	self.queue = queue
 	for i in range(queue_length):
 		queue.append(null)
+	self.queue = queue
 	self.start(tick_time)
 	self.connect("timeout", self, "add_snapshot")
 
@@ -32,7 +32,7 @@ func add_to_queue(snapshot):
 	# if we've run out of space, start over!
 	if not current_queue_tail < queue_length:
 		current_queue_tail = 0
-	queue.insert(current_queue_tail, snapshot)
+	queue.set(current_queue_tail, snapshot)
 	current_queue_tail += 1
 	ticks_since_start += 1
 
