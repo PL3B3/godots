@@ -136,8 +136,10 @@ remote func parse_client_rpc(client_cmd, args):
 
 func return_ping_query_unreliable(uuid):
 	var caller_id = get_tree().get_rpc_sender_id()
+	yield(get_tree().create_timer(0.5),"timeout")
 	send_server_rpc_to_one_player_unreliable(caller_id, "conclude_ping_query_unreliable", [uuid])
 
 func return_ping_query_reliable(uuid):
 	var caller_id = get_tree().get_rpc_sender_id()
+	yield(get_tree().create_timer(0.5),"timeout")
 	send_server_rpc_to_one_player(caller_id, "conclude_ping_query_reliable", [uuid])

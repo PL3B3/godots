@@ -192,6 +192,7 @@ func conclude_ping_query_unreliable(uuid):
 				ping_avg_unreliable + 
 				new_ping_weight * ping_time) / 
 				(1 + new_ping_weight))
+	ping_avg_timestamp_dict.erase(uuid)
 
 func conclude_ping_query_reliable(uuid):
 	var ping_time = (OS.get_ticks_usec() - ping_avg_timestamp_dict[uuid])
@@ -203,6 +204,7 @@ func conclude_ping_query_reliable(uuid):
 				ping_avg_reliable + 
 				new_ping_weight * ping_time) / 
 				(1 + new_ping_weight))
+	ping_avg_timestamp_dict.erase(uuid)
 
 func send_client_rpc(client_cmd, args):
 	rpc_id(1, "parse_client_rpc", client_cmd, args)
