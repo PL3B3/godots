@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://server/ClientInputHandler.tscn" type="PackedScene" id=1]
+[ext_resource path="res://server/Server.gd" type="Script" id=2]
+[ext_resource path="res://server/music/183881__erokia__elementary-wave-11.ogg" type="AudioStream" id=3]
+
+[node name="Server" type="Node"]
+script = ExtResource( 2 )
+
+[node name="WorldAudioPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 3 )
+volume_db = -10.0
+
+[node name="ClientInputHandler" parent="." instance=ExtResource( 1 )]

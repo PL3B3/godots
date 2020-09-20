@@ -16,7 +16,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Pumlet3DClient"
-run/main_scene="res://client/Client.tscn"
+run/main_scene="res://server/Server.tscn"
 config/icon="res://icon.png"
 
 [debug]
@@ -114,7 +114,7 @@ toggle_mouse_mode={
 
 [physics]
 
-common/physics_jitter_fix=0.0
+common/physics_jitter_fix=0.2
 3d/physics_engine="GodotPhysics"
 
 [rendering]

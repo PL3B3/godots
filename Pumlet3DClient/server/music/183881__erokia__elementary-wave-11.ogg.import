@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/183881__erokia__elementary-wave-11.ogg-8b48e284464247cab29c26cd07a8afe2.oggstr"
+
+[deps]
+
+source_file="res://server/music/183881__erokia__elementary-wave-11.ogg"
+dest_files=[ "res://.import/183881__erokia__elementary-wave-11.ogg-8b48e284464247cab29c26cd07a8afe2.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0
