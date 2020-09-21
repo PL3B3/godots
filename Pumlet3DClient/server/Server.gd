@@ -64,7 +64,8 @@ func _ready():
 	start_game_multiplayer()
 
 func _process(delta):
-	start_ping_query_reliable()
+	pass
+	#start_ping_query_reliable()
 
 func spawn_targets(num_targets):
 	for i in range(num_targets):

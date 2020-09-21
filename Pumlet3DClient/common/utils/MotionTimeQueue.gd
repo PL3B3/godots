@@ -6,7 +6,7 @@ var rolling_delta_p_sum = Vector3()
 # uses a timestamp_queue in parrallel with the data queue
 var tick_queue = PoolIntArray()
 
-func init_time_queue(tick_time=0.0166666666666666, queue_length=240, data_source=parent, queue=PoolVector3Array()):
+func init_time_queue(tick_time=16.666666667, queue_length=240, data_source=parent, queue=PoolVector3Array()):
 	self.tick_time = tick_time
 	self.queue_length = queue_length
 	self.data_source = data_source

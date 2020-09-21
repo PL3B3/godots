@@ -99,7 +99,7 @@ func _periodic():
 			error_avg = pcnt_error
 		else:
 			error_avg = (error_avg + (new_error_weight * pcnt_error)) / (1 + new_error_weight)
-#	print("%" + str(error_avg) + " error")
+	print("%" + str(error_avg) + " error")
 	last_period_position = get_global_transform().origin
 #	print(phys_tick_avg)
 
@@ -378,13 +378,12 @@ func update_and_add_delta_p():
 # ~%2.7 better than no velocity for high-activity movement
 # ~%7.0 better than no velocity for medium-activity movement
 func get_motion_since(lag_time):
-	var seconds_since_last_queue_add = (
-		(OS.get_ticks_usec() - last_queue_add_timestamp) /
-		1000000)
+	var microseconds_since_last_queue_add = OS.get_ticks_usec() - last_queue_add_timestamp
 	return (
 		get_velocity_at_end_of_physics_frame() * 
-		seconds_since_last_queue_add +
-		motion_time_queue.calculate_delta_p_prior_to_latest_physics_step(lag_time - seconds_since_last_queue_add))
+		float(microseconds_since_last_queue_add) /
+		1000000.0 +
+		motion_time_queue.calculate_delta_p_prior_to_latest_physics_step(lag_time - microseconds_since_last_queue_add))
 
 # ----------------------------------------------------------------------------UI
 
