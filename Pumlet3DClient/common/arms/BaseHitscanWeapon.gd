@@ -5,66 +5,7 @@ var rng = RandomNumberGenerator.new()
 var fire_line_mesh
 var fire_line_clear_timer
 
-var fire_mode_settings = [
-	{
-		"pattern": {
-			Vector3(0, 0, 0): 9,
-			Vector3(-0.035, 0, 0): 3,
-			Vector3(-0.0125, 0.0125, 0): 5,
-			Vector3(0, 0.035, 0): 3,
-			Vector3(-0.0125, -0.0125, 0): 5,
-			Vector3(0.035, 0, 0): 3,
-			Vector3(0.0125, 0.0125, 0): 5,
-			Vector3(0, -0.035, 0): 3,
-			Vector3(0.0125, -0.0125, 0): 5},
-		"transform": null,
-		"parameters": [],
-		"range": 30,
-		"damage_falloff": 0.3,
-		"push_force_falloff": 0.3,
-		"self_push_speed": 0.5,
-		"self_push_ticks": 10,
-		"target_push_speed": 0.1,
-		"target_push_ticks": 10,
-		"velocity_push_factor": 0.1
-	},
-	{
-		"pattern": {
-			Vector3(-.20, 0, 0): 18,
-			Vector3(-0.15, 0, 0): 18,
-			Vector3(-0.10, 0, 0): 18,
-			Vector3(-0.05, 0, 0): 18,
-			Vector3(-0.015, 0, 0): 18,
-			Vector3(0.015, 0, 0): 18,
-			Vector3(0.2, 0, 0): 18,
-			Vector3(0.15, 0, 0): 18,
-			Vector3(0.1, 0, 0): 18,
-			Vector3(0.05, 0, 0): 18},
-		"transform": null,
-		"parameters": [],
-		"range": 15,
-		"damage_falloff": 1.7,
-		"push_force_falloff": 1,
-		"self_push_speed": 3,
-		"self_push_ticks": 10,
-		"target_push_speed": 0.25,
-		"target_push_ticks": 10,
-		"velocity_push_factor": 0.2
-	},
-	{
-		"pattern": {
-			Vector3(0, 0, 0): 35},
-		"transform": null,
-		"parameters": [],
-		"range": 60,
-		"damage_falloff": 5,
-		"push_force_falloff": -2,
-		"self_push_speed": -1,
-		"self_push_ticks": 15,
-		"target_push_speed": -1,
-		"target_push_ticks": 10,
-		"velocity_push_factor": 0.3
-	}]
+var fire_mode_settings
 var fire_mode_phys_processing = [false, false, false]
 var ignored_objects = []
 var velocity_push_factor_universal = 10
@@ -87,10 +28,72 @@ func _ready():
 func init():
 	fire_rate_default = 1.3
 	reload_time_default = 3
-	clip_size_default = 3
+#	fire_rate_default = 0.4
+#	reload_time_default = 1
+	clip_size_default = 4
 	clip_remaining = clip_size_default
-	ammo_default = 400
+	ammo_default = 20
 	ammo_remaining = ammo_default
+	fire_mode_settings = [
+	{
+		"pattern": {
+			Vector3(0, 0, 0): 5,
+			Vector3(-0.035, 0, 0): 3,
+			Vector3(-0.0125, 0.0125, 0): 4,
+			Vector3(0, 0.035, 0): 3,
+			Vector3(-0.0125, -0.0125, 0): 4,
+			Vector3(0.035, 0, 0): 3,
+			Vector3(0.0125, 0.0125, 0): 4,
+			Vector3(0, -0.035, 0): 3,
+			Vector3(0.0125, -0.0125, 0): 4},
+		"transform": null,
+		"parameters": [],
+		"range": 30,
+		"damage_falloff": 0.3,
+		"push_force_falloff": 0.3,
+		"self_push_speed": 0.5,
+		"self_push_ticks": 10,
+		"target_push_speed": 0.1,
+		"target_push_ticks": 10,
+		"velocity_push_factor": 0.1
+	},
+	{
+		"pattern": {
+			Vector3(-.20, 0, 0): 15,
+			Vector3(-0.15, 0, 0): 15,
+			Vector3(-0.10, 0, 0): 15,
+			Vector3(-0.05, 0, 0): 15,
+			Vector3(-0.015, 0, 0): 15,
+			Vector3(0.015, 0, 0): 15,
+			Vector3(0.2, 0, 0): 15,
+			Vector3(0.15, 0, 0): 15,
+			Vector3(0.1, 0, 0): 15,
+			Vector3(0.05, 0, 0): 15},
+		"transform": null,
+		"parameters": [],
+		"range": 10,
+		"damage_falloff": 3.5,
+		"push_force_falloff": 1,
+		"self_push_speed": 3,
+		"self_push_ticks": 10,
+		"target_push_speed": 0.25,
+		"target_push_ticks": 10,
+		"velocity_push_factor": 0.2
+	},
+	{
+		"pattern": {
+			Vector3(0, 0, 0): 35},
+		"transform": null,
+		"parameters": [],
+		"range": 60,
+		"damage_falloff": 5,
+		"push_force_falloff": -2,
+		"self_push_speed": -1,
+		"self_push_ticks": 15,
+		"target_push_speed": -1,
+		"target_push_ticks": 10,
+		"velocity_push_factor": 0.3
+	}]
 
 func _process(delta):
 	pass
@@ -216,19 +219,20 @@ func create_fire_lines_representation(origin, fire_lines):
 	fire_line_clear_timer.start(fire_rate_default)
 
 func animate_reload():
-	var new_rot = mesh.rotation_degrees + Vector3(30, 0, 0)
-	animation_helper.interpolate_symmetric(
-		interpolator,
-		mesh,
-		"rotation_degrees",
-		new_rot,
-		reload_time_default)
-	yield(get_tree().create_timer(0.5 * reload_time_default), "timeout")
-	load_audio_player.set_stream(load("res://assets/arms/reload.wav"))
-	load_audio_player.play()
-	yield(get_tree().create_timer(0.4), "timeout")
-	load_audio_player.set_stream(load("res://assets/arms/shotgun_pump.wav"))
-	load_audio_player.play()
+	if not ammo_remaining == 0:
+		var new_rot = mesh.rotation_degrees + Vector3(30, 0, 0)
+		animation_helper.interpolate_symmetric(
+			interpolator,
+			mesh,
+			"rotation_degrees",
+			new_rot,
+			reload_time_default)
+		yield(get_tree().create_timer(0.5 * reload_time_default), "timeout")
+		load_audio_player.set_stream(load("res://assets/arms/reload.wav"))
+		load_audio_player.play()
+		yield(get_tree().create_timer(0.4), "timeout")
+		load_audio_player.set_stream(load("res://assets/arms/shotgun_pump.wav"))
+		load_audio_player.play()
 
 func _clear_fire_lines():
 	fire_line_mesh.clear()

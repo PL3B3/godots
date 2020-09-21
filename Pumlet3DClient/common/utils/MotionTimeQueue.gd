@@ -46,6 +46,24 @@ func calculate_delta_p_prior_to_latest_physics_step(time_preceding_last_physics_
 			return get_sum()
 	return delta_p
 
+#times in microseconds
+func get_position_at_time_past(time_past):
+	if time_past < 0:
+		print("calculating future p is not possible")
+		return Vector3()
+	var time_counter = time_past
+	var ticks_ago = 1
+	while time_counter > 0:
+		time_counter -= tick_queue[current_queue_tail - ticks_ago]
+		ticks_ago += 1
+		if ticks_ago > min(ticks_since_start, queue_length):
+			print("calculating too far into the past")
+			return get_earliest_position()
+	return queue[current_queue_tail - ticks_ago + 1]
+
+func get_earliest_position():
+	pass
+
 func get_sum():
 	var sum = Vector3()
 	for i in range(queue.size()):

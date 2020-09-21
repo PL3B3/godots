@@ -13,8 +13,7 @@ onready var ui_health_gauge = $UI/Stats/Bars/Health/HealthGauge
 onready var ui_dealt_damage_label = $UI/Stats/Bars2/DealtDamageLabel
 onready var motion_time_queue = $MotionTimeQueue
 
-var periodic_timer = Timer.new()
-var periodic_timer_period = 0.1
+
 var interpolator = Tween.new()
 var animation_helper = preload("res://common/utils/AnimationHelper.gd")
 
@@ -25,11 +24,17 @@ var ui_mid_damage_color = Color.salmon
 var ui_lil_damage_color = Color.gray
 
 # ---------------------------------------------------------------------Game Vars
-var health = 100
+var health_default = 160
+var health = health_default
+var vulnerability_default = 1
+var vulnerability = vulnerability_default
+var team : int
+var species : int
 
 # -----------------------------------------------------------------Movement Vars
 enum DIRECTION {NORTH, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST, NORTHWEST}
 var speed = 5
+var speed_mult = 1
 var acceleration = 6
 var acceleration_air = 2
 var air_control = 0.3
@@ -61,17 +66,21 @@ var cumulative_rot_x = 0
 var cumulative_rot_y = 0
 var fire_mode = 0
 
+# ---------------------------------------------------------------Networking Vars
+var initialization_attributes = [
+	"velocity", 
+	"health", 
+	"speed_mult", 
+	"vulnerability"] # things you need to sync to copy an old player to a new client 
+
 #var phys_start_time_us = -1
 #var start_pos
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	
-	add_child(periodic_timer)
-	periodic_timer.connect("timeout", self, "_periodic")
-	periodic_timer.start(periodic_timer_period)
 	
-	print(physics_tick_length)
+	#print(physics_tick_length)
 	motion_time_queue.init_time_queue(physics_tick_length, int(4 / physics_tick_length))
 	
 	add_child(interpolator)
@@ -81,19 +90,22 @@ func _ready():
 	weapon.connect("reload_started", self, "display_reload_progress")
 	weapon.connect("dealt_damage", self, "display_damage_dealt")
 	weapon.ignored_objects.append(self)
+	
+	display_ammo_reserves()
 
 var last_period_position = Vector3()
 var error_avg = 0
 var new_error_weight = 0.1
-func _periodic():
+func _periodic(timer_period):
 #	display_health()
 	var real_dist_moved = get_global_transform().origin - last_period_position
-	var error = real_dist_moved - get_motion_since(periodic_timer_period * 1000000)
+	var error = real_dist_moved - get_displacement_usec_ago(timer_period * 1000000)
 #	print(get_motion_since(periodic_timer_period * 1000000))
 #	print(real_dist_moved)
 	if real_dist_moved.length() > 0:
 		var pcnt_error = 100 * error.length() / real_dist_moved.length()
 		#print(pcnt_error)
+		#print("Overtime: %10d. error pcnt: %5.2f" % [OS.get_ticks_usec() - last_queue_add_timestamp, pcnt_error])
 		if error_avg == 0:
 			print("first_error")
 			error_avg = pcnt_error
@@ -112,7 +124,8 @@ var phys_tick_avg = 0
 # next frame by dashes, gravity, etc
 var last_frame_final_velocity : Vector3 
 func _physics_process(delta):
-	update_and_add_delta_p()
+#	update_and_add_delta_p()
+	update_motion_time_tracking()
 	
 	var accel_to_use = acceleration
 	if is_on_floor():
@@ -123,10 +136,8 @@ func _physics_process(delta):
 			accel_to_use = acceleration_air
 	
 	velocity = velocity.linear_interpolate(
-		direction * (speed + air_control * velocity.length()),
+		direction * (speed * speed_mult + air_control * velocity.length()),
 		accel_to_use * delta)
-	
-	#collect_inputs()
 	
 	
 	if is_on_wall():
@@ -135,7 +146,7 @@ func _physics_process(delta):
 		ticks_since_walled += 1
 	if ticks_since_walled < 5:
 		if ticks_spent_wall_climbing < wall_climb_tick_limit:
-			velocity.y += wall_climb_speed
+			velocity.y += wall_climb_speed * speed_mult
 			ticks_spent_wall_climbing += 1
 	velocity -= gravity * up_dir
 	
@@ -173,12 +184,12 @@ func get_velocity_at_end_of_physics_frame() -> Vector3:
 		accel_to_use = acceleration_air
 	
 	projected_velocity = projected_velocity.linear_interpolate(
-		direction * (speed + air_control * velocity.length()),
+		direction * (speed * speed_mult + air_control * velocity.length()),
 		accel_to_use * physics_tick_length)
 	
 	if ticks_since_walled < 4:
 		if ticks_spent_wall_climbing < wall_climb_tick_limit:
-			projected_velocity.y += wall_climb_speed
+			projected_velocity.y += wall_climb_speed * speed_mult
 	projected_velocity -= gravity * up_dir
 	
 	for dash_vector in dash_ticks_dict:
@@ -288,51 +299,6 @@ func handle_poll_input():
 	
 	
 	direction = direction.normalized()
-"""
-
-func _input(event):
-	if event is InputEventMouseMotion && Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-		cumulative_rot_x -= event.relative.x * mouse_sensitivity
-		cumulative_rot_y = clamp(
-			cumulative_rot_y - (event.relative.y * mouse_sensitivity),
-			-90,
-			90)
-		var camera_origin_rot_basis = Basis() # reset rotation
-		var camera_rot_basis = Basis()
-		camera_rot_basis = camera_rot_basis.rotated(Vector3(1, 0, 0), deg2rad(cumulative_rot_y)) # then rotate around X axis
-		camera_origin_rot_basis = camera_origin_rot_basis.rotated(Vector3(0, 1, 0), deg2rad(cumulative_rot_x)) # then rotate around Y axis
-		camera_origin.transform.basis = camera_origin_rot_basis
-		camera.transform.basis = camera_rot_basis
-	
-	if event.is_action_pressed("ui_cancel"):
-		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-		elif Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE:
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	
-	if event.is_action_pressed("teleport"):
-		transform.origin = Vector3(0, 15, 0)
-	
-	if event.is_action_pressed("jump") and jumps_left > 0 and ticks_since_grounded < jump_tick_limit:
-		jump()
-		jumps_left -= 1
-		
-	if Input.is_action_just_pressed("toggle_flashlight"):
-		if flashlight.is_visible_in_tree():
-			flashlight.hide()
-		else:
-			flashlight.show()
-	
-	if event.is_action_pressed("primary_action"):
-		weapon.fire(fire_mode, [camera.get_global_transform()])
-	
-	if event.is_action_pressed("select_fire_mode_0"):
-		fire_mode = 0
-	if event.is_action_pressed("select_fire_mode_1"):
-		fire_mode = 1
-	if event.is_action_pressed("select_fire_mode_2"):
-		fire_mode = 2
-"""
 
 # Run per physics frame
 func collect_inputs():
@@ -372,6 +338,12 @@ func update_and_add_delta_p():
 	last_position = current_position
 	motion_time_queue.add_to_queue([tick_length, delta_position])
 
+func update_motion_time_tracking():
+	var current_time = OS.get_ticks_usec()
+	tick_length = current_time - last_queue_add_timestamp
+	last_queue_add_timestamp = current_time
+	motion_time_queue.add_to_queue([tick_length, get_global_transform().origin])
+
 # using get_velocity_at_end_of_physics_frame is on average:
 # ~%1.5 better than raw velocity for high-activity movement
 # ~%3.5 better than raw velocity for medium-activity movement
@@ -384,6 +356,13 @@ func get_motion_since(lag_time):
 		float(microseconds_since_last_queue_add) /
 		1000000.0 +
 		motion_time_queue.calculate_delta_p_prior_to_latest_physics_step(lag_time - microseconds_since_last_queue_add))
+
+# error has been cut by 3 orders of magnitude
+func get_displacement_usec_ago(time_ago):
+	var microseconds_since_last_queue_add = OS.get_ticks_usec() - last_queue_add_timestamp
+	var displacement = get_global_transform().origin - motion_time_queue.get_position_at_time_past(time_ago - microseconds_since_last_queue_add)
+	return (
+		displacement)
 
 # ----------------------------------------------------------------------------UI
 
@@ -416,7 +395,7 @@ func display_damage_dealt(damage):
 			"rect_position",
 			ui_new_position,
 			0.4)
-	elif damage > 30:
+	elif damage > 35:
 		ui_dealt_damage_label.set("custom_colors/font_color", ui_big_damage_color)
 	elif damage > 15:
 		ui_dealt_damage_label.set("custom_colors/font_color", ui_mid_damage_color)
@@ -424,3 +403,22 @@ func display_damage_dealt(damage):
 		ui_dealt_damage_label.set("custom_colors/font_color", ui_lil_damage_color)
 
 # --------------------------------------------------------------------Networking
+
+func set_basic_values(species, team, origin):
+	self.species = species
+	self.team = team
+	transform.origin = origin
+
+# Array, not dictionary, optimizing for network usage
+func get_initialization_values():
+	var initialization_values = {}
+	for attrib in initialization_attributes:
+		initialization_values[attrib] = get(attrib)
+	return initialization_values
+
+func set_initialization_values(initialization_values):
+	if initialization_values.size() == initialization_attributes.size():
+		for attrib in initialization_values:
+			set(attrib, initialization_values[attrib])
+	else:
+		print("Given " + str(initialization_values.size()) + " values, but expected " + str(initialization_attributes.size()))
