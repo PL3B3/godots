@@ -1,0 +1,31 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://assets/entities/Tiles_036_basecolor.jpg" type="Texture" id=1]
+[ext_resource path="res://assets/entities/Squeegee_0.png" type="Texture" id=2]
+
+[sub_resource type="SpatialMaterial" id=4]
+albedo_texture = ExtResource( 1 )
+uv1_triplanar = true
+
+[sub_resource type="CubeMesh" id=2]
+size = Vector3( 2, 0.5, 2 )
+
+[sub_resource type="SpatialMaterial" id=3]
+flags_transparent = true
+params_billboard_mode = 1
+emission_enabled = true
+emission = Color( 0.32549, 0.568627, 0.6, 1 )
+emission_energy = 1.0
+emission_operator = 0
+emission_on_uv2 = false
+
+[node name="Gravestone" type="MeshInstance"]
+material_override = SubResource( 4 )
+mesh = SubResource( 2 )
+material/0 = null
+
+[node name="GraveSprite" type="Sprite3D" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.17493, 0 )
+material_override = SubResource( 3 )
+pixel_size = 0.05
+texture = ExtResource( 2 )

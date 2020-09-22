@@ -1,0 +1,19 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/wallBrick03.obj-41193306be8695b5f94c9c20093472b3.mesh"
+
+[deps]
+
+files=[ "res://.import/wallBrick03.obj-41193306be8695b5f94c9c20093472b3.mesh" ]
+
+source_file="res://assets/envs_assets/OBJ/wallBrick03.obj"
+dest_files=[ "res://.import/wallBrick03.obj-41193306be8695b5f94c9c20093472b3.mesh", "res://.import/wallBrick03.obj-41193306be8695b5f94c9c20093472b3.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+optimize_mesh=true

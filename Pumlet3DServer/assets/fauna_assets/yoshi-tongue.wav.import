@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/yoshi-tongue.wav-20e97d98adf17fe5d9200a5f9236dd60.sample"
+
+[deps]
+
+source_file="res://assets/fauna_assets/yoshi-tongue.wav"
+dest_files=[ "res://.import/yoshi-tongue.wav-20e97d98adf17fe5d9200a5f9236dd60.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop=false
+compress/mode=0

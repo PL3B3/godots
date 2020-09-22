@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/Pyro_paincrticialdeath03.wav-52174ad99c095e832acafa59c22bce9b.sample"
+
+[deps]
+
+source_file="res://assets/fauna_assets/Pyro_paincrticialdeath03.wav"
+dest_files=[ "res://.import/Pyro_paincrticialdeath03.wav-52174ad99c095e832acafa59c22bce9b.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop=false
+compress/mode=0
