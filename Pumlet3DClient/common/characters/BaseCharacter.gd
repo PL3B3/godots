@@ -13,7 +13,6 @@ onready var ui_health_gauge = $UI/Stats/Bars/Health/HealthGauge
 onready var ui_dealt_damage_label = $UI/Stats/Bars2/DealtDamageLabel
 onready var motion_time_queue = $MotionTimeQueue
 
-
 var interpolator = Tween.new()
 var animation_helper = preload("res://common/utils/AnimationHelper.gd")
 
@@ -22,6 +21,10 @@ var ui_meg_damage_color = Color.turquoise
 var ui_big_damage_color = Color.purple
 var ui_mid_damage_color = Color.salmon
 var ui_lil_damage_color = Color.gray
+
+# ---------------------------------------------------------------------Misc Vars
+var error_avg = 0
+var new_error_weight = 0.1
 
 # ---------------------------------------------------------------------Game Vars
 var health_default = 160
@@ -43,6 +46,7 @@ var jump_cap = 1
 var jump_tick_limit = 40
 var wall_climb_speed = 1.5
 var wall_climb_tick_limit = 50
+var ticks_spent_pushing_against_foot_of_wall = 0
 var velocity = Vector3()
 var direction = Vector3()
 var ticks_since_grounded = 0
@@ -52,6 +56,10 @@ var jumps_left = 0
 var up_dir = Vector3()
 var sprinting = false
 
+var dash_ticks_dict = {}
+# leftover velocity from last frame, which is built upon 
+# next frame by dashes, gravity, etc
+var last_frame_final_velocity : Vector3
 var delta_position : Vector3 = Vector3()
 var last_position : Vector3 = Vector3()
 var last_queue_add_timestamp = 0
@@ -73,8 +81,6 @@ var initialization_attributes = [
 	"speed_mult", 
 	"vulnerability"] # things you need to sync to copy an old player to a new client 
 
-#var phys_start_time_us = -1
-#var start_pos
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -93,13 +99,11 @@ func _ready():
 	
 	display_ammo_reserves()
 
-var last_period_position = Vector3()
-var error_avg = 0
-var new_error_weight = 0.1
+
 func _periodic(timer_period):
 #	display_health()
 #	var real_dist_moved = get_global_transform().origin - last_period_position
-#	var error = real_dist_moved - get_displacement_usec_ago(timer_period * 1000000)
+#	var error = real_dist_moved - get_displacement_usecs_ago(timer_period * 1000000)
 #	print(get_motion_since(periodic_timer_period * 1000000))
 #	print(real_dist_moved)
 #	if real_dist_moved.length() > 0:
@@ -117,13 +121,7 @@ func _periodic(timer_period):
 	pass
 
 # ----------------------------------------------------------------------Movement
-var dash_ticks_dict = {}
-var max_phys_tick_length = -100
-var min_phys_tick_length = 100
-var phys_tick_avg = 0
-# leftover velocity from last frame, which is built upon 
-# next frame by dashes, gravity, etc
-var last_frame_final_velocity : Vector3 
+
 func _physics_process(delta):
 #	update_and_add_delta_p()
 	update_motion_time_tracking()
@@ -143,12 +141,16 @@ func _physics_process(delta):
 	
 	if is_on_wall():
 		ticks_since_walled = 0
+		ticks_spent_pushing_against_foot_of_wall += 1
 	else:
 		ticks_since_walled += 1
 	if ticks_since_walled < 5:
 		if ticks_spent_wall_climbing < wall_climb_tick_limit:
-			velocity.y += wall_climb_speed * speed_mult
-			ticks_spent_wall_climbing += 1
+			if ticks_spent_pushing_against_foot_of_wall > 3:
+				velocity.y += wall_climb_speed * speed_mult
+				ticks_spent_wall_climbing += 1
+	else:
+		ticks_spent_pushing_against_foot_of_wall = 0
 	velocity -= gravity * up_dir
 	
 	for dash_vector in dash_ticks_dict:
@@ -175,28 +177,8 @@ func _physics_process(delta):
 		jumps_left = jump_cap
 	else:
 		ticks_since_grounded += 1
-
-func get_velocity_at_end_of_physics_frame() -> Vector3:
-	var projected_velocity = last_frame_final_velocity
-	var accel_to_use
-	if is_on_floor():
-		accel_to_use = acceleration
-	else:
-		accel_to_use = acceleration_air
 	
-	projected_velocity = projected_velocity.linear_interpolate(
-		direction * (speed * speed_mult + air_control * velocity.length()),
-		accel_to_use * physics_tick_length)
-	
-	if ticks_since_walled < 4:
-		if ticks_spent_wall_climbing < wall_climb_tick_limit:
-			projected_velocity.y += wall_climb_speed * speed_mult
-	projected_velocity -= gravity * up_dir
-	
-	for dash_vector in dash_ticks_dict:
-		velocity += dash_vector
-	
-	return projected_velocity
+#	direction = Vector3()
 
 func jump():
 	dash(Vector3(0, 1, 0), gravity * 3, 12)
@@ -267,19 +249,6 @@ func set_direction(direction_num):
 	direction = direction.normalized()
 
 # -----------------------------------------------------------------------Utility
-func take_snapshot() -> Vector3:
-	return delta_position
-
-func update_and_add_delta_p():
-	var current_time = OS.get_ticks_usec()
-	tick_length = current_time - last_queue_add_timestamp
-	last_queue_add_timestamp = current_time
-	
-	var current_position = get_global_transform().origin
-	delta_position = current_position - last_position
-	last_position = current_position
-	motion_time_queue.add_to_queue([tick_length, delta_position])
-
 func update_motion_time_tracking():
 	var current_time = OS.get_ticks_usec()
 	tick_length = current_time - last_queue_add_timestamp
@@ -287,7 +256,7 @@ func update_motion_time_tracking():
 	motion_time_queue.add_to_queue([tick_length, get_global_transform().origin])
 
 # accounts for microseconds since last frame
-func get_displacement_usec_ago(time_ago):
+func get_displacement_usecs_ago(time_ago):
 	var microseconds_since_last_queue_add = OS.get_ticks_usec() - last_queue_add_timestamp
 	var displacement = get_global_transform().origin - motion_time_queue.get_position_at_time_past(time_ago - microseconds_since_last_queue_add)
 	return displacement

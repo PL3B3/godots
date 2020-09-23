@@ -59,7 +59,7 @@ func get_position_at_time_past(time_past):
 		if ticks_ago > min(ticks_since_start, queue_length):
 			print("calculating too far into the past")
 			return get_earliest_position()
-	return queue[current_queue_tail - ticks_ago + 1]
+	return queue[current_queue_tail - max(1, ticks_ago - 1)]
 
 func get_earliest_position():
 	pass

@@ -19,6 +19,7 @@ const ability_conversions = {
 
 # -----------------------------------------------------------Functionality Nodes
 var uuid_gen = preload("res://common/utils/UUIDGenerator.gd")
+var interpolator = Tween.new()
 var periodic_timer = Timer.new()
 var periodic_timer_period = 1
 
@@ -43,6 +44,7 @@ func _ready():
 	# functionality node initialization
 	add_child(periodic_timer)
 	periodic_timer.start(periodic_timer_period)
+	add_child(interpolator)
 	
 	# connections
 	periodic_timer.connect("timeout", self, "_periodic", [periodic_timer_period])

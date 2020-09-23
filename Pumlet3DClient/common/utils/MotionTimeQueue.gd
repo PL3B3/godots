@@ -1,5 +1,7 @@
 extends "res://common/utils/TimeQueue.gd"
 
+onready var player = get_parent()
+
 var rolling_sum_ticks = 9999999999
 var rolling_delta_p_sum = Vector3()
 
@@ -50,7 +52,7 @@ func calculate_delta_p_prior_to_latest_physics_step(time_preceding_last_physics_
 func get_position_at_time_past(time_past):
 	if time_past < 0:
 		print("calculating future p is not possible")
-		return Vector3()
+		return player.transform.origin
 	var time_counter = time_past
 	var ticks_ago = 1
 	while time_counter > 0:
@@ -59,7 +61,10 @@ func get_position_at_time_past(time_past):
 		if ticks_ago > min(ticks_since_start, queue_length):
 			print("calculating too far into the past")
 			return get_earliest_position()
-	return queue[current_queue_tail - ticks_ago + 1]
+	if ticks_ago == 2:
+		return player.transform.origin
+	else:
+		return queue[current_queue_tail - (ticks_ago - 1)]
 
 func get_earliest_position():
 	pass

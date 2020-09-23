@@ -19,6 +19,7 @@ const ability_conversions = {
 
 # -----------------------------------------------------------Functionality Nodes
 var uuid_gen = preload("res://common/utils/UUIDGenerator.gd")
+var interpolator = Tween.new()
 var periodic_timer = Timer.new()
 var periodic_timer_period = 1
 
@@ -43,6 +44,7 @@ func _ready():
 	# functionality node initialization
 	add_child(periodic_timer)
 	periodic_timer.start(periodic_timer_period)
+	add_child(interpolator)
 	
 	# connections
 	periodic_timer.connect("timeout", self, "_periodic", [periodic_timer_period])
@@ -115,6 +117,7 @@ var ping_dict = {}
 
 # flag indicates if the ping is beginning (0), response (1), or conclude (2)
 remotesync func ping(args):
+	var start_time = OS.get_ticks_usec()
 	var id = args[0]
 	var uuid = args[1]
 	var flag = args[2]
@@ -147,10 +150,14 @@ remotesync func ping_unreliable(args):
 	var flag = args[2]
 	if flag == 0:
 		var uuid_to_send = uuid_gen.v4()
-		ping_dict[id][uuid_to_send] = OS.get_ticks_usec()
-		rpc_unreliable_id(id, "ping", [network_id, uuid_to_send, flag + 1])
+		if ping_dict.has(id):
+			ping_dict[id][uuid_to_send] = OS.get_ticks_usec()
+		else:
+			ping_dict[id] = {}
+			ping_dict[id][uuid_to_send] = OS.get_ticks_usec()
+		rpc_id(id, "ping_unreliable", [network_id, uuid_to_send, flag + 1])
 	elif flag == 1:
-		rpc_unreliable_id(get_tree().get_rpc_sender_id(), "ping", [network_id, uuid, flag + 1])
+		rpc_unreliable_id(get_tree().get_rpc_sender_id(), "ping_unreliable", [network_id, uuid, flag + 1])
 	elif flag == 2:
 		var ping_time = (OS.get_ticks_usec() - ping_dict[id][uuid])
 		#print(ping_time)

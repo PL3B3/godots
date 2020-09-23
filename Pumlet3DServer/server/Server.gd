@@ -152,6 +152,14 @@ remote func parse_player_rpc(method_name, args) -> void:
 	
 	var player_to_call = players.get(player_id)
 	if not player_to_call == null:
+		match method_name:
+			"set_direction":
+				send_server_rpc_to_one_player_unreliable(
+					player_id,
+					"update_own_player_origin",
+					[players[player_id].transform.origin])
+			_:
+				pass
 		player_to_call.callv(method_name, args)
 		
 		for id in players:

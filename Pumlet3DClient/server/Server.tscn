@@ -11,5 +11,6 @@ script = ExtResource( 2 )
 [node name="WorldAudioPlayer" type="AudioStreamPlayer" parent="." index="0"]
 stream = ExtResource( 3 )
 volume_db = -10.0
+pitch_scale = 0.41
 
 [node name="ClientInputHandler" parent="." index="1" instance=ExtResource( 1 )]

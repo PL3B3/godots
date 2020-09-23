@@ -14,6 +14,7 @@ var client_net = null # the ENet containing the client
 
 var our_species : int = Species.BASE
 var our_team : int = 0
+var our_player
 
 var connected = false
 
@@ -37,15 +38,21 @@ signal other_player_spawned(other_player_node)
 func _ready():
 	# resource node initialization
 	
-	base_character = load("res://characters/ClientCharacter.tscn")
+	base_character = load("res://characters/Character.tscn")
 	
 	# connections
 	connect("our_player_spawned", input_handler, "_on_our_player_spawned")
 	
+	
+#	start_game_offline()
 	start_game_multiplayer()
 
-
 # ---------------------------------------------------------Client Initialization
+func start_game_offline():
+	add_map()
+	add_our_player()
+	wap.play()
+
 func start_game_multiplayer():
 	add_map()
 	start_client()
@@ -105,13 +112,13 @@ func _on_connection_succeeded():
 
 func _periodic(timer_period):
 #	start_ping_query_unreliable()
-	ping_unreliable([1, "thing", 0])
+#	ping_unreliable([1, "thing", 0])
 	print(ping_avg)
 
 # ---------------------------------------------------------------Player Handling
 
 func add_our_player():
-	var our_player = initialize_and_add_player(
+	var our_player_node = initialize_and_add_player(
 		network_id, 
 		our_species, 
 		our_team, 
@@ -120,7 +127,9 @@ func add_our_player():
 	
 	set_network_master(network_id)
 	
-	emit_signal("our_player_spawned", our_player)
+	our_player = our_player_node
+	
+	emit_signal("our_player_spawned", our_player_node)
 
 func add_other_player(id, species, team: int, origin: Vector3, initialization_values):
 	var player_to_add = initialize_and_add_player(
@@ -133,7 +142,30 @@ func add_other_player(id, species, team: int, origin: Vector3, initialization_va
 	emit_signal("other_player_spawned", player_to_add)
 
 
-# -----------------------------------------------------------------------Utility
+# -----------------------------------------------------------------------Syncing
+var ping_interp_threshold = 14000 # below this, projection is unecessary
+var own_player_interp_speed = 0.1
+func update_own_player_origin(server_origin):
+	var current_origin = our_player.transform.origin
+	var displacement = our_player.get_displacement_usecs_ago(
+		max(
+			ping_avg, 
+			1.2 * (
+				OS.get_ticks_usec() - 
+				our_player.last_queue_add_timestamp)))
+	print(displacement)
+	var projected_origin = server_origin + displacement
+	print(
+		"Server origin at %s, current origin at %s, difference is %3.1f large" % 
+		[
+			server_origin, 
+			current_origin, 
+			(server_origin - current_origin).length()])
+	
+	our_player.transform.origin = (
+		our_player.transform.origin.linear_interpolate(
+			projected_origin,
+			0.1))
 
 func call_node_method(node_name: String, method_name: String, args) -> void:
 	var node_to_call = get_node("/root/Server/" + node_name)
