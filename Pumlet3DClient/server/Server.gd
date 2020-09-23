@@ -112,7 +112,7 @@ func _on_connection_succeeded():
 
 func _periodic(timer_period):
 #	start_ping_query_unreliable()
-#	ping_unreliable([1, "thing", 0])
+	ping([1, "thing", 0])
 	print(ping_avg)
 
 # ---------------------------------------------------------------Player Handling
@@ -144,28 +144,38 @@ func add_other_player(id, species, team: int, origin: Vector3, initialization_va
 
 # -----------------------------------------------------------------------Syncing
 var ping_interp_threshold = 14000 # below this, projection is unecessary
-var own_player_interp_speed = 0.1
+var own_player_interp_speed = 0.15
+var counter = 0
 func update_own_player_origin(server_origin):
 	var current_origin = our_player.transform.origin
-	var displacement = our_player.get_displacement_usecs_ago(
-		max(
-			ping_avg, 
-			1.2 * (
-				OS.get_ticks_usec() - 
-				our_player.last_queue_add_timestamp)))
-	print(displacement)
+	var displacement = our_player.get_displacement_usecs_ago(ping_avg + 100000)
+#		max(
+#			ping_avg, 
+#			1.2 * (
+#				OS.get_ticks_usec() - 
+#				our_player.last_queue_add_timestamp)))
 	var projected_origin = server_origin + displacement
-	print(
-		"Server origin at %s, current origin at %s, difference is %3.1f large" % 
-		[
-			server_origin, 
-			current_origin, 
-			(server_origin - current_origin).length()])
-	
-	our_player.transform.origin = (
-		our_player.transform.origin.linear_interpolate(
-			projected_origin,
-			0.1))
+#	if counter % 20 == 0:
+#		print(
+#			"Projected origin at %s, current origin at %s, difference is %3.1f large" % 
+#			[
+#				projected_origin, 
+#				current_origin, 
+#				(projected_origin - current_origin).length()])
+	counter += 1
+	our_player.velocity += (
+		own_player_interp_speed * 
+		(projected_origin - current_origin))
+#	our_player.transform.origin = projected_origin
+#	(
+#		current_origin + 
+#		(
+#			own_player_interp_speed * 
+#			(projected_origin - current_origin)))
+#	our_player.transform.origin = (
+#		our_player.transform.origin.linear_interpolate(
+#			projected_origin,
+#			own_player_interp_speed))
 
 func call_node_method(node_name: String, method_name: String, args) -> void:
 	var node_to_call = get_node("/root/Server/" + node_name)

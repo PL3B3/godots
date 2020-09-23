@@ -29,4 +29,5 @@ func _physics_process(delta):
 		# client send cmd to server
 #		 and direction_to_send[1][0] != DIRECTION.STOP
 		if server.connected:
+			yield(get_tree().create_timer(0.100), "timeout")
 			server.send_player_rpc_unreliable(direction_to_send[0], direction_to_send[1])

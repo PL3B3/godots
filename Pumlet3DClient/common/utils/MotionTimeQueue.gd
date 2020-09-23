@@ -60,7 +60,7 @@ func get_position_at_time_past(time_past):
 		ticks_ago += 1
 		if ticks_ago > min(ticks_since_start, queue_length):
 			print("calculating too far into the past")
-			return get_earliest_position()
+			return queue[current_queue_tail]
 	if ticks_ago == 2:
 		return player.transform.origin
 	else:

@@ -82,3 +82,9 @@ func handle_poll_input():
 			direction_num = DIRECTION.STOP
 	
 	return call_and_return("set_direction", [direction_num])
+
+func get_displacement_usecs_ago_counting_frame(time_ago):
+	var displacement = (
+		get_global_transform().origin - 
+		motion_time_queue.get_position_at_time_past(time_ago))
+	return displacement

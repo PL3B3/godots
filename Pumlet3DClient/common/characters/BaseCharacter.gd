@@ -162,7 +162,7 @@ func _physics_process(delta):
 			dash_ticks_dict.erase(dash_vector)
 	
 #	last_queue_add_timestamp = OS.get_ticks_usec()
-#	motion_time_queue.add_to_queue(velocity * delta)
+#	motion_time_queue.add_to_queue([delta, velocity * delta])
 	
 	velocity = move_and_slide(
 		velocity,
