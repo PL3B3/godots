@@ -11,6 +11,7 @@ extends "res://common/server/BaseServer.gd"
 
 var server_ip = "127.0.0.1"
 var client_net = null # the ENet containing the client
+var simulated_ping = 0.06
 
 var our_species : int = Species.BASE
 var our_team : int = 0
@@ -51,6 +52,7 @@ func _ready():
 func start_game_offline():
 	add_map()
 	add_our_player()
+	spawn_targets(5)
 	wap.play()
 
 func start_game_multiplayer():
@@ -113,7 +115,7 @@ func _on_connection_succeeded():
 func _periodic(timer_period):
 #	start_ping_query_unreliable()
 	ping([1, "thing", 0])
-	print(ping_avg)
+	print("Ping average is %s" % ping_avg)
 
 # ---------------------------------------------------------------Player Handling
 
@@ -129,6 +131,9 @@ func add_our_player():
 	
 	our_player = our_player_node
 	
+	our_player.camera.current = true
+	our_player.physics_enabled = true
+	
 	emit_signal("our_player_spawned", our_player_node)
 
 func add_other_player(id, species, team: int, origin: Vector3, initialization_values):
@@ -139,21 +144,24 @@ func add_other_player(id, species, team: int, origin: Vector3, initialization_va
 		origin,
 		initialization_values)
 	
+#	player_to_add.physics_enabled = true
+	
 	emit_signal("other_player_spawned", player_to_add)
 
 
 # -----------------------------------------------------------------------Syncing
 var ping_interp_threshold = 14000 # below this, projection is unecessary
-var own_player_interp_speed = 0.15
+var own_player_interp_speed = 0.13
 var counter = 0
+var origin_jump_limit = 1 # How far off (rel to displacement) b4 jumping position
+var origin_jump_limit_absolute = 2
+var no_sync_threshold = 0.005
 func update_own_player_origin(server_origin):
 	var current_origin = our_player.transform.origin
-	var displacement = our_player.get_displacement_usecs_ago(ping_avg + 100000)
-#		max(
-#			ping_avg, 
-#			1.2 * (
-#				OS.get_ticks_usec() - 
-#				our_player.last_queue_add_timestamp)))
+	if current_origin.distance_to(server_origin) < no_sync_threshold:
+		return
+#	var displacement = our_player.get_cumulative_movement_usecs_ago(ping_avg)
+	var displacement = our_player.get_cumulative_movement_usecs_ago(ping_avg + 1000000 * simulated_ping)
 	var projected_origin = server_origin + displacement
 #	if counter % 20 == 0:
 #		print(
@@ -162,20 +170,26 @@ func update_own_player_origin(server_origin):
 #				projected_origin, 
 #				current_origin, 
 #				(projected_origin - current_origin).length()])
-	counter += 1
-	our_player.velocity += (
-		own_player_interp_speed * 
-		(projected_origin - current_origin))
-#	our_player.transform.origin = projected_origin
-#	(
-#		current_origin + 
-#		(
-#			own_player_interp_speed * 
-#			(projected_origin - current_origin)))
-#	our_player.transform.origin = (
-#		our_player.transform.origin.linear_interpolate(
-#			projected_origin,
-#			own_player_interp_speed))
+#	counter += 1
+	
+	var error = current_origin - server_origin
+	
+	if (
+		(error - displacement).length() > 
+		max(
+			origin_jump_limit_absolute, 
+			origin_jump_limit * displacement.length())):
+		our_player.transform.origin = server_origin
+	else:
+		our_player.move_and_collide(
+			own_player_interp_speed * 
+			(projected_origin - current_origin))
+
+var other_player_interp_speed = 0.2
+var other_player_origin_target_dict = {}
+func interpolate_player_origin(player_id, new_origin):
+	other_player_origin_target_dict[player_id] = new_origin
+
 
 func call_node_method(node_name: String, method_name: String, args) -> void:
 	var node_to_call = get_node("/root/Server/" + node_name)
@@ -183,3 +197,14 @@ func call_node_method(node_name: String, method_name: String, args) -> void:
 	if is_instance_valid(node_to_call):
 		# call the method
 		node_to_call.callv(method_name, args)
+
+func _physics_process(delta):
+	for player_id in other_player_origin_target_dict:
+		var player_to_update = players.get(player_id)
+		if is_instance_valid(player_to_update):
+			var target_origin = other_player_origin_target_dict[player_id]
+			var current_origin = player_to_update.transform.origin
+			if (target_origin - current_origin).length() > no_sync_threshold:
+				player_to_update.move_and_collide(
+					other_player_interp_speed * 
+					(target_origin - current_origin))

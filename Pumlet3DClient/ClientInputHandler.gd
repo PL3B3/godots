@@ -5,6 +5,7 @@ onready var server = get_node("/root/Server")
 enum DIRECTION {STOP, NORTH, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST, NORTHWEST}
 
 var player_controlled = null
+var poll_cycle_ticks = 2
 
 
 func _ready():
@@ -20,6 +21,7 @@ func _input(event):
 		var command_to_send = player_controlled.handle_query_input(event)
 		# client send cmd to server
 		if (not command_to_send == []) and server.connected:
+#			yield(get_tree().create_timer(server.simulated_ping), "timeout")
 			server.send_player_rpc(command_to_send[0], command_to_send[1])
 
 # Run per physics frame
@@ -29,5 +31,5 @@ func _physics_process(delta):
 		# client send cmd to server
 #		 and direction_to_send[1][0] != DIRECTION.STOP
 		if server.connected:
-			yield(get_tree().create_timer(0.100), "timeout")
+#			yield(get_tree().create_timer(server.simulated_ping), "timeout")
 			server.send_player_rpc_unreliable(direction_to_send[0], direction_to_send[1])

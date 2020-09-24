@@ -1,7 +1,7 @@
 extends KinematicBody
 
 # ------------------------------------------------------------------Helper Nodes
-onready var client = get_node("/root/Server")
+onready var server = get_node("/root/Server")
 onready var camera_origin = $CameraOrigin
 onready var camera = $CameraOrigin/Camera
 onready var flashlight = $CameraOrigin/Camera/Flashlight
@@ -57,16 +57,13 @@ var up_dir = Vector3()
 var sprinting = false
 
 var dash_ticks_dict = {}
-# leftover velocity from last frame, which is built upon 
-# next frame by dashes, gravity, etc
-var last_frame_final_velocity : Vector3
 var delta_position : Vector3 = Vector3()
 var last_position : Vector3 = Vector3()
 var last_queue_add_timestamp = 0
 var tick_length
 var phys_counter = 0
 var physics_tick_length = 1.0 / Engine.iterations_per_second
-
+var physics_enabled = false
 
 # --------------------------------------------------------------------Input Vars
 export var mouse_sensitivity = 0.05
@@ -99,16 +96,18 @@ func _ready():
 	
 	display_ammo_reserves()
 
-
+onready var last_period_position = get_global_transform().origin
 func _periodic(timer_period):
 #	display_health()
 #	var real_dist_moved = get_global_transform().origin - last_period_position
-#	var error = real_dist_moved - get_displacement_usecs_ago(timer_period * 1000000)
+#	var movement = get_cumulative_movement_usecs_ago(timer_period * 1000000)
+#	print("Moved %s. Real movement %s" % [movement, real_dist_moved])
+#	var error = real_dist_moved - movement
 #	print(get_motion_since(periodic_timer_period * 1000000))
 #	print(real_dist_moved)
 #	if real_dist_moved.length() > 0:
 #		var pcnt_error = 100 * error.length() / real_dist_moved.length()
-#		print(pcnt_error)
+#		print("Pcnt error: %4.2f" % pcnt_error)
 #		print("Overtime: %10d. error pcnt: %5.2f" % [OS.get_ticks_usec() - last_queue_add_timestamp, pcnt_error])
 #		if error_avg == 0:
 #			print("first_error")
@@ -123,9 +122,18 @@ func _periodic(timer_period):
 # ----------------------------------------------------------------------Movement
 
 func _physics_process(delta):
-#	update_and_add_delta_p()
-	update_motion_time_tracking()
-	
+	if physics_enabled:
+		initialize_movement(delta)
+		
+		climb_wall()
+		
+		process_dash_vectors()
+		
+		move_and_record_movement_delta()
+		
+		check_on_floor()
+
+func initialize_movement(delta):
 	var accel_to_use = acceleration
 	if is_on_floor():
 		up_dir = get_floor_normal()
@@ -138,7 +146,23 @@ func _physics_process(delta):
 		direction * (speed * speed_mult + air_control * velocity.length()),
 		accel_to_use * delta)
 	
+	velocity -= gravity * up_dir
+
+func move_and_record_movement_delta():
+	var position_before_movement = get_global_transform().origin
 	
+	velocity = move_and_slide(
+		velocity,
+		Vector3.UP,
+		true)
+	
+	var movement_due_to_velocity = (
+		get_global_transform().origin - 
+		position_before_movement)
+	
+	update_movement_delta(movement_due_to_velocity)
+
+func climb_wall():
 	if is_on_wall():
 		ticks_since_walled = 0
 		ticks_spent_pushing_against_foot_of_wall += 1
@@ -146,13 +170,13 @@ func _physics_process(delta):
 		ticks_since_walled += 1
 	if ticks_since_walled < 5:
 		if ticks_spent_wall_climbing < wall_climb_tick_limit:
-			if ticks_spent_pushing_against_foot_of_wall > 3:
-				velocity.y += wall_climb_speed * speed_mult
-				ticks_spent_wall_climbing += 1
+#			if ticks_spent_pushing_against_foot_of_wall > 3:
+			velocity.y += wall_climb_speed * speed_mult
+			ticks_spent_wall_climbing += 1
 	else:
 		ticks_spent_pushing_against_foot_of_wall = 0
-	velocity -= gravity * up_dir
-	
+
+func process_dash_vectors():
 	for dash_vector in dash_ticks_dict:
 		var ticks_left = dash_ticks_dict[dash_vector]
 		if ticks_left > 0:
@@ -160,25 +184,14 @@ func _physics_process(delta):
 			dash_ticks_dict[dash_vector] -= 1
 		else:
 			dash_ticks_dict.erase(dash_vector)
-	
-#	last_queue_add_timestamp = OS.get_ticks_usec()
-#	motion_time_queue.add_to_queue([delta, velocity * delta])
-	
-	velocity = move_and_slide(
-		velocity,
-		Vector3.UP,
-		true)
-	
-	last_frame_final_velocity = velocity
-	
+
+func check_on_floor():
 	if is_on_floor():
 		ticks_since_grounded = 0
 		ticks_spent_wall_climbing = 0
 		jumps_left = jump_cap
 	else:
 		ticks_since_grounded += 1
-	
-#	direction = Vector3()
 
 func jump():
 	dash(Vector3(0, 1, 0), gravity * 3, 12)
@@ -249,6 +262,12 @@ func set_direction(direction_num):
 	direction = direction.normalized()
 
 # -----------------------------------------------------------------------Utility
+func update_movement_delta(movement_delta):
+	var current_time = OS.get_ticks_usec()
+	tick_length = current_time - last_queue_add_timestamp
+	last_queue_add_timestamp = current_time
+	motion_time_queue.add_to_queue([tick_length, movement_delta])
+
 func update_motion_time_tracking():
 	var current_time = OS.get_ticks_usec()
 	tick_length = current_time - last_queue_add_timestamp
@@ -260,6 +279,13 @@ func get_displacement_usecs_ago(time_ago):
 	var microseconds_since_last_queue_add = OS.get_ticks_usec() - last_queue_add_timestamp
 	var displacement = get_global_transform().origin - motion_time_queue.get_position_at_time_past(time_ago - microseconds_since_last_queue_add)
 	return displacement
+
+func get_cumulative_movement_usecs_ago(time_ago):
+	return motion_time_queue.get_cumulative_movement_usecs_before_step(
+		time_ago -
+		(
+			OS.get_ticks_usec() - 
+			last_queue_add_timestamp))
 
 # ----------------------------------------------------------------------------UI
 

@@ -7,9 +7,12 @@ extends "res://common/server/BaseServer.gd"
 # ---------------------------------------------------------------------Constants
 const MAX_PLAYERS = 12
 
+var cam_focus_counter = 0
 var physics_processing = false
 
 func _ready():
+	# Load game nodes
+	base_character = load("res://characters/Character.tscn")
 	server_delta = 1.0 / (ProjectSettings.get_setting("physics/common/physics_fps"))
 	
 	start_game_multiplayer()
@@ -19,7 +22,13 @@ func _ready():
 	get_tree().connect("connected_to_server", self, "_connected_ok")
 	get_tree().connect("connection_failed", self, "_connected_fail")
 	get_tree().connect("server_disconnected", self, "_server_disconnected")
+	
+#	test()
 
+func test():
+	var meb = add_player(1993, 0, 0)
+	var niph = add_player(3342, 0, 1)
+	niph.transform.origin = meb.get_global_transform().origin + Vector3(3, 0, 0)
 
 # ---------------------------------------------------------Server Initialization
 func start_game_multiplayer():
@@ -55,13 +64,19 @@ func add_player(id, species, team):
 		team_respawn_positions[team], 
 		[])
 	
+	player_phantom.connect("send_origin_update_to_my_client", self, "update_player_origin", [id])
+	
 	# ensures all other clients have a copy of this player and vice versa
 	add_new_player_to_current_clients_and_old_players_to_new_client(id, species, team)
+	
+	return player_phantom
 
 func add_new_player_to_current_clients_and_old_players_to_new_client(new_player_id, new_player_species, new_player_team):
+	var new_player = players[new_player_id]
 	for player_id in players:
 		# avoids redundantly adding our new player to its own client
 		if (player_id != new_player_id):
+			var other_player = players[player_id]
 			# add new player to existing client
 			send_server_rpc_to_one_player(
 				player_id,
@@ -70,16 +85,25 @@ func add_new_player_to_current_clients_and_old_players_to_new_client(new_player_
 					new_player_id,
 					new_player_species,
 					new_player_team,
-					players[new_player_id].get_initialization_values()])
+					team_respawn_positions[new_player_team],
+					new_player.get_initialization_values()])
+			
+			# add new player to existing player sync list on server
+			other_player.add_player_to_sync_dict(new_player_id)
+			
 			# add existing player to new client
 			send_server_rpc_to_one_player(
 				new_player_id,
 				"add_other_player",
 				[
 					player_id,
-					players[player_id].species,
-					players[player_id].team,
-					players[player_id].get_initialization_values()])
+					other_player.species,
+					other_player.team,
+					other_player.transform.origin,
+					other_player.get_initialization_values()])
+			
+			# add existing player to sync list on server
+			new_player.add_player_to_sync_dict(player_id)
 
 # -----------------------------------------------------------Connected Functions
 
@@ -152,6 +176,8 @@ remote func parse_player_rpc(method_name, args) -> void:
 	
 	var player_to_call = players.get(player_id)
 	if not player_to_call == null:
+		player_to_call.callv(method_name, args)
+		
 		match method_name:
 			"set_direction":
 				send_server_rpc_to_one_player_unreliable(
@@ -159,12 +185,9 @@ remote func parse_player_rpc(method_name, args) -> void:
 					"update_own_player_origin",
 					[players[player_id].transform.origin])
 			_:
-				pass
-		player_to_call.callv(method_name, args)
-		
-		for id in players:
-			if id != player_id:
-				call_player_method_on_client(id, player_id, method_name, args)
+				for id in players:
+					if id != player_id:
+						call_player_method_on_client(id, player_id, method_name, args)
 
 
 # -----------------------------------------------------------------------Utility
@@ -188,3 +211,22 @@ func setup_client(client_species, client_team):
 	var caller_id = get_tree().get_rpc_sender_id()
 	add_player(caller_id, client_species, client_team)
 	send_server_rpc_to_one_player(caller_id, "add_our_player", [])
+
+# -------------------------------------------------------------Server Monitoring
+
+func _input(event):
+	if event.is_action_pressed("ui_focus_next") and not players.empty():
+		cam_focus_counter += 1
+		var players_key_array = players.keys()
+		var index = players_key_array[(
+			cam_focus_counter % 
+			players_key_array.size())]
+		players[index].camera.current = true
+
+# ----------------------------------------------------------------Player Syncing
+
+func update_player_origin(player_to_update: int, new_origin: Vector3, client_to_update_on: int):
+	send_server_rpc_to_one_player_unreliable(client_to_update_on, "interpolate_player_origin", [player_to_update, new_origin])
+
+func update_player_velocity(player_to_update: int, new_origin: Vector3, client_to_update_on: int):
+	pass

@@ -52,7 +52,7 @@ func calculate_delta_p_prior_to_latest_physics_step(time_preceding_last_physics_
 func get_position_at_time_past(time_past):
 	if time_past < 0:
 		print("calculating future p is not possible")
-		return player.transform.origin
+		return player.get_global_transform().origin
 	var time_counter = time_past
 	var ticks_ago = 1
 	while time_counter > 0:
@@ -62,9 +62,26 @@ func get_position_at_time_past(time_past):
 			print("calculating too far into the past")
 			return queue[current_queue_tail]
 	if ticks_ago == 2:
-		return player.transform.origin
+		return player.get_global_transform().origin
 	else:
 		return queue[current_queue_tail - (ticks_ago - 1)]
+
+func get_cumulative_movement_usecs_before_step(time_preceding_last_queue_add):
+	if time_preceding_last_queue_add < 0:
+		print("calculating future p is not possible")
+		return Vector3()
+	var time_counter = time_preceding_last_queue_add
+	var ticks_ago = 1
+	var cumulative_movement = Vector3()
+	while time_counter > 0:
+		var index = current_queue_tail - ticks_ago
+		time_counter -= tick_queue[index]
+		cumulative_movement += queue[index]
+		ticks_ago += 1
+		if ticks_ago > min(ticks_since_start, queue_length):
+			print("calculating too far into the past")
+			return get_sum()
+	return cumulative_movement
 
 func get_earliest_position():
 	pass
