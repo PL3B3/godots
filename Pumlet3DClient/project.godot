@@ -114,7 +114,6 @@ toggle_mouse_mode={
 
 [physics]
 
-common/physics_jitter_fix=0.5
 3d/physics_engine="GodotPhysics"
 
 [rendering]

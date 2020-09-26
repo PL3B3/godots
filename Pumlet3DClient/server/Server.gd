@@ -95,9 +95,11 @@ func send_client_rpc_unreliable(client_cmd, args):
 
 # sends our in-game commands to the server
 func send_player_rpc(command, args):
+	yield(get_tree().create_timer(simulated_ping), "timeout")
 	rpc_id(1, "parse_player_rpc", command, args) 
 
 func send_player_rpc_unreliable(command, args):
+	yield(get_tree().create_timer(simulated_ping), "timeout")
 	rpc_unreliable_id(1, "parse_player_rpc", command, args)
 
 # -----------------------------------------------------------Connected Functions
@@ -114,8 +116,10 @@ func _on_connection_succeeded():
 
 func _periodic(timer_period):
 #	start_ping_query_unreliable()
-	ping([1, "thing", 0])
-	print("Ping average is %s" % ping_avg)
+#	if connected:
+#		ping([1, "thing", 0])
+#		print("Ping average is %s" % ping_avg)
+	pass
 
 # ---------------------------------------------------------------Player Handling
 
@@ -133,6 +137,7 @@ func add_our_player():
 	
 	our_player.camera.current = true
 	our_player.physics_enabled = true
+	our_player.is_own_player = true
 	
 	emit_signal("our_player_spawned", our_player_node)
 
@@ -151,41 +156,52 @@ func add_other_player(id, species, team: int, origin: Vector3, initialization_va
 
 # -----------------------------------------------------------------------Syncing
 var ping_interp_threshold = 14000 # below this, projection is unecessary
-var own_player_interp_speed = 0.13
+var own_player_interp_speed = 0.34
 var counter = 0
-var origin_jump_limit = 1 # How far off (rel to displacement) b4 jumping position
-var origin_jump_limit_absolute = 2
+var origin_jump_limit_absolute = 1
 var no_sync_threshold = 0.005
-func update_own_player_origin(server_origin):
-	var current_origin = our_player.transform.origin
-	if current_origin.distance_to(server_origin) < no_sync_threshold:
+var last_sequence_number_processed = -1
+var avg_error_size = 0
+func update_own_player_origin(server_origin, sequence_number):
+	if not sequence_number > last_sequence_number_processed:
 		return
-#	var displacement = our_player.get_cumulative_movement_usecs_ago(ping_avg)
-	var displacement = our_player.get_cumulative_movement_usecs_ago(ping_avg + 1000000 * simulated_ping)
+	
+	last_sequence_number_processed = sequence_number
+	var current_origin = our_player.transform.origin
+#	if current_origin.distance_to(server_origin) < no_sync_threshold:
+#		return
+	var displacement = our_player.motion_time_queue.replay_since_tick(sequence_number)
+#	var displacement = our_player.get_cumulative_movement_usecs_ago(ping_avg + 1000000 * simulated_ping)
 	var projected_origin = server_origin + displacement
-#	if counter % 20 == 0:
+	var error = projected_origin - current_origin
+#	print(our_player.motion_time_queue.ticks_since_start - sequence_number)
+	if counter % 100 == 0:
+#		print(our_player.motion_time_queue.ticks_since_start - sequence_number)
+		print(avg_error_size)
 #		print(
-#			"Projected origin at %s, current origin at %s, difference is %3.1f large" % 
+#			"Projected %s \n Current %s \n Server %s \n Displacement %s \n Diff 4.2f %s" % 
 #			[
 #				projected_origin, 
 #				current_origin, 
+#				server_origin,
+#				displacement,
 #				(projected_origin - current_origin).length()])
-#	counter += 1
+#		print(our_player.motion_time_queue.queue)
+	counter += 1
 	
-	var error = current_origin - server_origin
+	var error_size = error.length()
+	avg_error_size = (avg_error_size + 0.3 * error_size) / 1.3
 	
-	if (
-		(error - displacement).length() > 
-		max(
-			origin_jump_limit_absolute, 
-			origin_jump_limit * displacement.length())):
-		our_player.transform.origin = server_origin
+	if error_size > origin_jump_limit_absolute:
+		our_player.transform.origin = projected_origin
+	elif error_size < no_sync_threshold:
+		return
 	else:
 		our_player.move_and_collide(
 			own_player_interp_speed * 
 			(projected_origin - current_origin))
 
-var other_player_interp_speed = 0.2
+var other_player_interp_speed = 0.16
 var other_player_origin_target_dict = {}
 func interpolate_player_origin(player_id, new_origin):
 	other_player_origin_target_dict[player_id] = new_origin
@@ -205,6 +221,10 @@ func _physics_process(delta):
 			var target_origin = other_player_origin_target_dict[player_id]
 			var current_origin = player_to_update.transform.origin
 			if (target_origin - current_origin).length() > no_sync_threshold:
-				player_to_update.move_and_collide(
-					other_player_interp_speed * 
-					(target_origin - current_origin))
+				player_to_update.transform.origin = (
+					player_to_update.transform.origin.linear_interpolate(
+						target_origin, 
+						other_player_interp_speed))
+#				player_to_update.move_and_collide(
+#					other_player_interp_speed * 
+#					(target_origin - current_origin))

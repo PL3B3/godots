@@ -10,6 +10,8 @@ const MAX_PLAYERS = 12
 var cam_focus_counter = 0
 var physics_processing = false
 
+var simulated_ping = 1
+
 func _ready():
 	# Load game nodes
 	base_character = load("res://characters/Character.tscn")
@@ -65,6 +67,7 @@ func add_player(id, species, team):
 		[])
 	
 	player_phantom.connect("send_origin_update_to_my_client", self, "update_player_origin", [id])
+	player_phantom.camera.current = true
 	
 	# ensures all other clients have a copy of this player and vice versa
 	add_new_player_to_current_clients_and_old_players_to_new_client(id, species, team)
@@ -176,15 +179,19 @@ remote func parse_player_rpc(method_name, args) -> void:
 	
 	var player_to_call = players.get(player_id)
 	if not player_to_call == null:
-		player_to_call.callv(method_name, args)
-		
 		match method_name:
 			"set_direction":
 				send_server_rpc_to_one_player_unreliable(
 					player_id,
 					"update_own_player_origin",
-					[players[player_id].transform.origin])
+					[
+						players[player_id].transform.origin,
+						args[1]])
+#				print(args[1])
+#				print("calling set direction with args %s" % args[0])
+				player_to_call.callv(method_name, [args[0]])
 			_:
+				player_to_call.callv(method_name, args)
 				for id in players:
 					if id != player_id:
 						call_player_method_on_client(id, player_id, method_name, args)

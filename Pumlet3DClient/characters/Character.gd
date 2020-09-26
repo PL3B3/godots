@@ -1,5 +1,11 @@
 extends "res://common/characters/BaseCharacter.gd"
 
+var is_own_player = false
+
+var input_counter = 0
+
+signal physics_frame_ended(motion_during_frame)
+
 func call_and_return(method_name: String, args):
 	callv(method_name, args)
 	return [method_name, args]
@@ -82,6 +88,37 @@ func handle_poll_input():
 			direction_num = DIRECTION.STOP
 	
 	return call_and_return("set_direction", [direction_num])
+
+func move_and_record_movement_delta(delta):
+	var position_before_movement = get_global_transform().origin
+	
+	var slid_vel = move_and_slide(
+		velocity,
+		Vector3.UP,
+		true)
+	velocity = velocity.linear_interpolate(slid_vel, 10 * delta)
+	
+	var movement_due_to_velocity = (
+		get_global_transform().origin - 
+		position_before_movement)
+	
+	motion_time_queue.add_to_queue_with_sequence_number(movement_due_to_velocity)
+
+func _physics_process(delta):
+	input_counter += 1
+	if is_own_player and input_counter % 2 == 0:
+		var direction_to_send = handle_poll_input()
+#		print(motion_time_queue.ticks_since_start - 1)
+		if server.connected:
+			server.send_player_rpc_unreliable(
+				direction_to_send[0], 
+				[
+					direction_to_send[1][0], 
+					motion_time_queue.ticks_since_start - 1])
+
+func interpolate_origin():
+	if is_own_player:
+		pass
 
 func get_displacement_usecs_ago_counting_frame(time_ago):
 	var displacement = (

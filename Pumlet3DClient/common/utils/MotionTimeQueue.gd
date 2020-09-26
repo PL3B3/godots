@@ -8,7 +8,7 @@ var rolling_delta_p_sum = Vector3()
 # uses a timestamp_queue in parrallel with the data queue
 var tick_queue = PoolIntArray()
 
-func init_time_queue(tick_time=16.666666667, queue_length=240, data_source=parent, queue=PoolVector3Array()):
+func init_time_queue(tick_time=16.666666667, queue_length=960, data_source=parent, queue=PoolVector3Array()):
 	self.tick_time = tick_time
 	self.queue_length = queue_length
 	self.data_source = data_source
@@ -25,6 +25,24 @@ func add_to_queue(snapshot):
 	queue.set(current_queue_tail, snapshot[1])
 	current_queue_tail += 1
 	ticks_since_start += 1
+
+func add_to_queue_with_sequence_number(snapshot):
+	if not current_queue_tail < queue_length:
+		current_queue_tail = 0
+	tick_queue.set(current_queue_tail, ticks_since_start)
+	queue.set(current_queue_tail, snapshot)
+	current_queue_tail += 1
+	ticks_since_start += 1
+
+func replay_since_tick(sequence_number) -> Vector3:
+	var cumulative_movement = Vector3()
+	var ticks_ago = 1
+	var ticks_to_rewind = tick_queue[current_queue_tail - 1] - sequence_number
+	while ticks_to_rewind > 0 and ticks_ago < queue_length:
+		cumulative_movement = cumulative_movement + queue[current_queue_tail - ticks_ago]
+		ticks_ago += 1
+		ticks_to_rewind -= 1
+	return cumulative_movement
 
 func calculate_delta_p_prior_to_latest_physics_step(time_preceding_last_physics_step):
 	if time_preceding_last_physics_step < 0:

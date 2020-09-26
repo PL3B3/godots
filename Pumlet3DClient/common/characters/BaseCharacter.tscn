@@ -9,15 +9,15 @@
 [sub_resource type="SphereShape" id=1]
 radius = 1.2
 
-[sub_resource type="SpatialMaterial" id=2]
+[sub_resource type="SpatialMaterial" id=3]
 albedo_texture = ExtResource( 5 )
 roughness = 0.17
 rim_enabled = true
 rim = 1.0
 rim_tint = 0.23
 
-[sub_resource type="SphereMesh" id=3]
-material = SubResource( 2 )
+[sub_resource type="SphereMesh" id=4]
+material = SubResource( 3 )
 radius = 1.2
 height = 2.4
 
@@ -49,7 +49,7 @@ spot_angle_attenuation = 0.574349
 
 [node name="MeshInstance" type="MeshInstance" parent="CameraOrigin/Camera"]
 transform = Transform( 0.996976, -0.029976, 0.0716992, 0.0189767, 0.988589, 0.14944, -0.0753606, -0.147627, 0.986168, 0, -0.3, 0 )
-mesh = SubResource( 3 )
+mesh = SubResource( 4 )
 material/0 = null
 
 [node name="UI" parent="." instance=ExtResource( 3 )]
