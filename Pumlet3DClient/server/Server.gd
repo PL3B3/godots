@@ -45,8 +45,8 @@ func _ready():
 	connect("our_player_spawned", input_handler, "_on_our_player_spawned")
 	
 	
-#	start_game_offline()
-	start_game_multiplayer()
+	start_game_offline()
+#	start_game_multiplayer()
 
 # ---------------------------------------------------------Client Initialization
 func start_game_offline():

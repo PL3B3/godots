@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://character_meshes/puffy/Puffy.tscn" type="PackedScene" id=1]
+[ext_resource path="res://character_meshes/squeegee/SqueegeeMesh.tscn" type="PackedScene" id=2]
+
+[sub_resource type="Environment" id=1]
+ambient_light_color = Color( 0.592157, 0.635294, 0.458824, 1 )
+
+[node name="TestStage" type="Spatial"]
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.928687, 0.370865, 0, -0.370865, 0.928687, 0, 1.02925, 4.19081 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 0.67559, 1.20118e-07, -0.737277, 0.737277, -1.10068e-07, 0.67559, 0, -1, -1.62921e-07, -7.00483, 9.28992, 0 )
+
+[node name="Icosphere" parent="." instance=ExtResource( 1 )]
+transform = Transform( 0.396459, 0, -0.918052, 0, 1, 0, 0.918052, 0, 0.396459, -1.37474, 0, 0 )
+visible = false
+
+[node name="SqueegeeMesh" parent="." instance=ExtResource( 2 )]
+transform = Transform( -0.0305909, 0, -0.999532, 0, 1, 0, 0.999532, 0, -0.0305909, 0.143981, -0.225178, 0 )
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 1 )
