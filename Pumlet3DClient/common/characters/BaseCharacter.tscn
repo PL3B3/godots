@@ -4,7 +4,7 @@
 [ext_resource path="res://common/utils/MotionTimeQueue.tscn" type="PackedScene" id=2]
 [ext_resource path="res://common/ui/UI.tscn" type="PackedScene" id=3]
 [ext_resource path="res://common/characters/BaseCharacter.gd" type="Script" id=4]
-[ext_resource path="res://assets/characters/squeegee/SqueegeeMesh.tscn" type="PackedScene" id=5]
+[ext_resource path="res://assets/characters/squeegee/SqueegeeModel.tscn" type="PackedScene" id=5]
 
 [sub_resource type="SphereShape" id=1]
 radius = 1.2

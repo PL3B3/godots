@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://common/fauna/BaseFauna.gd" type="Script" id=1]
 [ext_resource path="res://assets/fauna_assets/Pyro_painsevere01.wav" type="AudioStream" id=2]
-[ext_resource path="res://assets/characters/squeegee/SqueegeeMesh.tscn" type="PackedScene" id=3]
+[ext_resource path="res://assets/characters/squeegee/SqueegeeModel.tscn" type="PackedScene" id=3]
+[ext_resource path="res://assets/characters/plumpkin/PlumpkinModel.tscn" type="PackedScene" id=4]
 
 [sub_resource type="SphereShape" id=1]
 radius = 0.9
@@ -17,6 +18,9 @@ shape = SubResource( 1 )
 
 [node name="SqueegeeMesh" parent="CollisionShape" instance=ExtResource( 3 )]
 transform = Transform( -1.46629e-07, 0, 0.9, 0, 0.9, 0, -0.9, 0, -1.46629e-07, 0, -0.0219545, 0 )
+visible = false
+
+[node name="PlumpkinModel" parent="CollisionShape" instance=ExtResource( 4 )]
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource( 2 )
