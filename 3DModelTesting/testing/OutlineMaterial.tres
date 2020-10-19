@@ -2,4 +2,6 @@
 
 [resource]
 flags_unshaded = true
+params_grow = true
+params_grow_amount = -0.005
 albedo_color = Color( 0, 0, 0, 1 )
