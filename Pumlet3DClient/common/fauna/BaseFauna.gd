@@ -1,12 +1,12 @@
 extends KinematicBody
 
-var health_default = 120
+var health_default = 480
 var health = health_default
 
 var gravity = 15
 var velocity = Vector3()
 var direction = Vector3()
-var speed = 10
+var speed = 8
 var jump_prob = 0.4
 var movement_enabled = true
 

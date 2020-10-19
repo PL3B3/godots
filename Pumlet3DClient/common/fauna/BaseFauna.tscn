@@ -21,6 +21,7 @@ transform = Transform( -1.46629e-07, 0, 0.9, 0, 0.9, 0, -0.9, 0, -1.46629e-07, 0
 visible = false
 
 [node name="PlumpkinModel" parent="CollisionShape" instance=ExtResource( 4 )]
+transform = Transform( -1.30337e-07, 0, 0.8, 0, 0.8, 0, -0.8, 0, -1.30337e-07, 0, 0, 0 )
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource( 2 )
