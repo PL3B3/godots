@@ -45,6 +45,7 @@ var gravity = 0.8
 var jump_cap = 1
 var jump_tick_limit = 40
 var wall_climb_speed = 0.7
+var wall_climb_vertical_speed_limit = 7
 var wall_climb_tick_limit = 50
 var ticks_spent_pushing_against_foot_of_wall = 0
 var velocity = Vector3()
@@ -161,7 +162,6 @@ func move_and_record_movement_delta(delta):
 		true)
 	velocity = velocity.linear_interpolate(slid_vel, 10 * delta)
 
-
 func climb_wall():
 	if is_on_wall():
 		ticks_since_walled = 0
@@ -175,11 +175,15 @@ func climb_wall():
 					-up_dir.x,
 					up_dir.y,
 					-up_dir.z)
-				print(wall_climb_direction)
+#				print(wall_climb_direction)
 				velocity += (
 					wall_climb_speed * 
 					speed_mult * 
 					wall_climb_direction)
+				if velocity.y > wall_climb_vertical_speed_limit:
+					velocity.y += (
+						0.12 * 
+						(wall_climb_vertical_speed_limit - velocity.y))
 				ticks_spent_wall_climbing += 1
 	else:
 		ticks_spent_pushing_against_foot_of_wall = 0

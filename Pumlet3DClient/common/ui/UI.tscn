@@ -1,23 +1,29 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://assets/ui/Comfortaa-Bold.ttf" type="DynamicFontData" id=1]
-[ext_resource path="res://assets/ui/lifebar_bg.png" type="Texture" id=2]
-[ext_resource path="res://assets/ui/label_HP_bg.png" type="Texture" id=3]
-[ext_resource path="res://assets/ui/label_HP.png" type="Texture" id=4]
-[ext_resource path="res://assets/ui/crosshair.png" type="Texture" id=5]
-[ext_resource path="res://assets/ui/lifebar_fill.png" type="Texture" id=6]
-[ext_resource path="res://assets/ui/energy_bar_bg.png" type="Texture" id=7]
-[ext_resource path="res://assets/ui/energy_bar_fill.png" type="Texture" id=8]
+[ext_resource path="res://common/ui/assets/lifebar_bg.png" type="Texture" id=2]
+[ext_resource path="res://common/ui/assets/label_HP_bg.png" type="Texture" id=3]
+[ext_resource path="res://common/ui/assets/label_HP.png" type="Texture" id=4]
+[ext_resource path="res://common/ui/assets/crosshair.png" type="Texture" id=5]
+[ext_resource path="res://common/ui/assets/lifebar_fill.png" type="Texture" id=6]
+[ext_resource path="res://common/ui/assets/energy_bar_bg.png" type="Texture" id=7]
+[ext_resource path="res://common/ui/assets/energy_bar_fill.png" type="Texture" id=8]
+[ext_resource path="res://common/ui/assets/Comfortaa-Bold.ttf" type="DynamicFontData" id=9]
 
-[sub_resource type="DynamicFont" id=1]
+[sub_resource type="DynamicFont" id=5]
 size = 28
+use_filter = true
 extra_spacing_top = 6
-font_data = ExtResource( 1 )
+font_data = ExtResource( 9 )
 
-[sub_resource type="DynamicFont" id=2]
+[sub_resource type="DynamicFont" id=4]
 size = 40
+outline_size = 2
+outline_color = Color( 0.215686, 0.215686, 0.215686, 1 )
+use_filter = true
+extra_spacing_top = 5
 extra_spacing_char = 10
-font_data = ExtResource( 1 )
+font_data = ExtResource( 9 )
 
 [sub_resource type="DynamicFont" id=3]
 size = 60
@@ -117,7 +123,7 @@ anchor_bottom = 1.0
 margin_left = -43.0
 size_flags_horizontal = 3
 size_flags_vertical = 7
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 5 )
 text = "100"
 align = 1
 valign = 1
@@ -170,8 +176,8 @@ texture = ExtResource( 3 )
 [node name="Reserves" type="Label" parent="Stats/Bars/Ammo/AmmoLabel/Background"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-custom_fonts/font = SubResource( 2 )
-custom_colors/font_color = Color( 0.945098, 0.964706, 0.34902, 1 )
+custom_fonts/font = SubResource( 4 )
+custom_colors/font_color = Color( 0.811765, 0.313726, 0.431373, 1 )
 text = "20"
 align = 1
 valign = 1

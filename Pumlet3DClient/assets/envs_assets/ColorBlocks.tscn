@@ -1,290 +1,296 @@
-[gd_scene load_steps=72 format=2]
+[gd_scene load_steps=75 format=2]
 
 [ext_resource path="res://assets/envs_assets/GridPalette0.gd" type="Script" id=1]
-[ext_resource path="res://assets/envs_assets/TestOutlineBlock.tscn" type="PackedScene" id=2]
 
-[sub_resource type="CubeMesh" id=1]
+[sub_resource type="Environment" id=1]
+ambient_light_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="CubeMesh" id=2]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=2]
+[sub_resource type="SpatialMaterial" id=3]
 albedo_color = Color( 0, 0, 0, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=3]
+[sub_resource type="ConvexPolygonShape" id=4]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=4]
+[sub_resource type="CubeMesh" id=5]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=5]
+[sub_resource type="SpatialMaterial" id=6]
 albedo_color = Color( 0.435294, 0.403922, 0.462745, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=6]
+[sub_resource type="ConvexPolygonShape" id=7]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=7]
+[sub_resource type="CubeMesh" id=8]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=8]
+[sub_resource type="SpatialMaterial" id=9]
 albedo_color = Color( 0.603922, 0.603922, 0.592157, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=9]
+[sub_resource type="ConvexPolygonShape" id=10]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=10]
+[sub_resource type="CubeMesh" id=11]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=11]
+[sub_resource type="SpatialMaterial" id=12]
 albedo_color = Color( 0.772549, 0.8, 0.721569, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=12]
+[sub_resource type="ConvexPolygonShape" id=13]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=13]
+[sub_resource type="CubeMesh" id=14]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=14]
+[sub_resource type="SpatialMaterial" id=15]
+albedo_color = Color( 0.545098, 0.333333, 0.501961, 1 )
+metallic = 0.4
+metallic_specular = 0.6
+roughness = 0.8
+
+[sub_resource type="ConvexPolygonShape" id=16]
+points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
+
+[sub_resource type="CubeMesh" id=17]
+size = Vector3( 1, 1, 1 )
+
+[sub_resource type="SpatialMaterial" id=18]
 albedo_color = Color( 0.764706, 0.533333, 0.564706, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=15]
+[sub_resource type="ConvexPolygonShape" id=19]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=16]
+[sub_resource type="CubeMesh" id=20]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=17]
+[sub_resource type="SpatialMaterial" id=21]
 albedo_color = Color( 0.647059, 0.576471, 0.647059, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=18]
+[sub_resource type="ConvexPolygonShape" id=22]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=19]
+[sub_resource type="CubeMesh" id=23]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=20]
+[sub_resource type="SpatialMaterial" id=24]
 albedo_color = Color( 0.4, 0.376471, 0.572549, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=21]
+[sub_resource type="ConvexPolygonShape" id=25]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=22]
+[sub_resource type="CubeMesh" id=26]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=23]
+[sub_resource type="SpatialMaterial" id=27]
 albedo_color = Color( 0.603922, 0.309804, 0.313726, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=24]
+[sub_resource type="ConvexPolygonShape" id=28]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=25]
+[sub_resource type="CubeMesh" id=29]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=26]
+[sub_resource type="SpatialMaterial" id=30]
 albedo_color = Color( 0.760784, 0.552941, 0.458824, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=27]
+[sub_resource type="ConvexPolygonShape" id=31]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=28]
+[sub_resource type="CubeMesh" id=32]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=29]
+[sub_resource type="SpatialMaterial" id=33]
 albedo_color = Color( 0.486275, 0.631373, 0.752941, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=30]
+[sub_resource type="ConvexPolygonShape" id=34]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=31]
+[sub_resource type="CubeMesh" id=35]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=32]
+[sub_resource type="SpatialMaterial" id=36]
 albedo_color = Color( 0.254902, 0.415686, 0.639216, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=33]
+[sub_resource type="ConvexPolygonShape" id=37]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=34]
+[sub_resource type="CubeMesh" id=38]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=35]
+[sub_resource type="SpatialMaterial" id=39]
 albedo_color = Color( 0.552941, 0.384314, 0.407843, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=36]
+[sub_resource type="ConvexPolygonShape" id=40]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=37]
+[sub_resource type="CubeMesh" id=41]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=38]
+[sub_resource type="SpatialMaterial" id=42]
 albedo_color = Color( 0.745098, 0.584314, 0.360784, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=39]
+[sub_resource type="ConvexPolygonShape" id=43]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=40]
+[sub_resource type="CubeMesh" id=44]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=41]
+[sub_resource type="SpatialMaterial" id=45]
 albedo_color = Color( 0.407843, 0.67451, 0.662745, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=42]
+[sub_resource type="ConvexPolygonShape" id=46]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=43]
+[sub_resource type="CubeMesh" id=47]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=44]
+[sub_resource type="SpatialMaterial" id=48]
 albedo_color = Color( 0.219608, 0.439216, 0.501961, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=45]
+[sub_resource type="ConvexPolygonShape" id=49]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=46]
+[sub_resource type="CubeMesh" id=50]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=47]
+[sub_resource type="SpatialMaterial" id=51]
 albedo_color = Color( 0.431373, 0.411765, 0.384314, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=48]
+[sub_resource type="ConvexPolygonShape" id=52]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=49]
+[sub_resource type="CubeMesh" id=53]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=50]
+[sub_resource type="SpatialMaterial" id=54]
 albedo_color = Color( 0.576471, 0.631373, 0.403922, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=51]
+[sub_resource type="ConvexPolygonShape" id=55]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=52]
+[sub_resource type="CubeMesh" id=56]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=53]
+[sub_resource type="SpatialMaterial" id=57]
 albedo_color = Color( 0.431373, 0.666667, 0.470588, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=54]
+[sub_resource type="ConvexPolygonShape" id=58]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=55]
+[sub_resource type="CubeMesh" id=59]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=56]
-params_specular_mode = 1
+[sub_resource type="SpatialMaterial" id=60]
 albedo_color = Color( 0.333333, 0.439216, 0.392157, 1 )
-metallic = 0.36
-metallic_specular = 0.33
-roughness = 0.57
-rim_enabled = true
-rim = 0.21
-rim_tint = 0.41
-ao_enabled = true
-ao_light_affect = 0.0
-ao_on_uv2 = false
-ao_texture_channel = 0
+metallic = 0.4
+metallic_specular = 0.6
+roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=57]
+[sub_resource type="ConvexPolygonShape" id=61]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=58]
+[sub_resource type="CubeMesh" id=62]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=59]
+[sub_resource type="SpatialMaterial" id=63]
 albedo_color = Color( 0.615686, 0.623529, 0.498039, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=60]
+[sub_resource type="ConvexPolygonShape" id=64]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=61]
+[sub_resource type="CubeMesh" id=65]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=62]
+[sub_resource type="SpatialMaterial" id=66]
 albedo_color = Color( 0.494118, 0.619608, 0.6, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=63]
+[sub_resource type="ConvexPolygonShape" id=67]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=64]
+[sub_resource type="CubeMesh" id=68]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=65]
+[sub_resource type="SpatialMaterial" id=69]
 albedo_color = Color( 0.364706, 0.407843, 0.447059, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=66]
+[sub_resource type="ConvexPolygonShape" id=70]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
-[sub_resource type="CubeMesh" id=67]
+[sub_resource type="CubeMesh" id=71]
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="SpatialMaterial" id=68]
+[sub_resource type="SpatialMaterial" id=72]
 albedo_color = Color( 0.262745, 0.203922, 0.333333, 1 )
 metallic = 0.4
 metallic_specular = 0.6
 roughness = 0.8
 
-[sub_resource type="ConvexPolygonShape" id=69]
+[sub_resource type="ConvexPolygonShape" id=73]
 points = PoolVector3Array( -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5 )
 
 [node name="GridPalette0" type="Spatial"]
@@ -297,233 +303,244 @@ transform = Transform( 1, 0, 0, 0, 0.48007, 0.87723, 0, -0.87723, 0.48007, 0, 2.
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12.4049 )
 current = true
 
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 1 )
+
 [node name="000000" type="MeshInstance" parent="."]
-mesh = SubResource( 1 )
-material/0 = SubResource( 2 )
+mesh = SubResource( 2 )
+material/0 = SubResource( 3 )
 
 [node name="000000_col" type="StaticBody" parent="000000"]
 
 [node name="@@3" type="CollisionShape" parent="000000/000000_col"]
-shape = SubResource( 3 )
+shape = SubResource( 4 )
 
 [node name="6f6776" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0 )
-mesh = SubResource( 4 )
-material/0 = SubResource( 5 )
+mesh = SubResource( 5 )
+material/0 = SubResource( 6 )
 
 [node name="6f6776_col" type="StaticBody" parent="6f6776"]
 
 [node name="@@5" type="CollisionShape" parent="6f6776/6f6776_col"]
-shape = SubResource( 6 )
+shape = SubResource( 7 )
 
 [node name="9a9a97" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 0 )
-mesh = SubResource( 7 )
-material/0 = SubResource( 8 )
+mesh = SubResource( 8 )
+material/0 = SubResource( 9 )
 
 [node name="9a9a97_col" type="StaticBody" parent="9a9a97"]
 
 [node name="@@7" type="CollisionShape" parent="9a9a97/9a9a97_col"]
-shape = SubResource( 9 )
+shape = SubResource( 10 )
 
 [node name="c5ccb8" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, 0 )
-mesh = SubResource( 10 )
-material/0 = SubResource( 11 )
+mesh = SubResource( 11 )
+material/0 = SubResource( 12 )
 
 [node name="c5ccb8_col" type="StaticBody" parent="c5ccb8"]
 
 [node name="@@9" type="CollisionShape" parent="c5ccb8/c5ccb8_col"]
-shape = SubResource( 12 )
+shape = SubResource( 13 )
 
-[node name="8b5580" parent="." instance=ExtResource( 2 )]
+[node name="8b5580" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 0 )
+mesh = SubResource( 14 )
+material/0 = SubResource( 15 )
+
+[node name="8b5580_col" type="StaticBody" parent="8b5580"]
+
+[node name="@@11" type="CollisionShape" parent="8b5580/8b5580_col"]
+shape = SubResource( 16 )
 
 [node name="c38890" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 3, 0 )
-mesh = SubResource( 13 )
-material/0 = SubResource( 14 )
+mesh = SubResource( 17 )
+material/0 = SubResource( 18 )
 
 [node name="c38890_col" type="StaticBody" parent="c38890"]
 
 [node name="@@13" type="CollisionShape" parent="c38890/c38890_col"]
-shape = SubResource( 15 )
+shape = SubResource( 19 )
 
 [node name="a593a5" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 6, 0 )
-mesh = SubResource( 16 )
-material/0 = SubResource( 17 )
+mesh = SubResource( 20 )
+material/0 = SubResource( 21 )
 
 [node name="a593a5_col" type="StaticBody" parent="a593a5"]
 
 [node name="@@15" type="CollisionShape" parent="a593a5/a593a5_col"]
-shape = SubResource( 18 )
+shape = SubResource( 22 )
 
 [node name="666092" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 9, 0 )
-mesh = SubResource( 19 )
-material/0 = SubResource( 20 )
+mesh = SubResource( 23 )
+material/0 = SubResource( 24 )
 
 [node name="666092_col" type="StaticBody" parent="666092"]
 
 [node name="@@17" type="CollisionShape" parent="666092/666092_col"]
-shape = SubResource( 21 )
+shape = SubResource( 25 )
 
 [node name="9a4f50" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 0 )
-mesh = SubResource( 22 )
-material/0 = SubResource( 23 )
+mesh = SubResource( 26 )
+material/0 = SubResource( 27 )
 
 [node name="9a4f50_col" type="StaticBody" parent="9a4f50"]
 
 [node name="@@19" type="CollisionShape" parent="9a4f50/9a4f50_col"]
-shape = SubResource( 24 )
+shape = SubResource( 28 )
 
 [node name="c28d75" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 3, 0 )
-mesh = SubResource( 25 )
-material/0 = SubResource( 26 )
+mesh = SubResource( 29 )
+material/0 = SubResource( 30 )
 
 [node name="c28d75_col" type="StaticBody" parent="c28d75"]
 
 [node name="@@21" type="CollisionShape" parent="c28d75/c28d75_col"]
-shape = SubResource( 27 )
+shape = SubResource( 31 )
 
 [node name="7ca1c0" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 6, 0 )
-mesh = SubResource( 28 )
-material/0 = SubResource( 29 )
+mesh = SubResource( 32 )
+material/0 = SubResource( 33 )
 
 [node name="7ca1c0_col" type="StaticBody" parent="7ca1c0"]
 
 [node name="@@23" type="CollisionShape" parent="7ca1c0/7ca1c0_col"]
-shape = SubResource( 30 )
+shape = SubResource( 34 )
 
 [node name="416aa3" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 9, 0 )
-mesh = SubResource( 31 )
-material/0 = SubResource( 32 )
+mesh = SubResource( 35 )
+material/0 = SubResource( 36 )
 
 [node name="416aa3_col" type="StaticBody" parent="416aa3"]
 
 [node name="@@25" type="CollisionShape" parent="416aa3/416aa3_col"]
-shape = SubResource( 33 )
+shape = SubResource( 37 )
 
 [node name="8d6268" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0, 0 )
-mesh = SubResource( 34 )
-material/0 = SubResource( 35 )
+mesh = SubResource( 38 )
+material/0 = SubResource( 39 )
 
 [node name="8d6268_col" type="StaticBody" parent="8d6268"]
 
 [node name="@@27" type="CollisionShape" parent="8d6268/8d6268_col"]
-shape = SubResource( 36 )
+shape = SubResource( 40 )
 
 [node name="be955c" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 3, 0 )
-mesh = SubResource( 37 )
-material/0 = SubResource( 38 )
+mesh = SubResource( 41 )
+material/0 = SubResource( 42 )
 
 [node name="be955c_col" type="StaticBody" parent="be955c"]
 
 [node name="@@29" type="CollisionShape" parent="be955c/be955c_col"]
-shape = SubResource( 39 )
+shape = SubResource( 43 )
 
 [node name="68aca9" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 6, 0 )
-mesh = SubResource( 40 )
-material/0 = SubResource( 41 )
+mesh = SubResource( 44 )
+material/0 = SubResource( 45 )
 
 [node name="68aca9_col" type="StaticBody" parent="68aca9"]
 
 [node name="@@31" type="CollisionShape" parent="68aca9/68aca9_col"]
-shape = SubResource( 42 )
+shape = SubResource( 46 )
 
 [node name="387080" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 9, 0 )
-mesh = SubResource( 43 )
-material/0 = SubResource( 44 )
+mesh = SubResource( 47 )
+material/0 = SubResource( 48 )
 
 [node name="387080_col" type="StaticBody" parent="387080"]
 
 [node name="@@33" type="CollisionShape" parent="387080/387080_col"]
-shape = SubResource( 45 )
+shape = SubResource( 49 )
 
 [node name="6e6962" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 0 )
-mesh = SubResource( 46 )
-material/0 = SubResource( 47 )
+mesh = SubResource( 50 )
+material/0 = SubResource( 51 )
 
 [node name="6e6962_col" type="StaticBody" parent="6e6962"]
 
 [node name="@@35" type="CollisionShape" parent="6e6962/6e6962_col"]
-shape = SubResource( 48 )
+shape = SubResource( 52 )
 
 [node name="93a167" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 3, 0 )
-mesh = SubResource( 49 )
-material/0 = SubResource( 50 )
+mesh = SubResource( 53 )
+material/0 = SubResource( 54 )
 
 [node name="93a167_col" type="StaticBody" parent="93a167"]
 
 [node name="@@37" type="CollisionShape" parent="93a167/93a167_col"]
-shape = SubResource( 51 )
+shape = SubResource( 55 )
 
 [node name="6eaa78" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 6, 0 )
-mesh = SubResource( 52 )
-material/0 = SubResource( 53 )
+mesh = SubResource( 56 )
+material/0 = SubResource( 57 )
 
 [node name="6eaa78_col" type="StaticBody" parent="6eaa78"]
 
 [node name="@@39" type="CollisionShape" parent="6eaa78/6eaa78_col"]
-shape = SubResource( 54 )
+shape = SubResource( 58 )
 
 [node name="557064" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 9, 0 )
-mesh = SubResource( 55 )
-material/0 = SubResource( 56 )
+mesh = SubResource( 59 )
+material/0 = SubResource( 60 )
 
 [node name="557064_col" type="StaticBody" parent="557064"]
 
 [node name="@@41" type="CollisionShape" parent="557064/557064_col"]
-shape = SubResource( 57 )
+shape = SubResource( 61 )
 
 [node name="9d9f7f" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0, 0 )
-mesh = SubResource( 58 )
-material/0 = SubResource( 59 )
+mesh = SubResource( 62 )
+material/0 = SubResource( 63 )
 
 [node name="9d9f7f_col" type="StaticBody" parent="9d9f7f"]
 
 [node name="@@43" type="CollisionShape" parent="9d9f7f/9d9f7f_col"]
-shape = SubResource( 60 )
+shape = SubResource( 64 )
 
 [node name="7e9e99" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 3, 0 )
-mesh = SubResource( 61 )
-material/0 = SubResource( 62 )
+mesh = SubResource( 65 )
+material/0 = SubResource( 66 )
 
 [node name="7e9e99_col" type="StaticBody" parent="7e9e99"]
 
 [node name="@@45" type="CollisionShape" parent="7e9e99/7e9e99_col"]
-shape = SubResource( 63 )
+shape = SubResource( 67 )
 
 [node name="5d6872" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 6, 0 )
-mesh = SubResource( 64 )
-material/0 = SubResource( 65 )
+mesh = SubResource( 68 )
+material/0 = SubResource( 69 )
 
 [node name="5d6872_col" type="StaticBody" parent="5d6872"]
 
 [node name="@@47" type="CollisionShape" parent="5d6872/5d6872_col"]
-shape = SubResource( 66 )
+shape = SubResource( 70 )
 
 [node name="433455" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 9, 0 )
-mesh = SubResource( 67 )
-material/0 = SubResource( 68 )
+mesh = SubResource( 71 )
+material/0 = SubResource( 72 )
 
 [node name="433455_col" type="StaticBody" parent="433455"]
 
 [node name="@@49" type="CollisionShape" parent="433455/433455_col"]
-shape = SubResource( 69 )
+shape = SubResource( 73 )

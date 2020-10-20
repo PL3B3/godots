@@ -1,25 +1,25 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://assets/envs_assets/ColorBlocks.meshlib" type="MeshLibrary" id=1]
+[ext_resource path="res://assets/envs_assets/ColoredBlocks.meshlib" type="MeshLibrary" id=1]
 [ext_resource path="res://common/envs/GridMap.gd" type="Script" id=2]
 [ext_resource path="res://common/envs/BaseMap.gd" type="Script" id=3]
 
 [sub_resource type="Environment" id=1]
 background_energy = 0.5
 ambient_light_color = Color( 0.921569, 0.905882, 0.847059, 1 )
-fog_enabled = true
 fog_color = Color( 0.25098, 0.333333, 0.419608, 1 )
 
 [node name="Map" type="Spatial"]
 script = ExtResource( 3 )
 
 [node name="GridMap" type="GridMap" parent="."]
+transform = Transform( 1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0 )
 mesh_library = ExtResource( 1 )
-cell_size = Vector3( 1, 1, 1 )
+cell_size = Vector3( 1.03, 1.03, 1.03 )
 collision_layer = 64
 collision_mask = 447
 data = {
-"cells": PoolIntArray( 0, 0, 1073741843, 1, 0, 1073741843, 2, 0, 19, 3, 0, 1073741843, 4, 0, 1073741843, 65533, 0, 1073741843, 65534, 0, 1073741843, 65535, 0, 1073741843, 0, 1, 19, 1, 1, 1073741843, 2, 1, 1073741843, 65533, 1, 1073741843, 65534, 1, 1073741843, 65535, 1, 536870931, 4, 65535, 1073741843 )
+"cells": PoolIntArray(  )
 }
 script = ExtResource( 2 )
 __meta__ = {

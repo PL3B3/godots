@@ -4,12 +4,13 @@ extends Node
 var base_character = preload("res://common/characters/BaseCharacter.tscn")
 var base_fauna = preload("res://common/fauna/BaseFauna.tscn")
 var podunk = preload("res://common/envs/impl_envs/Podunk.tscn")
+var phybim = preload("res://common/envs/impl_envs/Phybim.tscn")
 
 # -----------------------------------------------------------Constants and Enums
 const DEFAULT_PORT = 3342
 enum Species {BASE, PUBERT, SQUEEGEE, PUMBITA, JINGLING, SHIMMER, CAPIND, PUMPQUEEN}
 enum Sign {TERROR, ERRANT, VULN}
-enum Map {PODUNK}
+enum Map {PODUNK, PHYBIM}
 const ability_conversions = {
 	"mouse_ability_0" : 0,
 	"mouse_ability_1" : 1, 
@@ -30,7 +31,7 @@ var server_delta
 var network_id := 0
 var players = {}
 
-var map_type = Map.PODUNK
+var map_type = Map.PHYBIM
 var map_node
 var team_respawn_positions = [
 	Vector3(0, 50, 0),
@@ -59,6 +60,8 @@ func add_map():
 	match map_type:
 		Map.PODUNK:
 			map_to_add = podunk.instance()
+		Map.PHYBIM:
+			map_to_add = phybim.instance()
 		_:
 			map_to_add = podunk.instance()
 	map_node = map_to_add

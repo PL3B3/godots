@@ -1,12 +1,12 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://common/fauna/BaseFauna.gd" type="Script" id=1]
-[ext_resource path="res://assets/fauna_assets/Pyro_painsevere01.wav" type="AudioStream" id=2]
-[ext_resource path="res://assets/characters/squeegee/SqueegeeModel.tscn" type="PackedScene" id=3]
-[ext_resource path="res://assets/characters/plumpkin/PlumpkinModel.tscn" type="PackedScene" id=4]
+[ext_resource path="res://common/fauna/assets/Pyro_painsevere01.wav" type="AudioStream" id=2]
+[ext_resource path="res://assets/characters/cubby/CubbyModel.tscn" type="PackedScene" id=3]
+
 
 [sub_resource type="SphereShape" id=1]
-radius = 0.9
+radius = 1.2
 
 [node name="BaseFauna" type="KinematicBody"]
 collision_layer = 128
@@ -16,12 +16,9 @@ script = ExtResource( 1 )
 [node name="CollisionShape" type="CollisionShape" parent="."]
 shape = SubResource( 1 )
 
-[node name="SqueegeeMesh" parent="CollisionShape" instance=ExtResource( 3 )]
-transform = Transform( -1.46629e-07, 0, 0.9, 0, 0.9, 0, -0.9, 0, -1.46629e-07, 0, -0.0219545, 0 )
-visible = false
+[node name="Body" type="Spatial" parent="CollisionShape"]
 
-[node name="PlumpkinModel" parent="CollisionShape" instance=ExtResource( 4 )]
-transform = Transform( -1.30337e-07, 0, 0.8, 0, 0.8, 0, -0.8, 0, -1.30337e-07, 0, 0, 0 )
+[node name="CubbyModel" parent="CollisionShape/Body" instance=ExtResource( 3 )]
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource( 2 )
@@ -29,6 +26,7 @@ unit_db = 25.0
 unit_size = 0.5
 
 [node name="HealthLight" type="OmniLight" parent="."]
+visible = false
 light_color = Color( 0, 1, 0.392157, 1 )
 light_energy = 6.0
 light_indirect_energy = 0.0

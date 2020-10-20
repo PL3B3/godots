@@ -16,7 +16,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Pumlet3DClient"
-run/main_scene="res://assets/envs_assets/GridPalette0.tscn"
+run/main_scene="res://server/Server.tscn"
 config/icon="res://icon.png"
 
 [debug]
