@@ -4,9 +4,8 @@
 [ext_resource path="res://common/fauna/assets/Pyro_painsevere01.wav" type="AudioStream" id=2]
 [ext_resource path="res://assets/characters/cubby/CubbyModel.tscn" type="PackedScene" id=3]
 
-
 [sub_resource type="SphereShape" id=1]
-radius = 1.2
+radius = 1.4
 
 [node name="BaseFauna" type="KinematicBody"]
 collision_layer = 128
@@ -16,9 +15,7 @@ script = ExtResource( 1 )
 [node name="CollisionShape" type="CollisionShape" parent="."]
 shape = SubResource( 1 )
 
-[node name="Body" type="Spatial" parent="CollisionShape"]
-
-[node name="CubbyModel" parent="CollisionShape/Body" instance=ExtResource( 3 )]
+[node name="Body" parent="CollisionShape" instance=ExtResource( 3 )]
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource( 2 )

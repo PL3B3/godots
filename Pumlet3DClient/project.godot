@@ -118,6 +118,5 @@ toggle_mouse_mode={
 
 [rendering]
 
-quality/driver/driver_name="GLES2"
 quality/filters/msaa=3
 environment/default_environment="res://default_env.tres"

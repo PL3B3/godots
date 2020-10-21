@@ -42,8 +42,9 @@ var acceleration = 4
 var acceleration_air = 1.5
 var air_control = 0.3
 var gravity = 0.8
-var jump_cap = 1
-var jump_tick_limit = 40
+var jump_cap = 2
+var jump_tick_limit = 40 * jump_cap
+var jump_speed_limit = 7
 var wall_climb_speed = 0.7
 var wall_climb_vertical_speed_limit = 7
 var wall_climb_tick_limit = 50
@@ -199,14 +200,24 @@ func process_dash_vectors():
 
 func check_on_floor():
 	if is_on_floor():
+		if ticks_since_grounded > jump_reset_grounded_limit:
+			jumps_left = jump_cap
 		ticks_since_grounded = 0
 		ticks_spent_wall_climbing = 0
-		jumps_left = jump_cap
+		ticks_spent_grounded += 1
 	else:
 		ticks_since_grounded += 1
 
+var ticks_spent_grounded = 0
+var jump_reset_grounded_limit = 10
+
 func jump():
-	dash(Vector3(0, 1, 0), gravity * 3, 12)
+	dash(
+		Vector3(0, 1, 0),
+		gravity * 2.1,
+		20)
+	
+	ticks_spent_grounded = 0
 	jumps_left -= 1
 
 func dash(direction: Vector3, speed: float, ticks: int):

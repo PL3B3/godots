@@ -26,13 +26,13 @@ func _ready():
 	rng.randomize()
 
 func init():
-	fire_rate_default = 1.3
-	reload_time_default = 3
-#	fire_rate_default = 0.2
-#	reload_time_default = 1
-	clip_size_default = 4
+#	fire_rate_default = 1.3
+#	reload_time_default = 3
+	fire_rate_default = 0.1
+	reload_time_default = 1
+	clip_size_default = 400
 	clip_remaining = clip_size_default
-	ammo_default = 200
+	ammo_default = 2000
 	ammo_remaining = ammo_default
 	fire_mode_settings = [
 		{
