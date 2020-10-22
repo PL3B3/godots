@@ -40,13 +40,13 @@ func handle_query_input(event: InputEvent):
 		return call_and_return("toggle_flashlight", [turn_light_on])
 	
 	elif event.is_action_pressed("primary_action"):
-		return call_and_return("primary_action", [[camera.get_global_transform()]])
+		return call_and_return("primary_action", [[camera.get_global_transform(), velocity]])
 	
 	elif event.is_action_pressed("secondary_action"):
-		return call_and_return("secondary_action", [[camera.get_global_transform()]])
+		return call_and_return("secondary_action", [[camera.get_global_transform(), velocity]])
 	
 	elif event.is_action_pressed("tertiary_action"):
-		return call_and_return("tertiary_action", [[camera.get_global_transform()]])
+		return call_and_return("tertiary_action", [[camera.get_global_transform(), velocity]])
 	
 	else:
 		return []

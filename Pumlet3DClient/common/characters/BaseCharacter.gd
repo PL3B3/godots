@@ -95,6 +95,7 @@ func _ready():
 	weapon.connect("reload_started", self, "display_reload_progress")
 	weapon.connect("dealt_damage", self, "display_damage_dealt")
 	weapon.ignored_objects.append(self)
+	weapon.wielder = self
 	
 	display_ammo_reserves()
 

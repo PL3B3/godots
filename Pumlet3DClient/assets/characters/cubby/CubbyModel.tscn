@@ -3,7 +3,7 @@
 [ext_resource path="res://common/characters/BaseCharacterModel.tscn" type="PackedScene" id=1]
 [ext_resource path="res://assets/characters/cubby/new_arraymesh.tres" type="ArrayMesh" id=2]
 
-[sub_resource type="Image" id=1]
+[sub_resource type="Image" id=6]
 data = {
 "data": PoolByteArray( 0, 0, 0, 255, 110, 105, 98, 255, 154, 154, 151, 255, 111, 103, 118, 255, 165, 147, 165, 255, 194, 141, 117, 255, 190, 149, 92, 255, 157, 159, 127, 255, 147, 161, 103, 255, 197, 204, 184, 255, 110, 170, 120, 255, 85, 112, 100, 255, 126, 158, 153, 255, 104, 172, 169, 255, 56, 112, 128, 255, 93, 104, 114, 255, 65, 106, 163, 255, 124, 161, 192, 255, 102, 96, 146, 255, 67, 52, 85, 255, 139, 85, 128, 255, 141, 98, 104, 255, 154, 79, 80, 255, 195, 136, 144, 255 ),
 "format": "RGBA8",
@@ -15,7 +15,7 @@ data = {
 [sub_resource type="ImageTexture" id=2]
 flags = 3
 flags = 3
-image = SubResource( 1 )
+image = SubResource( 6 )
 size = Vector2( 4, 6 )
 
 [sub_resource type="SpatialMaterial" id=3]

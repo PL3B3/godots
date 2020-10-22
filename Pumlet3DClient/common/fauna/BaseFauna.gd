@@ -5,7 +5,7 @@ onready var body = $CollisionShape/Body
 const max_health_color = Color("6eaa78")
 const min_health_color = Color("9a4f50")
 
-const health_default = 480
+const health_default = 70
 var health = health_default
 
 var gravity = 15

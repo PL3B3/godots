@@ -11,14 +11,18 @@ var fire_rate_default = 0.3
 var clip_size_default = 2
 var reload_time_default = 1.5
 var ammo_default = 20
-var clip_remaining
-var ammo_remaining
+var clip_remaining = clip_size_default
+var ammo_remaining = ammo_default
 var can_fire = true
+
+var wielder
+
+var ignored_objects = []
 
 signal clip_changed()
 signal reload_started()
 signal dealt_damage(damage)
-
+signal recoil(direction, speed, ticks)
 
 func _ready():
 	next_shot_timer.connect("timeout", self, "_load_next_shot")
@@ -27,6 +31,7 @@ func _ready():
 	init()
 
 func init():
+	# set this in init to avoid using old value
 	clip_remaining = clip_size_default
 	ammo_remaining = ammo_default
 
