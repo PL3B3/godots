@@ -5,7 +5,7 @@ onready var body = $CollisionShape/Body
 const max_health_color = Color("6eaa78")
 const min_health_color = Color("9a4f50")
 
-const health_default = 70
+const health_default = 480
 var health = health_default
 
 var gravity = 15
@@ -54,16 +54,19 @@ func _on_killed():
 func play_hitsound():
 	var rand = rng.randf_range(0, 1)
 	var sound_rsrc = null
-	if rand > 0.8:
-		sound_rsrc = load("res://common/fauna/assets/Pyro_paincrticialdeath03.wav")
-	elif rand > 0.6:
+	if rand > 0.9:
+		pass
+#		sound_rsrc = load("res://common/fauna/assets/Pyro_paincrticialdeath03.wav")
+	elif rand > 0.85:
 		sound_rsrc = load("res://common/fauna/assets/Pyro_painsevere01.wav")
-	elif rand > 0.4:
+	elif rand > 0.8:
 		sound_rsrc = load("res://common/fauna/assets/Pyro_painsevere02.wav")
-	elif rand > 0.2:
+	elif rand > 0.75:
 		sound_rsrc = load("res://common/fauna/assets/Pyro_painsevere06.wav")
-	else:
+	elif rand > 0.7:
 		sound_rsrc = load("res://common/fauna/assets/Pyro_painsharp03.wav")
+	rand = rng.randf_range(0, 0.5)
+	yield(get_tree().create_timer(rand), "timeout")
 	$AudioStreamPlayer3D.set_stream(sound_rsrc)
 	$AudioStreamPlayer3D.play()
 

@@ -19,8 +19,9 @@ shape = SubResource( 1 )
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource( 2 )
-unit_db = 25.0
+unit_db = 11.506
 unit_size = 0.5
+attenuation_filter_db = -31.1
 
 [node name="HealthLight" type="OmniLight" parent="."]
 visible = false
