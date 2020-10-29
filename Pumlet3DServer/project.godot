@@ -19,6 +19,10 @@ config/name="Pumlet3DServer"
 run/main_scene="res://server/Server.tscn"
 config/icon="res://icon.png"
 
+[physics]
+
+3d/physics_engine="GodotPhysics"
+
 [rendering]
 
 quality/driver/driver_name="GLES2"

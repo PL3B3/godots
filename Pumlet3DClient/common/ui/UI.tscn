@@ -1,30 +1,35 @@
 [gd_scene load_steps=12 format=2]
 
-[ext_resource path="res://assets/ui/Comfortaa-Bold.ttf" type="DynamicFontData" id=1]
-[ext_resource path="res://assets/ui/lifebar_bg.png" type="Texture" id=2]
-[ext_resource path="res://assets/ui/label_HP_bg.png" type="Texture" id=3]
-[ext_resource path="res://assets/ui/label_HP.png" type="Texture" id=4]
-[ext_resource path="res://assets/ui/crosshair.png" type="Texture" id=5]
-[ext_resource path="res://assets/ui/lifebar_fill.png" type="Texture" id=6]
-[ext_resource path="res://assets/ui/energy_bar_bg.png" type="Texture" id=7]
-[ext_resource path="res://assets/ui/energy_bar_fill.png" type="Texture" id=8]
+[ext_resource path="res://common/ui/assets/lifebar_bg.png" type="Texture" id=2]
+[ext_resource path="res://common/ui/assets/label_HP_bg.png" type="Texture" id=3]
+[ext_resource path="res://common/ui/assets/label_HP.png" type="Texture" id=4]
+[ext_resource path="res://common/ui/assets/crosshair.png" type="Texture" id=5]
+[ext_resource path="res://common/ui/assets/lifebar_fill.png" type="Texture" id=6]
+[ext_resource path="res://common/ui/assets/energy_bar_bg.png" type="Texture" id=7]
+[ext_resource path="res://common/ui/assets/energy_bar_fill.png" type="Texture" id=8]
+[ext_resource path="res://common/ui/assets/Comfortaa-Bold.ttf" type="DynamicFontData" id=9]
 
 [sub_resource type="DynamicFont" id=1]
-size = 28
+size = 30
+use_filter = true
 extra_spacing_top = 6
-font_data = ExtResource( 1 )
+font_data = ExtResource( 9 )
 
 [sub_resource type="DynamicFont" id=2]
 size = 40
+outline_size = 2
+outline_color = Color( 0.215686, 0.215686, 0.215686, 1 )
+use_filter = true
+extra_spacing_top = 5
 extra_spacing_char = 10
-font_data = ExtResource( 1 )
+font_data = ExtResource( 9 )
 
 [sub_resource type="DynamicFont" id=3]
 size = 60
 outline_size = 2
 outline_color = Color( 0, 0, 0, 1 )
 extra_spacing_char = 15
-font_data = ExtResource( 1 )
+font_data = ExtResource( 9 )
 
 [node name="UI" type="Control"]
 modulate = Color( 1, 1, 1, 0.341176 )
@@ -114,7 +119,10 @@ __meta__ = {
 anchor_left = 0.882
 anchor_right = 0.925
 anchor_bottom = 1.0
-margin_left = -43.0
+margin_left = -39.8819
+margin_top = -0.260925
+margin_right = 3.11813
+margin_bottom = -0.260925
 size_flags_horizontal = 3
 size_flags_vertical = 7
 custom_fonts/font = SubResource( 1 )
@@ -171,7 +179,7 @@ texture = ExtResource( 3 )
 anchor_right = 1.0
 anchor_bottom = 1.0
 custom_fonts/font = SubResource( 2 )
-custom_colors/font_color = Color( 0.945098, 0.964706, 0.34902, 1 )
+custom_colors/font_color = Color( 0.811765, 0.313726, 0.431373, 1 )
 text = "20"
 align = 1
 valign = 1

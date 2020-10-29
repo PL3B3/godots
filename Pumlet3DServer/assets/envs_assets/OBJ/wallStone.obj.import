@@ -1,0 +1,19 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/wallStone.obj-1eaf6df82376416a3db5d0fe9774e8fb.mesh"
+
+[deps]
+
+files=[ "res://.import/wallStone.obj-1eaf6df82376416a3db5d0fe9774e8fb.mesh" ]
+
+source_file="res://assets/envs_assets/OBJ/wallStone.obj"
+dest_files=[ "res://.import/wallStone.obj-1eaf6df82376416a3db5d0fe9774e8fb.mesh", "res://.import/wallStone.obj-1eaf6df82376416a3db5d0fe9774e8fb.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+optimize_mesh=true

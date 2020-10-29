@@ -1,0 +1,13 @@
+[gd_resource type="SpatialMaterial" load_steps=2 format=2]
+
+[ext_resource path="res://character_meshes/puffy/PuffyTexture.tres" type="Texture" id=1]
+
+
+[resource]
+resource_name = "Material.002"
+albedo_texture = ExtResource( 1 )
+metallic = 0.6
+metallic_specular = 0.3
+roughness = 0.3
+subsurf_scatter_enabled = true
+subsurf_scatter_strength = 0.4

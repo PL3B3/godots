@@ -1,16 +1,21 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://assets/envs_assets/Blocks.meshlib" type="MeshLibrary" id=1]
+[ext_resource path="res://assets/envs_assets/ColoredBlocks.meshlib" type="MeshLibrary" id=1]
 [ext_resource path="res://common/envs/GridMap.gd" type="Script" id=2]
 [ext_resource path="res://common/envs/BaseMap.gd" type="Script" id=3]
+
+[sub_resource type="Environment" id=1]
+background_energy = 0.5
+ambient_light_color = Color( 0.921569, 0.905882, 0.847059, 1 )
+fog_color = Color( 0.25098, 0.333333, 0.419608, 1 )
 
 [node name="Map" type="Spatial"]
 script = ExtResource( 3 )
 
 [node name="GridMap" type="GridMap" parent="."]
+transform = Transform( 1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0 )
 mesh_library = ExtResource( 1 )
-cell_size = Vector3( 1, 1, 1 )
-cell_scale = 0.01
+cell_size = Vector3( 1.03, 1.03, 1.03 )
 collision_layer = 64
 collision_mask = 447
 data = {
@@ -20,3 +25,12 @@ script = ExtResource( 2 )
 __meta__ = {
 "_editor_clip_": 0
 }
+
+[node name="Sun" type="DirectionalLight" parent="."]
+transform = Transform( 0.938993, 0.188667, 0.287571, -0.337845, 0.662636, 0.668412, -0.064448, -0.724788, 0.685951, 0, 4.48159, 0 )
+
+[node name="Atmosphere" type="WorldEnvironment" parent="."]
+environment = SubResource( 1 )
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.957259, 0.289232, 0, -0.289232, 0.957259, 0, 2.94081, 8.19117 )
