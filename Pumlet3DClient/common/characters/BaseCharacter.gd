@@ -93,7 +93,7 @@ func _periodic():
 #	print(real_dist_moved)
 	if real_dist_moved.length() > 0:
 		var pcnt_error = 100 * error.length() / real_dist_moved.length()
-		#print(pcnt_error)
+		print(pcnt_error)
 		if error_avg == 0:
 			print("first_error")
 			error_avg = pcnt_error

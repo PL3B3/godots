@@ -35,6 +35,7 @@ func calculate_delta_p_prior_to_latest_physics_step(time_preceding_last_physics_
 		var index = current_queue_tail - ticks_ago
 		var tick_delta_p = queue[index]
 		var tick_length = tick_queue[index]
+#		delta_p += tick_delta_p
 		delta_p += (
 			tick_delta_p * 
 			min(th, tick_length) 

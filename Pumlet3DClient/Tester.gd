@@ -1,6 +1,6 @@
 extends Node
 
-var mtq = preload("res://client/utils/MotionTimeQueue.tscn")
+var mtq = preload("res://common/utils/MotionTimeQueue.tscn")
 
 func _ready():
 	test_mtq_2()
