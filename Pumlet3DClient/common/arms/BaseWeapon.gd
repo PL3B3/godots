@@ -21,6 +21,7 @@ var ignored_objects = []
 
 signal clip_changed()
 signal reload_started()
+signal reload_ended()
 signal dealt_damage(damage)
 signal recoil(direction, speed, ticks)
 
@@ -79,3 +80,28 @@ func animate_reload():
 	pass
 
 	pass
+	
+
+#func set_clip_and_reserve(new_clip: int, new_reserve: int)
+
+func handle_loading():
+	if clip_remaining == 0:
+		next_shot_timer.start(reload_time_default)
+		emit_signal("reload_started")
+		animate_reload()
+	else:
+		next_shot_timer.start(fire_rate_default)
+
+func load_from_reserve():
+	can_fire = false
+	
+	emit_signal("reload_started")
+	animate_reload()
+	
+	var amount_to_add = min(
+		clip_size_default - clip_remaining,
+		ammo_remaining)
+	clip_remaining += amount_to_add
+	ammo_remaining -= amount_to_add
+	
+	can_fire = true

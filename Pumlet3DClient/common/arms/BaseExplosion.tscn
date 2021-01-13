@@ -3,6 +3,8 @@
 [ext_resource path="res://common/arms/BaseExplosion.gd" type="Script" id=1]
 [ext_resource path="res://common/arms/assets/explosion_0.wav" type="AudioStream" id=2]
 
+
+
 [sub_resource type="SphereShape" id=1]
 radius = 4.0
 

@@ -97,17 +97,17 @@ func _process(delta):
 
 func primary_fire(fire_transform: Transform, fire_parameters):
 	fire_by_mode(0, fire_transform, fire_parameters)
-	fire_audio_player.set_stream(load("res://assets/arms/primary_fire.wav"))
+	fire_audio_player.set_stream(load("res://common/arms/assets/primary_fire.wav"))
 	fire_audio_player.play()
 
 func secondary_fire(fire_transform: Transform, fire_parameters):
 	fire_by_mode(1, fire_transform, fire_parameters)
-	fire_audio_player.set_stream(load("res://assets/arms/shot.wav"))
+	fire_audio_player.set_stream(load("res://common/arms/assets/shot.wav"))
 	fire_audio_player.play()
 
 func tertiary_fire(fire_transform: Transform, fire_parameters):
 	fire_by_mode(2, fire_transform, fire_parameters)
-	fire_audio_player.set_stream(load("res://assets/arms/woosh.wav"))
+	fire_audio_player.set_stream(load("res://common/arms/assets/woosh.wav"))
 	fire_audio_player.play(0.3)
 
 func fire_by_mode(mode: int, fire_transform: Transform, fire_parameters):
@@ -196,7 +196,7 @@ func animate_fire(power: float):
 		0.8)
 	if not clip_remaining == 0:
 		yield(get_tree().create_timer(0.55), "timeout")
-		load_audio_player.set_stream(load("res://assets/arms/shotgun_pump.wav"))
+		load_audio_player.set_stream(load("res://common/arms/assets/shotgun_pump.wav"))
 		load_audio_player.play()
 
 func create_fire_lines_representation(origin, fire_lines):
@@ -225,10 +225,10 @@ func animate_reload():
 			new_rot,
 			reload_time_default)
 		yield(get_tree().create_timer(0.5 * reload_time_default), "timeout")
-		load_audio_player.set_stream(load("res://assets/arms/reload.wav"))
+		load_audio_player.set_stream(load("res://common/arms/assets/reload.wav"))
 		load_audio_player.play()
 		yield(get_tree().create_timer(0.4), "timeout")
-		load_audio_player.set_stream(load("res://assets/arms/shotgun_pump.wav"))
+		load_audio_player.set_stream(load("res://common/arms/assets/shotgun_pump.wav"))
 		load_audio_player.play()
 
 func _clear_fire_lines():

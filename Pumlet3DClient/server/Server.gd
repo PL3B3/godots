@@ -1,6 +1,6 @@
 extends "res://common/server/BaseServer.gd"
 
-# --------------4e 69 70 68 72 69 61 20 50 75 6d 6c 65 74 20 51 69--------------
+# ----------------------------------4e 50 51------------------------------------
 
 ## Handles top-level game logic
 ## Loads maps
