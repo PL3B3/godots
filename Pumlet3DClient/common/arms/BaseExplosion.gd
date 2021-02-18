@@ -9,9 +9,10 @@ var compensation_radius = 1
 func _ready():
 	$Shape.shape.radius = area_radius
 
-func setup(layer, mask, origin):
-	collision_layer = layer
+func setup(mask, origin):
+	#collision_layer = layer
 	collision_mask = mask
+	#set_collision_mask_bit(8, true)
 	get_global_transform().origin = origin
 
 func explode():

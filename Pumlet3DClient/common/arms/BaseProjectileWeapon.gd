@@ -23,6 +23,7 @@ func fire_projectile(fire_transform: Transform, fire_parameters, explosive_dmg, 
 	var projectile_to_fire = projectile.instance()
 	projectile_to_fire.set_as_toplevel(true)
 	projectile_to_fire.connect("projectile_dealt_damage", self, "notify_dealt_damage")
+	print("wielder mask ", wielder.collision_mask)
 	projectile_to_fire.set_collision(wielder.collision_layer, wielder.collision_mask)
 	projectile_to_fire.base_damage = explosive_dmg
 	projectile_to_fire.direct_hit_damage = direct_dmg

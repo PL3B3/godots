@@ -20,6 +20,7 @@ func fire(origin : Vector3, dir : Vector3, rel_vel : Vector3):
 
 func set_collision(parent_layer, parent_mask):
 	collision_layer = parent_layer
+	print("pl", parent_layer)
 	collision_mask = parent_mask
 
 
@@ -28,7 +29,7 @@ func explode():
 	explosion.connect("body_hit", self, "damage_body")
 	explosion.connect("explosion_finished", self, "remove")
 	add_child(explosion)
-	explosion.setup(collision_layer, collision_mask, get_global_transform().origin)
+	explosion.setup(collision_mask, get_global_transform().origin)
 	explosion.explode()
 	$Shape/Mesh.visible = false
 	yield(get_tree().create_timer(0.1), "timeout")
