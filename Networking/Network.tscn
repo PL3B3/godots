@@ -11,6 +11,9 @@ margin_top = -26.2237
 margin_right = 25.9511
 margin_bottom = -6.22369
 text = "Server"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="ButtonClient" type="Button" parent="."]
 margin_left = -23.951
@@ -22,5 +25,6 @@ text = "Client"
 [node name="Camera2D" type="Camera2D" parent="."]
 current = true
 zoom = Vector2( 0.2, 0.2 )
+
 [connection signal="pressed" from="ButtonServer" to="." method="_on_ButtonServer_pressed"]
 [connection signal="pressed" from="ButtonClient" to="." method="_on_ButtonClient_pressed"]

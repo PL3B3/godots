@@ -1,0 +1,8 @@
+C:\Users\shrew-badden\GitHub\godots\Networking\.mono\temp\bin\Debug\Networking.dll
+C:\Users\shrew-badden\GitHub\godots\Networking\.mono\temp\bin\Debug\Networking.pdb
+C:\Users\shrew-badden\GitHub\godots\Networking\.mono\temp\obj\Debug\Networking.csproj.AssemblyReference.cache
+C:\Users\shrew-badden\GitHub\godots\Networking\.mono\temp\obj\Debug\Networking.AssemblyInfoInputs.cache
+C:\Users\shrew-badden\GitHub\godots\Networking\.mono\temp\obj\Debug\Networking.AssemblyInfo.cs
+C:\Users\shrew-badden\GitHub\godots\Networking\.mono\temp\obj\Debug\Networking.csproj.CoreCompileInputs.cache
+C:\Users\shrew-badden\GitHub\godots\Networking\.mono\temp\obj\Debug\Networking.dll
+C:\Users\shrew-badden\GitHub\godots\Networking\.mono\temp\obj\Debug\Networking.pdb

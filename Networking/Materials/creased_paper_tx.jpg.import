@@ -2,8 +2,8 @@
 
 importer="texture"
 type="StreamTexture"
-path.s3tc="res://.import/icon.png-487276ed1e3a0c39cad0279d744ee560.s3tc.stex"
-path.etc2="res://.import/icon.png-487276ed1e3a0c39cad0279d744ee560.etc2.stex"
+path.s3tc="res://.import/creased_paper_tx.jpg-0052e1e5a031459673c793a200c393a2.s3tc.stex"
+path.etc2="res://.import/creased_paper_tx.jpg-0052e1e5a031459673c793a200c393a2.etc2.stex"
 metadata={
 "imported_formats": [ "s3tc", "etc2" ],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://icon.png"
-dest_files=[ "res://.import/icon.png-487276ed1e3a0c39cad0279d744ee560.s3tc.stex", "res://.import/icon.png-487276ed1e3a0c39cad0279d744ee560.etc2.stex" ]
+source_file="res://Materials/creased_paper_tx.jpg"
+dest_files=[ "res://.import/creased_paper_tx.jpg-0052e1e5a031459673c793a200c393a2.s3tc.stex", "res://.import/creased_paper_tx.jpg-0052e1e5a031459673c793a200c393a2.etc2.stex" ]
 
 [params]
 
