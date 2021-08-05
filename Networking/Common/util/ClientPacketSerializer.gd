@@ -1,5 +1,7 @@
 extends Node
 
+class_name ClientPacketSerializer
+
 const OPCODE_MASK = 224
 const BYTE_MASK = 255
 const MAX_BYTES = 512
@@ -7,12 +9,6 @@ const MAX_BYTES = 512
 # We serialize to an existing PoolByteArray using indices changed right before 
 # calling serialization functions. This reduces parameter count and avoids 
 # runtime allocations
-# ***
-# *** PROGRAMMER IS RESPONSIBLE FOR SETTING BYTE ARRAY SIZE AND END INDICES
-# *** BEFORE EVERY MANUAL (DE)SERIALIZATION CALL.
-# *** (DE)SERIALIZATION FUNCTIONS WILL MOVE THE START INDEX TO END_BIT + 1
-# *** AFTER FINISHING EXECUTION
-# ***
 var bytes
 var start_bit = 0
 var end_bit = 0
@@ -125,6 +121,8 @@ func serialize_ubyte_to_1b(ubyte:int): # writes to start_bit
 		ubyte >= 0 and ubyte < 256,
 		"ubyte out of range")
 	
+	end_bit = start_bit
+	
 	bytes[start_bit] = ubyte
 	
 	start_bit = start_bit + 1
@@ -134,6 +132,8 @@ func deserialize_ubyte_from_1b() -> int:
 	assert(
 		bytes.size() > 0,
 		"byte array must have at least 1 element")
+	
+	end_bit = start_bit
 	
 	var ubyte = bytes[start_bit]
 	
@@ -153,6 +153,8 @@ func serialize_ushort_to_2b(ushort:int):
 		ushort >= 0 and ushort < 65536,
 		"ushort out of range")
 	
+	end_bit = start_bit + 1
+	
 	bytes[start_bit] = ushort >> 8
 	bytes[end_bit] = ushort & BYTE_MASK
 	
@@ -166,6 +168,8 @@ func deserialize_ushort_from_2b() -> int:
 	assert(
 		end_bit == start_bit + 1,
 		"end_bit must equal (start_bit + 1)")
+	
+	end_bit = start_bit + 1
 	
 	var ushort = (bytes[start_bit] << 8) + bytes[end_bit]
 	

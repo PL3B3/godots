@@ -8,8 +8,26 @@
 
 config_version=4
 
-_global_script_classes=[  ]
+_global_script_classes=[ {
+"base": "Node",
+"class": "ClientPacketSerializer",
+"language": "GDScript",
+"path": "res://Common/util/ClientPacketSerializer.gd"
+}, {
+"base": "Node",
+"class": "RingBuffer",
+"language": "GDScript",
+"path": "res://Common/util/RingBuffer.gd"
+}, {
+"base": "Timer",
+"class": "TimeQueue",
+"language": "GDScript",
+"path": "res://Common/util/TimeQueue.gd"
+} ]
 _global_script_class_icons={
+"ClientPacketSerializer": "",
+"RingBuffer": "",
+"TimeQueue": ""
 }
 
 [application]
