@@ -21,8 +21,14 @@ var physics_delta = (
 	)
 
 func _ready():
-	var serializer_test = client_serializer.new()
-	get_tree().get_root().call_deferred("add_child", serializer_test)
+#	var serializer_test = client_serializer.new()
+#	get_tree().get_root().call_deferred("add_child", serializer_test)
+#	test_ringbuf()
+	var cps = ClientPacketSerializer.new()
+	get_tree().get_root().call_deferred("add_child", cps)
+	var rb = LagBuffer.new()
+	get_tree().get_root().call_deferred("add_child", rb)
+	pass
 
 func start_network(is_server: bool):
 	net_peer = NetworkedMultiplayerENet.new()
@@ -96,3 +102,5 @@ func _physics_process(delta):
 				PoolByteArray([0]), 
 				1
 				)
+
+

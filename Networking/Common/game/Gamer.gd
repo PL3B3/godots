@@ -17,7 +17,7 @@ var x_dir := 0
 
 var jump_force := 10.0
 var jump_grace_ticks := 6
-var ticks_since_last_jump := 0
+var ticks_since_last_jump := jump_grace_ticks
 var ticks_since_on_floor := 0
 var ticks_until_in_air := 5
 var ticks_since_on_wall := 0
@@ -95,7 +95,8 @@ func _physics_process(delta):
 #		0.9 * avg_yaw_delta + 
 #		0.1 * shortest_deg_between(yaw, last_frame_yaw)
 #		)
-#	last_frame_yaw = yaw
+	print(shortest_deg_between(yaw, last_frame_yaw))
+	last_frame_yaw = yaw
 	
 	if raycast_this_physics_frame:
 		target_to_shoot.transform.origin = target_position
@@ -157,7 +158,11 @@ func move(delta):
 		Vector3.UP,
 		true)
 	
+	
+	
 	velocity = slid_vel
+	
+#	print((get_global_transform().origin - position_before_movement).length())
 
 func deg360_to_short(deg : float) -> int:
 	return lerp(0, 65535, deg_to_deg360(deg) / 360.0)

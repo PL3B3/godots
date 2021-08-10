@@ -9,15 +9,35 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Node",
+"base": "PacketSerializer",
 "class": "ClientPacketSerializer",
 "language": "GDScript",
 "path": "res://Common/util/ClientPacketSerializer.gd"
 }, {
 "base": "Node",
-"class": "RingBuffer",
+"class": "InstrucBuffer",
 "language": "GDScript",
-"path": "res://Common/util/RingBuffer.gd"
+"path": "res://Common/util/InstrucBuffer.gd"
+}, {
+"base": "Node",
+"class": "LagBuffer",
+"language": "GDScript",
+"path": "res://Common/util/LagBuffer.gd"
+}, {
+"base": "Node",
+"class": "NetworkGamerMovement",
+"language": "GDScript",
+"path": "res://Common/networking/NetworkGamerMovement.gd"
+}, {
+"base": "Node",
+"class": "NetworkPhantomMovement",
+"language": "GDScript",
+"path": "res://Common/networking/NetworkPhantomMovement.gd"
+}, {
+"base": "StreamPeerBuffer",
+"class": "PacketSerializer",
+"language": "GDScript",
+"path": "res://Common/util/PacketSerializer.gd"
 }, {
 "base": "Timer",
 "class": "TimeQueue",
@@ -26,7 +46,11 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "ClientPacketSerializer": "",
-"RingBuffer": "",
+"InstrucBuffer": "",
+"LagBuffer": "",
+"NetworkGamerMovement": "",
+"NetworkPhantomMovement": "",
+"PacketSerializer": "",
 "TimeQueue": ""
 }
 
