@@ -2,31 +2,36 @@ extends KinematicBody
 
 export(NodePath) var camera_path : NodePath
 export(NodePath) var collider_path : NodePath
-
 onready var camera : Camera = get_node(camera_path)
 onready var collider : CollisionShape = get_node(collider_path)
 
 onready var target = preload("res://Common/game/Target.tscn")
 
+var network_mover:NetworkGamerMovement
+
+const physics_tick_id_MAX = 512
+
+# -------------------------------------------------------------Movement Settings
 var mouse_sensitivity := 0.04
-var yaw := 0.0
-var pitch := 0.0
-
-var z_dir := 0
-var x_dir := 0
-
 var jump_force := 10.0
-var jump_grace_ticks := 6
-var ticks_since_last_jump := jump_grace_ticks
-var ticks_since_on_floor := 0
+var jump_grace_ticks := 8
 var ticks_until_in_air := 5
 var ticks_since_on_wall := 0
 var gravity := 30.0
 var speed := 7.5
-var velocity := Vector3()
 var acceleration := 11.0
 var acceleration_in_air := 3.5
 
+# -----------------------------------------------------------------Movement Vars
+var yaw := 0.0
+var pitch := 0.0
+var ticks_since_last_jump := jump_grace_ticks
+var ticks_since_on_floor := 0
+var velocity := Vector3()
+var move_dict:Dictionary
+var physics_tick_id := 0
+
+# ---------------------------------------------------------------Experiment Vars
 var raycast_this_physics_frame = false
 var target_position = Vector3(0.0, 2.0, -15.0)
 var target_to_shoot = null
@@ -35,17 +40,19 @@ var last_frame_yaw := 0.0
 var avg_yaw_delta := 0.0
 
 func _ready():
+	move_dict = {}
+	
+	network_mover = NetworkGamerMovement.new()
+	get_tree().get_root().call_deferred("add_child", network_mover)
+	
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	target_to_shoot = target.instance()
 	get_tree().get_root().call_deferred("add_child", target_to_shoot)
-	
-	var packet : PoolByteArray = PoolByteArray()
-	packet.push_back(-1)
-	print(packet[0])
 
 func _unhandled_input(event):
 	if event.is_action_pressed("click"):
 		raycast_this_physics_frame = true
+		transform.origin += Vector3(0.004, 0, 0)
 		
 	if (event is InputEventMouseMotion 
 		&& Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED):
@@ -73,31 +80,34 @@ func _unhandled_input(event):
 		Input.set_mouse_mode(new_mouse_mode)
 		
 	elif event.is_action_pressed("jump"):
+		# jump tried this frame
+		move_dict['jump_%d' % (physics_tick_id % 2)] = 1
+		
 		if (ticks_since_on_floor < jump_grace_ticks
 		&& ticks_since_last_jump > jump_grace_ticks):
 			velocity.y = jump_force
 			ticks_since_on_floor = jump_grace_ticks
 			ticks_since_last_jump = 0
-#		if gravity > 0:
-#			gravity = 0
-#			velocity.y = 0
-#		else:
-#			gravity = 30
 
 func _process(delta):
 	pass
 
 func _physics_process(delta):
-	handle_poll_input()
-	move(delta)
+	var frame = physics_tick_id % 2
 	
-#	avg_yaw_delta = (
-#		0.9 * avg_yaw_delta + 
-#		0.1 * shortest_deg_between(yaw, last_frame_yaw)
-#		)
-	print(shortest_deg_between(yaw, last_frame_yaw))
-	last_frame_yaw = yaw
+	handle_poll_input(frame)
 	
+	handle_move_dict(frame)
+	
+	handle_networking(frame)
+	
+	move(frame, delta)
+	
+	handle_raycast()
+	
+	physics_tick_id = (physics_tick_id + 1) % physics_tick_id_MAX
+
+func handle_raycast():
 	if raycast_this_physics_frame:
 		target_to_shoot.transform.origin = target_position
 		target_to_shoot.force_update_transform()
@@ -110,25 +120,29 @@ func _physics_process(delta):
 		raycast_this_physics_frame = false
 		target_to_shoot.transform.origin = Vector3(0, 0, 0)
 
-func handle_poll_input():
-	z_dir = 0
-	x_dir = 0
+func handle_poll_input(frame:int):
+	var z_dir = 0
+	var x_dir = 0
 	
 	if Input.is_action_pressed("move_forward"):
-		z_dir -= 1
-	if Input.is_action_pressed("move_backward"):
 		z_dir += 1
+	if Input.is_action_pressed("move_backward"):
+		z_dir -= 1
 	if Input.is_action_pressed("move_left"):
 		x_dir -= 1
 	if Input.is_action_pressed("move_right"):
 		x_dir += 1
+	
+	move_dict['x_dir_%d' % frame] = x_dir
+	move_dict['z_dir_%d' % frame] = z_dir
 
-func move(delta):
+func move(frame:int, delta:float):
 	var position_before_movement = get_global_transform().origin
-		
+	
 	var target_velocity = (
-		speed *
-		(z_dir * transform.basis.z + x_dir * transform.basis.x).normalized() +
+		speed * (
+			move_dict['z_dir_%d' % frame] * -transform.basis.z + 
+			move_dict['x_dir_%d' % frame] * transform.basis.x).normalized() +
 		velocity.y * Vector3.UP)
 	
 	if ticks_since_on_floor > ticks_until_in_air:
@@ -137,6 +151,13 @@ func move(delta):
 	else:
 		velocity = velocity.linear_interpolate(
 			target_velocity, acceleration * delta)
+	
+	if (move_dict['jump_%d' % frame] and 
+	ticks_since_on_floor < jump_grace_ticks and
+	ticks_since_last_jump > jump_grace_ticks):
+		velocity.y = jump_force
+		ticks_since_on_floor = jump_grace_ticks
+		ticks_since_last_jump = 0
 	
 	if is_on_floor():
 		velocity -= gravity * delta * get_floor_normal()
@@ -158,14 +179,28 @@ func move(delta):
 		Vector3.UP,
 		true)
 	
-	
-	
 	velocity = slid_vel
 	
 #	print((get_global_transform().origin - position_before_movement).length())
 
-func deg360_to_short(deg : float) -> int:
-	return lerp(0, 65535, deg_to_deg360(deg) / 360.0)
+func handle_move_dict(frame:int):
+	move_dict['id'] = int(physics_tick_id / 2)
+	move_dict['has_been_processed'] = 1
+	move_dict['jump_%d' % frame] = (
+		1 if ticks_since_last_jump < jump_grace_ticks else 0)
+	move_dict['yaw_%d' % frame] = yaw
+	move_dict['pitch_%d' % frame] = pitch
+
+func handle_networking(frame:int):
+	if physics_tick_id % 2 == 1:
+		network_mover.send_move_packet(move_dict)
+
+func show_angle_change():
+	avg_yaw_delta = (
+		0.9 * avg_yaw_delta + 
+		0.1 * shortest_deg_between(yaw, last_frame_yaw))
+	print(shortest_deg_between(yaw, last_frame_yaw))
+	last_frame_yaw = yaw
 
 static func deg_to_deg360(deg : float):
 	deg = fmod(deg, 360.0)
@@ -176,11 +211,7 @@ static func deg_to_deg360(deg : float):
 func shortest_deg_between(deg1 : float, deg2 : float):
 	return min(
 		abs(deg1 - deg2),
-		min(
-			abs((deg1 - 360.0) - deg2),
-			abs((deg2 - 360.0) - deg1)
-			)
-		)
+		min(abs((deg1 - 360.0) - deg2), abs((deg2 - 360.0) - deg1)))
 
 # takes the players 0 to 360 degree yaw and -90 to 90 degree pitch
 # converts into a PoolByteArray of length 3

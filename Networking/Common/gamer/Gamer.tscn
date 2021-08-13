@@ -1,9 +1,9 @@
 [gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://Common/game/Gamer.gd" type="Script" id=1]
+[ext_resource path="res://Common/gamer/Gamer.gd" type="Script" id=1]
 
 [sub_resource type="CylinderShape" id=1]
-height = 2.1
+height = 2.2
 
 [sub_resource type="CapsuleShape" id=2]
 height = 0.45
@@ -24,8 +24,9 @@ camera_path = NodePath("Camera")
 collider_path = NodePath("GroundCollider")
 
 [node name="GroundCollider" type="CollisionShape" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0469515, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.090493, 0 )
 shape = SubResource( 1 )
+disabled = true
 
 [node name="CollisionShape" type="CollisionShape" parent="."]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -0.223998, 0 )

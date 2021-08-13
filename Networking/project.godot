@@ -9,17 +9,12 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "PacketSerializer",
-"class": "ClientPacketSerializer",
-"language": "GDScript",
-"path": "res://Common/util/ClientPacketSerializer.gd"
-}, {
 "base": "Node",
 "class": "InstrucBuffer",
 "language": "GDScript",
 "path": "res://Common/util/InstrucBuffer.gd"
 }, {
-"base": "Node",
+"base": "Reference",
 "class": "LagBuffer",
 "language": "GDScript",
 "path": "res://Common/util/LagBuffer.gd"
@@ -45,7 +40,6 @@ _global_script_classes=[ {
 "path": "res://Common/util/TimeQueue.gd"
 } ]
 _global_script_class_icons={
-"ClientPacketSerializer": "",
 "InstrucBuffer": "",
 "LagBuffer": "",
 "NetworkGamerMovement": "",
@@ -57,8 +51,12 @@ _global_script_class_icons={
 [application]
 
 config/name="Networking"
-run/main_scene="res://Network.tscn"
+run/main_scene="res://Common/networking/Network.tscn"
 config/icon="res://icon.png"
+
+[autoload]
+
+Network="*res://Common/networking/Network.gd"
 
 [input]
 
@@ -102,10 +100,6 @@ alt_click={
 "events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":2,"pressed":false,"doubleclick":false,"script":null)
  ]
 }
-
-[physics]
-
-3d/physics_engine="GodotPhysics"
 
 [rendering]
 

@@ -2,209 +2,394 @@ extends StreamPeerBuffer
 
 class_name PacketSerializer
 
-const OPCODE_MASK = 224
-const BYTE_MASK = 255
-const MAX_BYTES = 512
-
-"""
-We serialize to an existing PoolByteArray using indices changed right before 
-calling serialization functions. This reduces parameter count and minimizes
-runtime allocations
-
-Every packet includes the information needed to 
-"""
-var bytes
-var start_byte = 0
-var end_byte = 0
-
-# byte:  [ 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 ]
-# most sig ^                           ^ least sig
-# using big endian: [byte0, byte1] -> short = (byte0 << 8) + (byte1)
-
-# serialize_X_to_Kb means serializing a var of type X to K number of bytes
-
-#func serialize__to_b():
-#	check_valid_byte_array_and_indices()
-
-#func deserialize__from_b() -> :
-#	check_valid_byte_array_and_indices()
-
-func _ready():
-	bytes = PoolByteArray()
-	bytes.resize(20)
+func doc():
+	return
+	"""
+	Common serialization class for major in-game networked instrucs
 	
-	serialize_k_integer_to_k_b(0x14ABCD, 3)
-	serialize_k_integer_to_k_b(0xEF987654, 4)
-	serialize_k_integer_to_k_b(0xEF987654, 4)
-	serialize_k_integer_to_k_b(0xEF987654, 4)
+	client sent:
+	- movement (max 30 / sec)
+	- ability uses / firing weapon
 	
-	pbt()
+	server sent:
+	- player transforms snapshot (max 20 / sec)
+	- health, death, vuln updates (ASAP, reliable)
+	- map and gamemode state (ASAP, reliable)
+	"""
 
-func pbt():
-	if bytes:
-		print(bytes.hex_encode())
+enum { # client opcodes (bits 7, 6 of first byte in payload)
+	CL_EXTENDED_OPCODE, # use next 6 bits for instruc
+	CL_MOVEMENT, # movement
+	CL_U_ABILITY, # undirected ability
+	CL_D_ABILITY} # directed ability (precise position / direction info)
 
-func pre_serialization(external_byte_array:PoolByteArray, start:int):
-	bytes = external_byte_array
-	start_byte = start
-	end_byte = start_byte
-	check_valid_byte_array_and_indices()
+enum { # server opcodes (bits 7, 6 of first byte in payload)
+	SV_EXTENDED_OPCODE, # use next 6 bits for instruc
+	SV_SNAPSHOT, # movement
+	SV_MAP_GAME, # undirected ability
+	D_ABILITY} # directed ability (precise position / direction info)
 
-func check_valid_byte_array_and_indices():
+
+const CLIENT_OPCODE_MASK = 0b_1100_0000
+const BYTE_MASK = 0b_1111_1111
+const FIRST_HALF_MASK = 0b_1111_0000
+const SECOND_HALF_MASK = 0b_0000_1111
+const MAX_BYTES = 256
+
+func test():
+	test_movement_serialization()
+
+func test_movement_serialization():
+	clear()
+	var test_movement = {
+		'has_been_processed' : 0,
+		'has_look_changed' : 0,
+		'id' : 0b_1001_1011, 
+		'jump_0' : 0, 
+		'z_dir_0' : 1, 
+		'x_dir_0' : -1, 
+		'yaw_0': 40.2356, 
+		'pitch_0': 5.1134, 
+		'jump_1': 3, 
+		'z_dir_1':-1, 
+		'x_dir_1':0, 
+		'yaw_1':38.7777, 
+		'pitch_1':2.8}
+	# expected (little endian)
+	# 0101 1000 HEADER
+	# 1001 1011 ID
+	# 0111 0100 WASD
+	# 1001 1100 0001 1100 YAW 0 
+	# 1000 0111 PITCH 0
+	# 1001 0011 0001 1011 YAW 0
+	# 1000 0011 PITCH 1
+	var sz_move = serialize_movement(test_movement)
+	print(hex_string_to_binary(sz_move.hex_encode()))
+	var recv_movement = {}
+	deserialize_movement(sz_move, recv_movement)
+	print(recv_movement)
+	
+	clear()
+	var test_movement_2 = {
+		'has_been_processed' : 0,
+		'has_look_changed' : 0,
+		'id' : 0b_1001_1011, 
+		'jump_0' : 0, 
+		'z_dir_0' : 1, 
+		'x_dir_0' : -1, 
+		'yaw_0': 40.2356, 
+		'pitch_0': 5.1134, 
+		'jump_1': 3, 
+		'z_dir_1':-1, 
+		'x_dir_1':0, 
+		'yaw_1':38.7777, 
+		'pitch_1':2.8}
+	"""
+	print(dir_to_int(0, 0))
+	print(dir_to_int(1, 0))
+	print(dir_to_int(1, 1))
+	print(dir_to_int(0, 1))
+	print(dir_to_int(-1, 1))
+	print(dir_to_int(-1, 0))
+	print(dir_to_int(-1, -1))
+	print(dir_to_int(0, -1))
+	print(dir_to_int(1, -1))
+	
+	print(dir_from_int(0))
+	print(dir_from_int(8))
+	print(dir_from_int(3))
+	"""
+
+# --------------------------------------------------------Movement Serialization
+func movement_serialization_doc():
+	return (
+	"""
+	NAMENAMENAMENAMENAME,BYTES,DESC....
+	--------------------------------------------------------------------------------
+	Head                ,1    , opcode, jumps, tells if wasd or look delta 
+	ID                  ,1    , movement id
+
+	---------------------------------------------------------------OPTIONAL BY DELTA
+	DIR                 ,1    , WASD info for both frames
+
+	---------------------------------------------------------------OPTIONAL BY DELTA
+	YAW0                ,2    
+	PITCH0              ,1    
+
+	---------------------------------------------------------------OPTIONAL BY DELTA
+	YAW1                ,2
+	PITCH1              ,1
+
+	--------------------------------------------------------OPTIONAL FOR PACKET LOSS
+	JDIR_CMP            ,1    , redundant last instruc dir
+	YAW01               ,2    , avg yaw last instruc
+	PITCH01             ,1    , avg pitch last instruc
+	""")
+
+func serialize_movement(move_dict:Dictionary) -> PoolByteArray:
+	var has_wasd_movement = (
+		move_dict['z_dir_0'] | 
+		move_dict['x_dir_0'] | 
+		move_dict['z_dir_1'] | 
+		move_dict['x_dir_1'])
+	
+	var has_jump = (move_dict['jump_0'] | move_dict['jump_1'])
+	
+	var has_look_changed = move_dict['has_look_changed']
+	
+	var should_send_move = has_jump | has_look_changed | has_wasd_movement
+	
+	var packet := PoolByteArray()
+	
+	if should_send_move:
+		var header_byte := (
+			0b_0100_0000 +
+			(0b_0010_0000 if move_dict['jump_0'] else 0) +
+			(0b_0001_0000 if move_dict['jump_1'] else 0) +
+			(0b_0000_1000 if has_wasd_movement else 0) + 
+			(0b_0000_0100 if has_look_changed else 0))
+		
+		put_u8(header_byte)
+		
+		put_u8(move_dict['id'])
+		
+		if has_wasd_movement:
+			var dir_byte := (
+				(dir_to_int(move_dict['x_dir_0'], move_dict['z_dir_0']) << 4) +
+				dir_to_int(move_dict['x_dir_1'], move_dict['z_dir_1']))
+			
+			put_u8(dir_byte)
+		
+		if has_look_changed:
+			put_u16(convert_float_to_k_integer(
+				move_dict['yaw_0'], 0.0, 360.0, 2))
+			put_u8(convert_float_to_k_integer(
+				move_dict['pitch_0'], -90.0, 90.0, 1))
+			
+			put_u16(convert_float_to_k_integer(
+				move_dict['yaw_1'], 0.0, 360.0, 2))
+			put_u8(convert_float_to_k_integer(
+				move_dict['pitch_1'], -90.0, 90.0, 1))
+		
+		packet = data_array
+	
+	clear()
+	
+	return packet
+
+func deserialize_movement(instruc:PoolByteArray, move_dict:Dictionary):
+	clear()
+	
+	data_array = instruc
+	
+	var header_byte = get_u8()
+	
+	move_dict['jump_0'] = header_byte & 0b_0010_0000
+	move_dict['jump_1'] = header_byte & 0b_0001_0000
+	
+	var has_wasd_movement = header_byte & 0b_0000_1000
+	var has_look_changed = header_byte & 0b_0000_0100
+	
+	move_dict['has_look_changed'] = has_look_changed
+	
+	move_dict['id'] = get_u8()
+	
+	if has_wasd_movement:
+		var dir_byte = get_u8()
+		var first_frame_dir = dir_from_int(
+			(dir_byte & FIRST_HALF_MASK) >> 4)
+		var second_frame_dir = dir_from_int(
+			dir_byte & SECOND_HALF_MASK)
+		
+		move_dict['x_dir_0'] = first_frame_dir.x_dir
+		move_dict['z_dir_0'] = first_frame_dir.z_dir
+		move_dict['x_dir_1'] = second_frame_dir.x_dir
+		move_dict['z_dir_1'] = second_frame_dir.z_dir
+	
+	if has_look_changed:
+		move_dict['yaw_0'] = read_float_from_k_integer(
+			get_u16(), 0.0, 360.0, 2)
+		move_dict['pitch_0'] = read_float_from_k_integer(
+			get_u8(), -90.0, 90.0, 1)
+		
+		move_dict['yaw_1'] = read_float_from_k_integer(
+			get_u16(), 0.0, 360.0, 2)
+		move_dict['pitch_1'] = read_float_from_k_integer(
+			get_u8(), -90.0, 90.0, 1)
+	
+	move_dict['has_been_processed'] = 0
+
+static func dir_to_int(x_dir:int, z_dir:int) -> int:
 	assert(
-		bytes,
-		"given byte array is null")
-	assert(
-		bytes,
-		"given byte array is null")
-	assert(
-		start_byte >= 0 and start_byte < bytes.size(), 
-		"start_byte out of range")
-	assert(
-		end_byte >= 0 and end_byte < bytes.size(), 
-		"end_byte out of range")
-	assert(
-		end_byte >= start_byte,
-		"end_byte must be after or at start_byte")
+		z_dir >= -1 and z_dir <= 1 and x_dir >= -1 and x_dir <=1,
+		"Directions must be between -1 and 1")
+	
+	var dir_int:int = 0
+	
+	match z_dir:
+		-1:
+			match x_dir:
+				-1:
+					dir_int = 5
+				0:
+					dir_int = 4
+				1:
+					dir_int = 3
+		0:
+			match x_dir:
+				-1:
+					dir_int = 6
+				0:
+					dir_int = 8
+				1:
+					dir_int = 2
+		1:
+			match x_dir:
+				-1:
+					dir_int = 7
+				0:
+					dir_int = 0
+				1:
+					dir_int = 1
+	
+	return dir_int
 
-func serialize_ubyte_to_1b(ubyte:int): # writes to start_byte
-	check_valid_byte_array_and_indices()
+static func dir_from_int(dir_int) -> Dictionary:
 	assert(
-		bytes.size() > 0,
-		"byte array must have at least 1 element")
-	assert(
-		ubyte >= 0 and ubyte < 256,
-		"ubyte out of range")
+		dir_int >= 0 and dir_int <= 8, 
+		"dir_int must be between [0..8]")
 	
-	end_byte = start_byte
+	var dir_dict = {
+		'z_dir':0,
+		'x_dir':0}
 	
-	bytes[start_byte] = ubyte
+	match dir_int:
+		0:
+			dir_dict.z_dir = 1
+			dir_dict.x_dir = 0
+		1:
+			dir_dict.z_dir = 1
+			dir_dict.x_dir = 1
+		2:
+			dir_dict.z_dir = 0
+			dir_dict.x_dir = 1
+		3:
+			dir_dict.z_dir = -1
+			dir_dict.x_dir = 1
+		4:
+			dir_dict.z_dir = -1
+			dir_dict.x_dir = 0
+		5:
+			dir_dict.z_dir = -1
+			dir_dict.x_dir = -1
+		6:
+			dir_dict.z_dir = 0
+			dir_dict.x_dir = -1
+		7:
+			dir_dict.z_dir = 1
+			dir_dict.x_dir = -1
+		8:
+			dir_dict.z_dir = 0
+			dir_dict.x_dir = 0
 	
-	start_byte = start_byte + 1
+	return dir_dict
 
-func deserialize_ubyte_from_1b() -> int:
-	check_valid_byte_array_and_indices()
-	assert(
-		bytes.size() > 0,
-		"byte array must have at least 1 element")
-	
-	end_byte = start_byte
-	
-	var ubyte = bytes[start_byte]
-	
-	start_byte = start_byte + 1
-	
-	return ubyte
+# -----------------------------------------------------------------------Utility
 
-func serialize_ushort_to_2b(ushort:int):
-	check_valid_byte_array_and_indices()
-	assert(
-		bytes.size() >= 2,
-		"byte array must have at least 2 elements")
-	assert(
-		end_byte == start_byte + 1,
-		"end_byte must equal (start_byte + 1)")
-	assert(
-		ushort >= 0 and ushort < 65536,
-		"ushort out of range")
-	
-	end_byte = start_byte + 1
-	
-	bytes[start_byte] = ushort >> 8
-	bytes[end_byte] = ushort & BYTE_MASK
-	
-	start_byte = end_byte + 1
+# a 1:1 function with domain and range 0.0 to 1.0 
+# used to map normalized player camera pitch to a 6-bit int
+# corresponds to:
+# y = 0.5x WHEN 0 < x < 0.25
+# y = 1.5x - 0.25 WHEN 0.25 < x < 0.75
+# y = 0.5x + 0.5 WHEN 0.75 < x < 1.0
+static func pitch_to_bit6_lerp_map(lerp_in: float) -> float:
+	return lerp_in
 
-func deserialize_ushort_from_2b() -> int:
-	check_valid_byte_array_and_indices()
+# inverse of pitch_to_bit6_lerp_map
+static func bit6_to_pitch_lerp_map(lerp_in: float):
+	return lerp_in
+
+static func deg_to_deg360(deg : float):
+	deg = fmod(deg, 360.0)
+	if deg < 0.0:
+		deg += 360.0
+	return deg
+
+static func shortest_deg_between(deg1 : float, deg2 : float):
+	deg1 = deg_to_deg360(deg1)
+	deg2 = deg_to_deg360(deg2)
+	return min(
+		abs(deg1 - deg2),
+		min(
+			abs((deg1 - 360.0) - deg2),
+			abs((deg2 - 360.0) - deg1)
+			)
+		)
+
+static func convert_float_to_k_integer(f:float, f_min:float, f_max:float, 
+k:int) -> int:
 	assert(
-		bytes.size() >= 2,
-		"byte array must have at least 2 elements")
+		f >= f_min and f <= f_max, 
+		"float must be between specified range")
 	assert(
-		end_byte == start_byte + 1,
-		"end_byte must equal (start_byte + 1)")
-	
-	end_byte = start_byte + 1
-	
-	var ushort = (bytes[start_byte] << 8) + bytes[end_byte]
-	
-	start_byte = end_byte + 1
-	
-	return ushort
-
-func serialize_k_integer_to_k_b(num:int, k:int):
-	assert(
-		k > 0 and k <= 4,
-		"k must be between [1..4]")
-	
-	end_byte = start_byte + (k - 1)
-	
-	check_valid_byte_array_and_indices()
-	
-	for i in range(k):
-		bytes[start_byte + i] = (
-			(num >> ((k - 1 - i) * 8)) &
-			BYTE_MASK)
-	
-	start_byte = end_byte + 1
-
-func deserialize_k_integer_from_k_b(k:int) -> int:
-	assert(
-		k > 0 and k <= 4,
-		"k must be between [1..4]")
-	
-	end_byte = start_byte + (k - 1)
-	
-	check_valid_byte_array_and_indices()
-	
-	var k_int = 0
-	
-	for i in range(k):
-		k_int += (
-			bytes[start_byte + i] << 
-			((k - 1 - i) * 8))
-	
-	start_byte = end_byte + 1
-	
-	return k_int
-
-
-
-func is_fully_processed() -> bool:
-	assert(
-		bytes,
-		"bytes must not be null")
-	return start_byte >= bytes.size()
-
-static func convert_float_to_integer(f:float, f_min:float, f_max:float, 
-int_len_bytes:int) -> int:
+		k >= 0 and k <= 4,
+		"k must be between [0..4]")
 	return int(lerp(
 		0, 
-		pow(256, min(int_len_bytes, 4)),
+		pow(256, k),
 		(f - f_min) / (f_max - f_min)))
 
-static func read_float_from_integer(i:int, f_min:float, f_max:float, 
-int_len_bytes:int) -> float:
+static func read_float_from_k_integer(i:int, f_min:float, f_max:float, 
+k:int) -> float:
+	assert(
+	k >= 0 and k <= 4,
+	"k must be between [0..4]")
 	return lerp(
-		f_min,
-		f_max,
-		i / pow(256, min(int_len_bytes, 4)))
+	f_min,
+	f_max,
+	i / pow(256, k))
 
-func test_short_serialization():
-	# test short serialization
-	var test_short = 0x3342
-	start_byte = 0
-	end_byte = 1
-	serialize_ushort_to_2b(test_short)
-	end_byte = start_byte + 1
-	serialize_ushort_to_2b(0x99FF)
-	end_byte = start_byte + 1
-	serialize_ushort_to_2b(0xBEEF)
-	print("%02X" % bytes[0], "%02X" % bytes[1])
-	start_byte = 0
-	end_byte = 1
-	print("%04X" % deserialize_ushort_from_2b())
-	end_byte = start_byte + 1
-	print("%04X" % deserialize_ushort_from_2b())
-	end_byte = start_byte + 1
-	print("%04X" % deserialize_ushort_from_2b())
+static func hex_string_to_binary(hex_str:String) -> String:
+	var b_str_arr = PoolStringArray()
+	for i in hex_str.length():
+		var append : String
+		match hex_str[i]:
+			'0':
+				append = '0000'
+			'1':
+				append = '0001'
+			'2':
+				append = '0010'
+			'3':
+				append = '0011'
+			'4':
+				append = '0100'
+			'5':
+				append = '0101'
+			'6':
+				append = '0110'
+			'7':
+				append = '0111'
+			'8':
+				append = '1000'
+			'9':
+				append = '1001'
+			'a':
+				append = '1010'
+			'b':
+				append = '1011'
+			'c':
+				append = '1100'
+			'd':
+				append = '1101'
+			'e':
+				append = '1110'
+			'f':
+				append = '1111'
+		
+		b_str_arr.push_back(append)
+	
+	return String(b_str_arr)
+
+func pd():
+	print(hex_string_to_binary(data_array.hex_encode()))

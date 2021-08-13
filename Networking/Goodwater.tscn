@@ -1,20 +1,9 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://Materials/seamless_wood_tx.jpg" type="Texture" id=1]
-[ext_resource path="res://Common/game/Gamer.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Common/gamer/Gamer.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Materials/StoneWallMaterial.tres" type="Material" id=3]
-
-[sub_resource type="CubeMesh" id=1]
-
-[sub_resource type="SpatialMaterial" id=2]
-flags_world_triplanar = true
-albedo_texture = ExtResource( 1 )
-metallic_specular = 0.0
-uv1_scale = Vector3( 0.2, 0.2, 0.2 )
-uv1_triplanar = true
-
-[sub_resource type="ConvexPolygonShape" id=3]
-points = PoolVector3Array( -1, 1, 1, 1, 1, -1, 1, 1, 1, -1, 1, -1, -1, -1, 1, 1, -1, -1, 1, -1, 1, -1, -1, -1, 1, 1, 1, -1, 1, -1, 1, 1, -1, -1, 1, 1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, -1, 1, 1, 1, 1, -1, -1, 1, -1, 1, 1, 1, -1, 1, 1, 1, -1, -1, -1, -1, -1, 1, -1, 1, -1, -1 )
+[ext_resource path="res://Materials/ShingleMaterial.tres" type="Material" id=4]
 
 [sub_resource type="BoxShape" id=4]
 
@@ -24,19 +13,17 @@ points = PoolVector3Array( -1, 1, 1, 1, 1, -1, 1, 1, 1, -1, 1, -1, -1, -1, 1, 1,
 
 [sub_resource type="BoxShape" id=7]
 
+[sub_resource type="BoxShape" id=1]
+
+[sub_resource type="CubeMesh" id=2]
+
+[sub_resource type="SpatialMaterial" id=3]
+flags_world_triplanar = true
+albedo_texture = ExtResource( 1 )
+uv1_scale = Vector3( 0.1, 0.1, 0.1 )
+uv1_triplanar = true
+
 [node name="Goodwater" type="Spatial"]
-
-[node name="MapFloor" type="StaticBody" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -10.7487, 0 )
-
-[node name="MeshInstance" type="MeshInstance" parent="MapFloor"]
-transform = Transform( -100, 0, -1.50996e-05, 0, 0.1, 0, 1.50996e-05, 0, -100, 0, 0, 0 )
-mesh = SubResource( 1 )
-material/0 = SubResource( 2 )
-
-[node name="CollisionShape" type="CollisionShape" parent="MapFloor"]
-transform = Transform( -100, 0, -1.50996e-05, 0, 0.1, 0, 1.50996e-05, 0, -100, 0, 0, 0 )
-shape = SubResource( 3 )
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
 transform = Transform( 1, 0, 0, 0, 0.884402, 0.466726, 0, -0.466726, 0.884402, 0, 8.36841, 0 )
@@ -131,3 +118,55 @@ shape = SubResource( 4 )
 [node name="MeshInstance" type="MeshInstance" parent="Building/Column"]
 mesh = SubResource( 5 )
 material/0 = ExtResource( 3 )
+
+[node name="Bounds" type="Spatial" parent="."]
+
+[node name="MapFloor" type="StaticBody" parent="Bounds"]
+transform = Transform( 125, 0, 0, 0, 1, 0, 0, 0, 125, 0, -11.5463, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Bounds/MapFloor"]
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Bounds/MapFloor"]
+mesh = SubResource( 2 )
+material/0 = SubResource( 3 )
+
+[node name="WallEast" type="StaticBody" parent="Bounds"]
+transform = Transform( -5.46392e-06, -1, 0, 125, -4.37114e-08, 0, 0, 0, 125, 126, -11.546, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Bounds/WallEast"]
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Bounds/WallEast"]
+mesh = SubResource( 2 )
+material/0 = ExtResource( 4 )
+
+[node name="WallWest" type="StaticBody" parent="Bounds"]
+transform = Transform( -5.46392e-06, -1, 0, 125, -4.37114e-08, 0, 0, 0, 125, -126, -11.546, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Bounds/WallWest"]
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Bounds/WallWest"]
+mesh = SubResource( 2 )
+material/0 = ExtResource( 4 )
+
+[node name="WallSouth" type="StaticBody" parent="Bounds"]
+transform = Transform( 2.38836e-13, 4.37114e-08, -125, 125, -4.37114e-08, 0, -5.46392e-06, -1, -5.46392e-06, 0, -11.546, -125 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Bounds/WallSouth"]
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Bounds/WallSouth"]
+mesh = SubResource( 2 )
+material/0 = ExtResource( 4 )
+
+[node name="WallNorth" type="StaticBody" parent="Bounds"]
+transform = Transform( 2.38836e-13, 4.37114e-08, -125, 125, -4.37114e-08, 0, -5.46392e-06, -1, -5.46392e-06, 0, -11.546, 125 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Bounds/WallNorth"]
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Bounds/WallNorth"]
+mesh = SubResource( 2 )
+material/0 = ExtResource( 4 )

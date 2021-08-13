@@ -13,7 +13,6 @@ const TRAIL_BEHIND_DEFAULT = 3
 # this is because the ids "wrap around" after reaching the max value
 const WRAP_THRESHOLD_RATIO = 0.125
 
-var serializer:PacketSerializer
 var id_max_size = ID_MAX_SIZE_DEFAULT # max num of ids including 0, not max id value
 var instruc_max_size = INSTRUC_MAX_SIZE_DEFAULT # max size of instruc in bytes
 var buffer_size = ID_MAX_SIZE_DEFAULT * INSTRUC_MAX_SIZE_DEFAULT
