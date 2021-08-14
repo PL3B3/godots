@@ -4,20 +4,62 @@ extends Node
 
 const DEFAULT_PORT := 3342
 const MAX_PLAYERS := 40
+enum MOVE { # move instruc
+	# vector2
+	LOOK, # yaw and pitch
+	# byte
+	PROCESSED, # has been processed
+	JUMP,
+	X_DIR,
+	Z_DIR,
+	LOOK_DELTA} # did look change since last frame
+
+enum STATE { # for snapshot / state
+	# vector3
+	POSITION,
+	VELOCITY,
+	# vector2
+	LOOK, 
+	# byte
+	HEALTH,
+	EQUIPPED_SLOT, # tells which weapon / ability and if reloading
+	WEAPON_CHARGE, # frames since weapon last fired
+	FIXED_CHARGE, # how many fixed abilities available
+	TIMED_CHARGE, # frames since timed ability last used
+	ULT_CHARGE}
+
 var server_ip := "127.0.0.1"
 var net_peer:NetworkedMultiplayerENet = null # enet peer for this client
 var network_id:int
 var is_online := false
 
+var client_gamer:Gamer
 
 var physics_delta = (
 	1.0 / (ProjectSettings.get_setting("physics/common/physics_fps")))
 
 func _ready():
-	var cps = PacketSerializer.new()
-	cps.test()
-	var rb = LagBuffer.new()
-	rb.test()
+	
+#	var cps = PacketSerializer.new()
+#	cps.test()
+#	var rb = LagBuffer.new()
+#	rb.test()
+	var pb = PoolBuffer.new([
+		PoolVector3Array([Vector3(10, 5, 8), Vector3(3, 2, 1)]),
+		PoolVector3Array(),
+		PoolVector2Array(),
+		PoolByteArray(),
+		PoolByteArray(),
+		PoolByteArray(),
+		PoolByteArray(),
+		PoolByteArray()])
+	pb.test()
+	gaming(PoolByteArray())
+
+func gaming(thing):
+	thing.resize(1)
+	thing[0] = 120
+	print(thing[0])
 
 func start_network(is_server: bool):
 	net_peer = NetworkedMultiplayerENet.new()
@@ -71,10 +113,8 @@ func _on_connect():
 
 var counter_0 = 0
 func _on_custom_packet_received(id:int, packet:PoolByteArray):
-	counter_0 += 1
-	if counter_0 == 10:
-		print("got packet: ", packet.hex_encode(), "\n")
-		counter_0 = 0
+	if network_id == 1:
+		client_gamer.network_mover.receive_move_packet(id, packet)
 
 func has_connected_peer() -> bool:
 	var is_connected = false
@@ -90,7 +130,5 @@ func has_connected_peer() -> bool:
 func send_packet(packet:PoolByteArray, id:int):
 	# client can only send packets to server
 	if packet and (not packet.empty()) and is_online:
-		if network_id == 1 and id != 1:
-			return get_tree().get_multiplayer().send_bytes(packet, id)
-		elif network_id !=1 and id ==1:
+		if (network_id == 1 and id != 1) or (network_id !=1 and id ==1): # xor
 			return get_tree().get_multiplayer().send_bytes(packet, id)

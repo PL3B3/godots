@@ -1,5 +1,7 @@
 extends KinematicBody
 
+class_name Gamer
+
 export(NodePath) var camera_path : NodePath
 export(NodePath) var collider_path : NodePath
 onready var camera : Camera = get_node(camera_path)
@@ -7,20 +9,23 @@ onready var collider : CollisionShape = get_node(collider_path)
 
 onready var target = preload("res://Common/game/Target.tscn")
 
-var network_mover:NetworkGamerMovement
+var network_mover:NetworkClientMovement
 
 const physics_tick_id_MAX = 512
 
 # -------------------------------------------------------------Movement Settings
 var mouse_sensitivity := 0.04
-var jump_force := 10.0
+var jump_force := 15.0
 var jump_grace_ticks := 8
+var jump_try_ticks := 4
 var ticks_until_in_air := 5
 var ticks_since_on_wall := 0
-var gravity := 30.0
+var gravity := 0.75
 var speed := 7.5
+var speed_limit := 25.5
+var h_speed_limit_sqr := pow(speed_limit, 2)
 var acceleration := 11.0
-var acceleration_in_air := 3.5
+var acceleration_in_air := 3.0
 
 # -----------------------------------------------------------------Movement Vars
 var yaw := 0.0
@@ -29,11 +34,12 @@ var ticks_since_last_jump := jump_grace_ticks
 var ticks_since_on_floor := 0
 var velocity := Vector3()
 var move_dict:Dictionary
+var move_arr:Array
 var physics_tick_id := 0
 
 # ---------------------------------------------------------------Experiment Vars
 var raycast_this_physics_frame = false
-var target_position = Vector3(0.0, 2.0, -15.0)
+var target_position = Vector3(10.0, 5.0, -15.0)
 var target_to_shoot = null
 
 var last_frame_yaw := 0.0
@@ -42,11 +48,14 @@ var avg_yaw_delta := 0.0
 func _ready():
 	move_dict = {}
 	
-	network_mover = NetworkGamerMovement.new()
+	Network.client_gamer = self
+	
+	network_mover = NetworkClientMovement.new()
 	get_tree().get_root().call_deferred("add_child", network_mover)
 	
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	target_to_shoot = target.instance()
+	target_to_shoot.transform.origin = target_position
 	get_tree().get_root().call_deferred("add_child", target_to_shoot)
 
 func _unhandled_input(event):
@@ -82,15 +91,13 @@ func _unhandled_input(event):
 	elif event.is_action_pressed("jump"):
 		# jump tried this frame
 		move_dict['jump_%d' % (physics_tick_id % 2)] = 1
+#		move_arr['jump_%d' % (physics_tick_id % 2)] = 1
 		
 		if (ticks_since_on_floor < jump_grace_ticks
 		&& ticks_since_last_jump > jump_grace_ticks):
 			velocity.y = jump_force
 			ticks_since_on_floor = jump_grace_ticks
 			ticks_since_last_jump = 0
-
-func _process(delta):
-	pass
 
 func _physics_process(delta):
 	var frame = physics_tick_id % 2
@@ -145,6 +152,13 @@ func move(frame:int, delta:float):
 			move_dict['x_dir_%d' % frame] * transform.basis.x).normalized() +
 		velocity.y * Vector3.UP)
 	
+#	var target_velocity = (
+#		speed * (
+#			move_arr[NetworkGamerMovement.MOVE.X] * transform.basis.x + 
+#			move_arr[NetworkGamerMovement.MOVE.Z] * -transform.basis.z
+#		).normalized() +
+#		velocity.y * Vector3.UP)
+	
 	if ticks_since_on_floor > ticks_until_in_air:
 		velocity = velocity.linear_interpolate(
 			target_velocity, acceleration_in_air * delta)
@@ -160,10 +174,10 @@ func move(frame:int, delta:float):
 		ticks_since_last_jump = 0
 	
 	if is_on_floor():
-		velocity -= gravity * delta * get_floor_normal()
+		velocity -= gravity * get_floor_normal()
 		ticks_since_on_floor = 0
 	else:
-		velocity -= gravity * delta * Vector3.UP
+		velocity -= gravity * Vector3.UP
 		ticks_since_on_floor += 1
 	
 	if is_on_wall():
@@ -172,6 +186,12 @@ func move(frame:int, delta:float):
 		ticks_since_on_wall += 1
 	
 	ticks_since_last_jump += 1
+	
+	var vel_h_mag_sqr = pow(velocity.x, 2) + pow(velocity.z, 2)
+	if vel_h_mag_sqr > h_speed_limit_sqr:
+		var h_scale_fac = sqrt(h_speed_limit_sqr / vel_h_mag_sqr)
+		velocity.x *= h_scale_fac
+		velocity.z *= h_scale_fac
 	
 	# Movement code proper
 	var slid_vel = move_and_slide(

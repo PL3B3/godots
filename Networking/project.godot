@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "KinematicBody",
+"class": "Gamer",
+"language": "GDScript",
+"path": "res://Common/gamer/Gamer.gd"
+}, {
 "base": "Node",
 "class": "InstrucBuffer",
 "language": "GDScript",
@@ -20,19 +25,29 @@ _global_script_classes=[ {
 "path": "res://Common/util/LagBuffer.gd"
 }, {
 "base": "Node",
-"class": "NetworkGamerMovement",
+"class": "NetworkClientMovement",
 "language": "GDScript",
-"path": "res://Common/networking/NetworkGamerMovement.gd"
+"path": "res://Common/networking/NetworkClientMovement.gd"
 }, {
 "base": "Node",
 "class": "NetworkPhantomMovement",
 "language": "GDScript",
 "path": "res://Common/networking/NetworkPhantomMovement.gd"
 }, {
+"base": "Node",
+"class": "NetworkServerMovement",
+"language": "GDScript",
+"path": "res://Common/networking/NetworkServerMovement.gd"
+}, {
 "base": "StreamPeerBuffer",
 "class": "PacketSerializer",
 "language": "GDScript",
 "path": "res://Common/util/PacketSerializer.gd"
+}, {
+"base": "Reference",
+"class": "PoolBuffer",
+"language": "GDScript",
+"path": "res://Common/util/PoolBuffer.gd"
 }, {
 "base": "Timer",
 "class": "TimeQueue",
@@ -40,11 +55,14 @@ _global_script_classes=[ {
 "path": "res://Common/util/TimeQueue.gd"
 } ]
 _global_script_class_icons={
+"Gamer": "",
 "InstrucBuffer": "",
 "LagBuffer": "",
-"NetworkGamerMovement": "",
+"NetworkClientMovement": "",
 "NetworkPhantomMovement": "",
+"NetworkServerMovement": "",
 "PacketSerializer": "",
+"PoolBuffer": "",
 "TimeQueue": ""
 }
 

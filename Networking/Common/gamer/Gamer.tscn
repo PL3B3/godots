@@ -24,7 +24,7 @@ camera_path = NodePath("Camera")
 collider_path = NodePath("GroundCollider")
 
 [node name="GroundCollider" type="CollisionShape" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.090493, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0819989, 0 )
 shape = SubResource( 1 )
 disabled = true
 

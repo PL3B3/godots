@@ -334,6 +334,9 @@ k:int) -> int:
 	assert(
 		k >= 0 and k <= 4,
 		"k must be between [0..4]")
+	
+	f = clamp(f, f_min, f_max)
+	
 	return int(lerp(
 		0, 
 		pow(256, k),

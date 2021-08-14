@@ -1,13 +1,12 @@
 extends Node
 
-class_name NetworkGamerMovement
+class_name NetworkServerMovement
 
-func doc():
-	return
-	"""
+
+"""
 	on client: serialize and send player movement
 	on server: buffer and deserialize player movement
-	
+
 	we send one movement instruction every two frames, after both have been 
 	processed by client. we represent these two frames with a single dictionary
 	for convenience:
@@ -25,7 +24,16 @@ func doc():
 		x_dir_1, 
 		yaw_1, 
 		pitch_1}
-	"""
+"""
+
+enum MOVE { # move instruc
+	PROC,
+	JUMP,
+	X,
+	Z,
+	LOOK_DELTA,
+	YAW,
+	PITCH}
 
 var lbuf:LagBuffer
 var sz:PacketSerializer
@@ -67,7 +75,7 @@ func read_instruc_from_move_dict(move_dict:Dictionary) -> PoolByteArray:
 func send_move_packet(move_dict:Dictionary):
 	Network.send_packet(read_instruc_from_move_dict(move_dict), 1)
 
-func receive_move_packet(instruc:PoolByteArray, sender_id:int):
+func receive_move_packet(sender_id:int, instruc:PoolByteArray):
 	var index = instruc[1]
 	
 	if should_init_lagbuf:
