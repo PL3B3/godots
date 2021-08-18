@@ -1,67 +1,105 @@
-extends KinematicBody
+extends Mover
 
 class_name Gamer
 
-export(NodePath) var camera_path : NodePath
-export(NodePath) var collider_path : NodePath
-onready var camera : Camera = get_node(camera_path)
-onready var collider : CollisionShape = get_node(collider_path)
-
 onready var target = preload("res://Common/game/Target.tscn")
 
-var network_mover:NetworkClientMovement
+enum PHANTOM_STATE {
+	PROCESSED,
+	POSITION,
+	VELOCITY,
+	LOOK,
+	HEALTH}
 
-const physics_tick_id_MAX = 512
+enum STATE {
+	POSITION,
+	VELOCITY, # slid vel at end of previous frame
+	HEALTH,
+	FAST_CHARGE_TIME_LEFT,
+	SLOW_CHARGE_TIME_LEFT,
+	ULT_CHARGE}
 
-# -------------------------------------------------------------Movement Settings
+# ----------------------------------------------------------------Gamer settings
+var base_health := 100 # limit to how much healing items can heal you
+var meat_health := 150 # highest persistent health
+var over_health := 200 # decays to meat_health
+var buff_decay_rate := 5 # amount buff to decay every 0.5 seconds
+
+var recharge_rate := 6 # after this many ticks, we decrease the "time" left by 1
+var fast_recharge_time := 85
+var slow_recharge_time := 255
+
+var ult_charge_max := 250 
+
+# --------------------------------------------------------------------Gamer vars
+var state_slice = []
+
+var fast_recharge_ticks_left := 0 # how many phys ticks b4 next time decrease
+var slow_recharge_ticks_left := 0 # set=recharge_rate on ability press
+
+
+# ----------------------------------------------------------------Input settings
 var mouse_sensitivity := 0.04
-var jump_force := 15.0
-var jump_grace_ticks := 8
-var jump_try_ticks := 4
-var ticks_until_in_air := 5
-var ticks_since_on_wall := 0
-var gravity := 0.75
-var speed := 7.5
-var speed_limit := 25.5
-var h_speed_limit_sqr := pow(speed_limit, 2)
-var acceleration := 11.0
-var acceleration_in_air := 3.0
+var jump_try_ticks_default := 3
 
-# -----------------------------------------------------------------Movement Vars
-var yaw := 0.0
-var pitch := 0.0
-var ticks_since_last_jump := jump_grace_ticks
-var ticks_since_on_floor := 0
-var velocity := Vector3()
-var move_dict:Dictionary
-var move_arr:Array
-var physics_tick_id := 0
+# --------------------------------------------------------------------Input vars
+var jump_try_ticks_remaining := 0
+
+# ------------------------------------------------------------------Network vars
+var state_buffer:PoolBuffer
+
 
 # ---------------------------------------------------------------Experiment Vars
 var raycast_this_physics_frame = false
 var target_position = Vector3(10.0, 5.0, -15.0)
-var target_to_shoot = null
-
-var last_frame_yaw := 0.0
-var avg_yaw_delta := 0.0
+var test_target
+var targets = []
 
 func _ready():
-	move_dict = {}
-	
+	init_state_recording()
+
 	Network.client_gamer = self
-	
-	network_mover = NetworkClientMovement.new()
-	get_tree().get_root().call_deferred("add_child", network_mover)
-	
+
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	target_to_shoot = target.instance()
-	target_to_shoot.transform.origin = target_position
-	get_tree().get_root().call_deferred("add_child", target_to_shoot)
+
+func init_state_recording():
+	state_slice = []
+	state_slice.resize(STATE.size())
+	state_slice[STATE.POSITION] = transform.origin
+	state_slice[STATE.VELOCITY] = Vector3()
+	state_slice[STATE.HEALTH] = base_health
+	state_slice[STATE.ULT_CHARGE] = 0
+	state_slice[STATE.SLOW_CHARGE_TIME_LEFT] = 0
+	state_slice[STATE.FAST_CHARGE_TIME_LEFT] = 0
+
+	var state_stubs = []
+	state_stubs.resize(STATE.size())
+	state_stubs[STATE.POSITION] = PoolVector3Array()
+	state_stubs[STATE.VELOCITY] = PoolVector3Array()
+	state_stubs[STATE.HEALTH] = PoolByteArray()
+	state_stubs[STATE.FAST_CHARGE_TIME_LEFT] = PoolByteArray()
+	state_stubs[STATE.SLOW_CHARGE_TIME_LEFT] = PoolByteArray()
+	state_stubs[STATE.ULT_CHARGE] = PoolByteArray()
+	state_buffer = PoolBuffer.new(state_stubs)
+
+func setup_test_targets():
+	"""
+	for i in range(10):
+			var target_to_shoot = target.instance()
+			target_to_shoot.transform.origin = target_position
+			targets.push_back(target_to_shoot)
+			get_tree().get_root().call_deferred("add_child", target_to_shoot)
+	"""
+	test_target = target.instance()
+	test_target.transform.origin = target_position
+	get_tree().get_root().call_deferred("add_child", test_target)
 
 func _unhandled_input(event):
 	if event.is_action_pressed("click"):
-		raycast_this_physics_frame = true
-		transform.origin += Vector3(0.004, 0, 0)
+		pass
+		# test_target.transform.origin = Vector3(-10.0, 2.0, 4.0)
+		# test_target.force_update_transform()
+		# raycast_this_physics_frame = true
 		
 	if (event is InputEventMouseMotion 
 		&& Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED):
@@ -89,165 +127,109 @@ func _unhandled_input(event):
 		Input.set_mouse_mode(new_mouse_mode)
 		
 	elif event.is_action_pressed("jump"):
-		# jump tried this frame
-		move_dict['jump_%d' % (physics_tick_id % 2)] = 1
-#		move_arr['jump_%d' % (physics_tick_id % 2)] = 1
-		
-		if (ticks_since_on_floor < jump_grace_ticks
-		&& ticks_since_last_jump > jump_grace_ticks):
-			velocity.y = jump_force
-			ticks_since_on_floor = jump_grace_ticks
-			ticks_since_last_jump = 0
+		# try a jump for next jump_try_ticks_default ticks
+		jump_try_ticks_remaining = jump_try_ticks_default
 
 func _physics_process(delta):
-	var frame = physics_tick_id % 2
-	
-	handle_poll_input(frame)
-	
-	handle_move_dict(frame)
-	
-	handle_networking(frame)
-	
-	move(frame, delta)
-	
-	handle_raycast()
-	
-	physics_tick_id = (physics_tick_id + 1) % physics_tick_id_MAX
+	record_move()
+
+	record_state()
+
+	handle_networking()
+
+	calculate_movement(delta)
+
+	apply_movement()
+
+	get_next_move()
+
+	get_next_state()
 
 func handle_raycast():
 	if raycast_this_physics_frame:
-		target_to_shoot.transform.origin = target_position
-		target_to_shoot.force_update_transform()
-		var space_state = get_world().direct_space_state
-		var result = space_state.intersect_ray(Vector3(10.0, 2.0, 3.0), target_position)
-		if result and is_instance_valid(result.collider):
-			pass
-			#print(result.collider_id)
-			#result.collider.queue_free()
+		for i in range(1):
+			var space_state = get_world().direct_space_state
+			var result = space_state.intersect_ray(
+				Vector3(10.0, 2.0, 3.0), 
+				Vector3(-10.0, 2.0, 4.0))
+			if result and is_instance_valid(result.collider):
+				print(result.collider)
+		# for i in range(targets.size()):
+		# 	var target_to_shoot = targets[i]
+		# 	target_to_shoot.transform.origin = Vector3(-10.0, 2.0, i * -4.0)
+		# 	target_to_shoot.force_update_transform()
+		# 	var result = space_state.intersect_ray(
+		# 		Vector3(10.0, 2.0, 3.0), 
+		# 		target_to_shoot.transform.origin)
+		# 	if result and is_instance_valid(result.collider):
+		# 		print(result.collider)
+		# 		#result.collider.queue_free()
+		# 	target_to_shoot.transform.origin = target_position
 		raycast_this_physics_frame = false
-		target_to_shoot.transform.origin = Vector3(0, 0, 0)
 
-func handle_poll_input(frame:int):
-	var z_dir = 0
-	var x_dir = 0
+func record_move():
+	move_buffer.write(
+		move_slice,
+		Network.physics_tick_id)
+
+func get_next_move(): # get move to process this phys frame
+	# --------for calc look_delta
+	var last_look = move_slice[MOVE.LOOK]
 	
-	if Input.is_action_pressed("move_forward"):
-		z_dir += 1
-	if Input.is_action_pressed("move_backward"):
-		z_dir -= 1
+	move_slice[MOVE.PROCESSED] = 1
+	
+	if jump_try_ticks_remaining > 0:
+		move_slice[MOVE.JUMP] = 1
+		jump_try_ticks_remaining -= 1
+	else:
+		move_slice[MOVE.JUMP] = 0
+
+	# --------cardinal direction
+	move_slice[MOVE.X_DIR] = 0
+	move_slice[MOVE.Z_DIR] = 0
+	
 	if Input.is_action_pressed("move_left"):
-		x_dir -= 1
+		move_slice[MOVE.X_DIR] -= 1
 	if Input.is_action_pressed("move_right"):
-		x_dir += 1
+		move_slice[MOVE.X_DIR] += 1
+	if Input.is_action_pressed("move_forward"):
+		move_slice[MOVE.Z_DIR] += 1
+	if Input.is_action_pressed("move_backward"):
+		move_slice[MOVE.Z_DIR] -= 1
 	
-	move_dict['x_dir_%d' % frame] = x_dir
-	move_dict['z_dir_%d' % frame] = z_dir
+	move_slice[MOVE.LOOK] = Vector2(yaw, pitch)
+	
+	move_slice[MOVE.LOOK_DELTA] = int(
+		last_look.is_equal_approx(
+			move_slice[MOVE.LOOK]))
 
-func move(frame:int, delta:float):
-	var position_before_movement = get_global_transform().origin
-	
-	var target_velocity = (
-		speed * (
-			move_dict['z_dir_%d' % frame] * -transform.basis.z + 
-			move_dict['x_dir_%d' % frame] * transform.basis.x).normalized() +
-		velocity.y * Vector3.UP)
-	
-#	var target_velocity = (
-#		speed * (
-#			move_arr[NetworkGamerMovement.MOVE.X] * transform.basis.x + 
-#			move_arr[NetworkGamerMovement.MOVE.Z] * -transform.basis.z
-#		).normalized() +
-#		velocity.y * Vector3.UP)
-	
-	if ticks_since_on_floor > ticks_until_in_air:
-		velocity = velocity.linear_interpolate(
-			target_velocity, acceleration_in_air * delta)
-	else:
-		velocity = velocity.linear_interpolate(
-			target_velocity, acceleration * delta)
-	
-	if (move_dict['jump_%d' % frame] and 
-	ticks_since_on_floor < jump_grace_ticks and
-	ticks_since_last_jump > jump_grace_ticks):
-		velocity.y = jump_force
-		ticks_since_on_floor = jump_grace_ticks
-		ticks_since_last_jump = 0
-	
-	if is_on_floor():
-		velocity -= gravity * get_floor_normal()
-		ticks_since_on_floor = 0
-	else:
-		velocity -= gravity * Vector3.UP
-		ticks_since_on_floor += 1
-	
-	if is_on_wall():
-		ticks_since_on_wall = 0
-	else:
-		ticks_since_on_wall += 1
-	
-	ticks_since_last_jump += 1
-	
-	var vel_h_mag_sqr = pow(velocity.x, 2) + pow(velocity.z, 2)
-	if vel_h_mag_sqr > h_speed_limit_sqr:
-		var h_scale_fac = sqrt(h_speed_limit_sqr / vel_h_mag_sqr)
-		velocity.x *= h_scale_fac
-		velocity.z *= h_scale_fac
-	
-	# Movement code proper
-	var slid_vel = move_and_slide(
-		velocity,
-		Vector3.UP,
-		true)
-	
-	velocity = slid_vel
-	
-#	print((get_global_transform().origin - position_before_movement).length())
+func record_state(): # state @start of phys frame, before move/other changes
+	state_buffer.write(
+		state_slice,
+		Network.physics_tick_id)
 
-func handle_move_dict(frame:int):
-	move_dict['id'] = int(physics_tick_id / 2)
-	move_dict['has_been_processed'] = 1
-	move_dict['jump_%d' % frame] = (
-		1 if ticks_since_last_jump < jump_grace_ticks else 0)
-	move_dict['yaw_%d' % frame] = yaw
-	move_dict['pitch_%d' % frame] = pitch
+func get_next_state():
+	var fast_time_left = state_slice[STATE.FAST_CHARGE_TIME_LEFT] 
+	if fast_time_left > 0:
+		if fast_recharge_ticks_left == 0:
+			state_slice[STATE.FAST_CHARGE_TIME_LEFT] -= 1
+			fast_recharge_ticks_left = recharge_rate
+		else:
+			fast_recharge_ticks_left -= 1
 
-func handle_networking(frame:int):
-	if physics_tick_id % 2 == 1:
-		network_mover.send_move_packet(move_dict)
+	var slow_time_left = state_slice[STATE.SLOW_CHARGE_TIME_LEFT]
+	if slow_time_left > 0:
+		if slow_recharge_ticks_left == 0:
+			state_slice[STATE.SLOW_CHARGE_TIME_LEFT] -= 1
+			slow_recharge_ticks_left = recharge_rate
+		else:
+			slow_recharge_ticks_left -= 1
 
-func show_angle_change():
-	avg_yaw_delta = (
-		0.9 * avg_yaw_delta + 
-		0.1 * shortest_deg_between(yaw, last_frame_yaw))
-	print(shortest_deg_between(yaw, last_frame_yaw))
-	last_frame_yaw = yaw
+	state_slice[STATE.POSITION] = transform.origin
 
-static func deg_to_deg360(deg : float):
-	deg = fmod(deg, 360.0)
-	if deg < 0.0:
-		deg += 360.0
-	return deg
+	state_slice[STATE.VELOCITY] = velocity
 
-func shortest_deg_between(deg1 : float, deg2 : float):
-	return min(
-		abs(deg1 - deg2),
-		min(abs((deg1 - 360.0) - deg2), abs((deg2 - 360.0) - deg1)))
 
-# takes the players 0 to 360 degree yaw and -90 to 90 degree pitch
-# converts into a PoolByteArray of length 3
-# little endian
-func encode_player_rotation(yaw: float, pitch: float):
+
+func handle_networking():
 	pass
-
-# a 1:1 function with domain and range 0.0 to 1.0 
-# used to map normalized player camera pitch to a 6-bit int
-# corresponds to:
-# y = 0.5x WHEN 0 < x < 0.25
-# y = 1.5x - 0.25 WHEN 0.25 < x < 0.75
-# y = 0.5x + 0.5 WHEN 0.75 < x < 1.0
-func pitch_to_bit6_lerp_map(lerp_in: float) -> float:
-	return lerp_in
-
-# inverse of pitch_to_bit6_lerp_map
-func bit6_to_pitch_lerp_map(lerp_in: float):
-	return lerp_in

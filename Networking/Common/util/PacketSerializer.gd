@@ -2,9 +2,7 @@ extends StreamPeerBuffer
 
 class_name PacketSerializer
 
-func doc():
-	return
-	"""
+"""
 	Common serialization class for major in-game networked instrucs
 	
 	client sent:
@@ -15,19 +13,19 @@ func doc():
 	- player transforms snapshot (max 20 / sec)
 	- health, death, vuln updates (ASAP, reliable)
 	- map and gamemode state (ASAP, reliable)
-	"""
+"""
 
-enum { # client opcodes (bits 7, 6 of first byte in payload)
-	CL_EXTENDED_OPCODE, # use next 6 bits for instruc
-	CL_MOVEMENT, # movement
-	CL_U_ABILITY, # undirected ability
-	CL_D_ABILITY} # directed ability (precise position / direction info)
+enum CL_PKT { # client opcodes (bits 7, 6 of first byte in payload)
+	EXTENDED, # use next 6 bits for instruc
+	MOVE, # move instruc
+	WEAPON, # undirected ability
+	ABILITY} # directed ability (precise position / direction info)
 
-enum { # server opcodes (bits 7, 6 of first byte in payload)
-	SV_EXTENDED_OPCODE, # use next 6 bits for instruc
-	SV_SNAPSHOT, # movement
-	SV_MAP_GAME, # undirected ability
-	D_ABILITY} # directed ability (precise position / direction info)
+enum SV_PKT { # server opcodes (bits 7, 6 of first byte in payload)
+	EXTENDED, # use next 6 bits for instruc
+	SNAPSHOT, # unreliable state snapshot
+	MAP_GAME, # 
+	ENFORCE} # reliable, authoritative, immediate game change
 
 
 const CLIENT_OPCODE_MASK = 0b_1100_0000

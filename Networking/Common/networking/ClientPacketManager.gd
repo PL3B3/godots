@@ -1,13 +1,11 @@
-extends Node
+extends PacketManager
 
-class_name NetworkClientMovement
+class_name ClientPacketManager
 
-func doc():
-	return (
-	"""
+"""
 	on client: serialize and send player movement
 	on server: buffer and deserialize player movement
-	
+
 	we send one movement instruction every two frames, after both have been 
 	processed by client. we represent these two frames with a single dictionary
 	for convenience:
@@ -25,24 +23,20 @@ func doc():
 		x_dir_1, 
 		yaw_1, 
 		pitch_1}
-	""")
+"""
 
-enum MOVE { # move instruc
+enum MOVE {
 	PROC,
+	ID,
 	JUMP,
-	X,
-	Z,
+	X_DIR,
+	Z_DIR,
 	LOOK_DELTA,
 	YAW,
 	PITCH}
 
-var sz:PacketSerializer
-
 var last_move_dict:Dictionary
-
-func _ready():
-	last_move_dict = {}
-	sz = PacketSerializer.new()
+var last_move_arr:Array
 
 func read_instruc_from_move_dict(move_dict:Dictionary) -> PoolByteArray:
 	var look_delta_from_last = true
@@ -66,6 +60,3 @@ func read_instruc_from_move_dict(move_dict:Dictionary) -> PoolByteArray:
 
 func send_move_packet(move_dict:Dictionary):
 	Network.send_packet(read_instruc_from_move_dict(move_dict), 1)
-
-func _on_connect():
-	pass

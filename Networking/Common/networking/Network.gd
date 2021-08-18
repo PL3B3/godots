@@ -3,7 +3,8 @@ extends Node
 # Packet overhead around 37 bytes for unreliable.
 
 const DEFAULT_PORT := 3342
-const MAX_PLAYERS := 40
+const MAX_PLAYERS := 32
+const physics_tick_id_MAX = 0b_1111_1111
 enum MOVE { # move instruc
 	# vector2
 	LOOK, # yaw and pitch
@@ -33,28 +34,32 @@ var net_peer:NetworkedMultiplayerENet = null # enet peer for this client
 var network_id:int
 var is_online := false
 
+var physics_tick_id := 0
+
 var client_gamer:Gamer
+
+var player_dict:Dictionary # map from server_id to ClientGamer or PhantomGamer
 
 var physics_delta = (
 	1.0 / (ProjectSettings.get_setting("physics/common/physics_fps")))
 
 func _ready():
-	
+	player_dict = {}
 #	var cps = PacketSerializer.new()
 #	cps.test()
 #	var rb = LagBuffer.new()
 #	rb.test()
-	var pb = PoolBuffer.new([
-		PoolVector3Array([Vector3(10, 5, 8), Vector3(3, 2, 1)]),
-		PoolVector3Array(),
-		PoolVector2Array(),
-		PoolByteArray(),
-		PoolByteArray(),
-		PoolByteArray(),
-		PoolByteArray(),
-		PoolByteArray()])
-	pb.test()
-	gaming(PoolByteArray())
+#	var pb = PoolBuffer.new([
+#		PoolVector3Array([Vector3(10, 5, 8), Vector3(3, 2, 1)]),
+#		PoolVector3Array(),
+#		PoolVector2Array(),
+#		PoolByteArray(),
+#		PoolByteArray(),
+#		PoolByteArray(),
+#		PoolByteArray(),
+#		PoolByteArray()])
+#	pb.test()
+#	gaming(PoolByteArray())
 
 func gaming(thing):
 	thing.resize(1)
@@ -115,6 +120,9 @@ var counter_0 = 0
 func _on_custom_packet_received(id:int, packet:PoolByteArray):
 	if network_id == 1:
 		client_gamer.network_mover.receive_move_packet(id, packet)
+
+func _physics_process(delta):
+	physics_tick_id = (physics_tick_id + 1) % physics_tick_id_MAX
 
 func has_connected_peer() -> bool:
 	var is_connected = false

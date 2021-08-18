@@ -9,7 +9,12 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "KinematicBody",
+"base": "PacketManager",
+"class": "ClientPacketManager",
+"language": "GDScript",
+"path": "res://Common/networking/ClientPacketManager.gd"
+}, {
+"base": "Mover",
 "class": "Gamer",
 "language": "GDScript",
 "path": "res://Common/gamer/Gamer.gd"
@@ -24,20 +29,15 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Common/util/LagBuffer.gd"
 }, {
-"base": "Node",
-"class": "NetworkClientMovement",
+"base": "KinematicBody",
+"class": "Mover",
 "language": "GDScript",
-"path": "res://Common/networking/NetworkClientMovement.gd"
+"path": "res://Common/gamer/Mover.gd"
 }, {
-"base": "Node",
-"class": "NetworkPhantomMovement",
+"base": "Reference",
+"class": "PacketManager",
 "language": "GDScript",
-"path": "res://Common/networking/NetworkPhantomMovement.gd"
-}, {
-"base": "Node",
-"class": "NetworkServerMovement",
-"language": "GDScript",
-"path": "res://Common/networking/NetworkServerMovement.gd"
+"path": "res://Common/networking/PacketManager.gd"
 }, {
 "base": "StreamPeerBuffer",
 "class": "PacketSerializer",
@@ -49,20 +49,26 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Common/util/PoolBuffer.gd"
 }, {
+"base": "Node",
+"class": "ServerPacketManager",
+"language": "GDScript",
+"path": "res://Common/networking/ServerPacketManager.gd"
+}, {
 "base": "Timer",
 "class": "TimeQueue",
 "language": "GDScript",
 "path": "res://Common/util/TimeQueue.gd"
 } ]
 _global_script_class_icons={
+"ClientPacketManager": "",
 "Gamer": "",
 "InstrucBuffer": "",
 "LagBuffer": "",
-"NetworkClientMovement": "",
-"NetworkPhantomMovement": "",
-"NetworkServerMovement": "",
+"Mover": "",
+"PacketManager": "",
 "PacketSerializer": "",
 "PoolBuffer": "",
+"ServerPacketManager": "",
 "TimeQueue": ""
 }
 
@@ -118,6 +124,11 @@ alt_click={
 "events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":2,"pressed":false,"doubleclick":false,"script":null)
  ]
 }
+
+[physics]
+
+3d/physics_engine="Bullet"
+3d/active_soft_world=false
 
 [rendering]
 

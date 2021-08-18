@@ -6,8 +6,8 @@ class_name PoolBuffer
 	ringbuffer backed by parallel poolarrays
 """
 
-const ID_MAX_SIZE_DEFAULT := 512
-const TRAIL_BEHIND_DEFAULT := 6
+const ID_MAX_SIZE_DEFAULT := 256
+const TRAIL_BEHIND_DEFAULT := 2
 
 var id_max_size = ID_MAX_SIZE_DEFAULT # how many states to store
 var pools:Array
@@ -21,7 +21,7 @@ var trail_behind := TRAIL_BEHIND_DEFAULT
 # the wrap threshold means we interpret very low id values like 0 or 15
 # as being more "recent" than very high ones, like 255 if our id is 8-bit
 # this is because the ids "wrap around" after reaching the max value
-var wrap_threshold := trail_behind * 3
+var wrap_threshold := trail_behind * 6
 
 
 var head = 0 # next entry to consume (trails behind)
@@ -34,34 +34,36 @@ func _init(stubs:Array=[]):
 		var arr = stubs[i] # need to copy poolarray to var to properly resize
 		arr.resize(id_max_size)
 		pools.push_back(arr)
+	
+	for pool in pools:
+		print(pool[100])
 
 # ----------------------------------------------------------------Writing Slices
 
-func write(snapshot:Array, idx:int):
-	check_valid_idx(idx)
+func write(slice:Array, idx:int):
 	idx = get_normalized_idx(idx)
 	
-	for i in range(min(pools.size(), snapshot.size())):
-		pools[i][idx] = snapshot[i]
+	for i in range(min(pools.size(), slice.size())):
+		pools[i][idx] = slice[i]
 
-func write_first(snapshot:Array, idx:int):
+func write_first(slice:Array, idx:int):
 	"""
 	initializes the trail_behind window
 	"""
 	
 	head = get_normalized_idx(idx - trail_behind)
 	
-	write(snapshot, idx)
+	write(slice, idx)
 
-func write_new(snapshot:Array, idx:int):
+func write_new(slice:Array, idx:int):
 	"""
-	only write if snapshot is more recent than head
+	only write if slice is more recent than head
 	"""
 	if get_relative_offset(head, idx) >= 0:
-		write(snapshot, idx)
+		write(slice, idx)
 
-func write_tail(snapshot:Array):
-	write(snapshot, tail)
+func write_tail(slice:Array):
+	write(slice, tail)
 	
 	tail = get_normalized_idx(tail + 1)
 
@@ -70,19 +72,14 @@ func write_subslice(source:Array, sub_indices:PoolIntArray, idx:int):
 		writes the values in source to their corresponding pools, based on the
 		provided sub_indices
 	"""
-	check_valid_idx(idx)
 	idx = get_normalized_idx(idx)
 	
 	for i in range(source.size()):
-		var sub_idx = sub_indices[i]
-		
-		check_valid_sub_idx(sub_idx)
+		var sub_idx = get_normalized_var_idx(sub_indices[i])
 		
 		pools[sub_idx][idx] = source[i]
 
 func write_var(value, var_id:int, idx:int):
-	check_valid_idx(idx)
-	check_valid_sub_idx(var_id)
 	idx = get_normalized_idx(idx)
 	var_id = int(clamp(var_id, 0, pools.size() - 1))
 	
@@ -91,7 +88,6 @@ func write_var(value, var_id:int, idx:int):
 # ----------------------------------------------------------------Reading Slices
 
 func read_to_array(idx:int, arr:Array):
-	check_valid_idx(idx)
 	idx = get_normalized_idx(idx)
 	assert(
 		arr.size() >= pools.size(), 
@@ -110,29 +106,22 @@ func read_subslice_to_array(idx:int, sub_indices:PoolIntArray, target:Array):
 		a contiguous fashion. In other words, the target and sub_indices arrays
 		are the same size
 	"""
-	check_valid_idx(idx)
 	idx = get_normalized_idx(idx)
 	
 	var target_idx = 0
 	for var_idx in sub_indices:
-		if var_idx < 0 or var_idx >= pools.size():
-			push_error("sub_idx %d is out of range" % var_idx)
-		else:
-			target[target_idx] = pools[var_idx][idx]
-			target_idx += 1
+		var norm_var_idx = get_normalized_var_idx(var_idx) 
+		target[target_idx] = pools[norm_var_idx][idx]
+		target_idx += 1
 
-func read_var_to_array(var_id:int, idx:int, arr:Array):
-	check_valid_idx(idx)
+func read_var_to_array(var_idx:int, idx:int, arr:Array):
 	idx = get_normalized_idx(idx)
-	check_valid_sub_idx(var_id)
-	var_id = int(clamp(var_id, 0, pools.size() - 1))
+	var_idx = get_normalized_var_idx(var_idx)
 	
-	var value = pools[var_id][idx]
-	arr[var_id] = pools[var_id][idx]
-
+	var value = pools[var_idx][idx]
+	arr[var_idx] = pools[var_idx][idx]
 
 func read(idx:int) -> Array:
-	check_valid_idx(idx)
 	idx = get_normalized_idx(idx)
 	
 	var slice = []
@@ -148,7 +137,6 @@ func read_head() -> Array:
 	return data
 
 func read_subslice(idx:int, sub_indices:PoolIntArray) -> Array:
-	check_valid_idx(idx)
 	idx = get_normalized_idx(idx)
 	
 	var subslice = []
@@ -156,23 +144,24 @@ func read_subslice(idx:int, sub_indices:PoolIntArray) -> Array:
 	
 	var subslice_idx = 0
 	for var_idx in sub_indices:
-		subslice[subslice_idx] = pools[var_idx][idx]
+		var norm_var_idx = get_normalized_var_idx(var_idx)
+		subslice[subslice_idx] = pools[norm_var_idx][idx]
 		subslice_idx += 1
 	
 	return subslice
 
-func read_var(var_id:int, idx:int):
-	var snapshot = read(idx)
-	return snapshot[int(clamp(var_id, 0, pools.size() - 1))]
+func read_var(var_idx:int, idx:int):
+	var slice = read(idx)
+	return slice[get_normalized_var_idx(var_idx)]
 
 # -----------------------------------------------------------------idx Utility
 
-func check_valid_idx(idx:int):
+func check_idx(idx:int):
 	assert(
 		idx < id_max_size and idx >= 0,
 		"idx out of range, should be between [0...%d]" % (id_max_size - 1))
 
-func check_valid_sub_idx(var_id:int):
+func check_sub_idx(var_id:int):
 	assert(
 		var_id < pools.size() and var_id >= 0,
 		"idx out of range, should be between [0...%d]" % (pools.size() - 1))
@@ -180,18 +169,25 @@ func check_valid_sub_idx(var_id:int):
 func get_normalized_idx(idx:int) -> int:
 	var norm_idx = idx % id_max_size
 	
-	if idx < 0:
+	if norm_idx < 0:
 		norm_idx += id_max_size
 	
 	return norm_idx
+
+func get_normalized_var_idx(var_idx:int) -> int:
+	if var_idx < 0 or var_idx >= pools.size():
+		print(
+			"given var index is outside range, ",
+			"make sure you're using the right enum")
+	return int(clamp(var_idx, 0, pools.size() - 1))
 
 func get_relative_offset(base_idx:int, new_idx:int):
 	"""
 	tells us if new_idx is to the right (positive return) or to the left 
 	(negative return), accounting for the circular nature of the buffer
 	"""
-	check_valid_idx(base_idx)
-	check_valid_idx(new_idx)
+	base_idx = get_normalized_idx(base_idx)
+	new_idx = get_normalized_idx(new_idx)
 	
 	return (
 		new_idx + (

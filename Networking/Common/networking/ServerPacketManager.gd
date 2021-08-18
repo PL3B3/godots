@@ -1,6 +1,6 @@
 extends Node
 
-class_name NetworkServerMovement
+class_name ServerPacketManager
 
 
 """
