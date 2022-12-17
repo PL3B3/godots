@@ -7,6 +7,7 @@
 [sub_resource type="Environment" id=1]
 background_energy = 0.5
 ambient_light_color = Color( 0.921569, 0.905882, 0.847059, 1 )
+ambient_light_energy = 2.15
 fog_color = Color( 0.25098, 0.333333, 0.419608, 1 )
 
 [node name="Map" type="Spatial"]

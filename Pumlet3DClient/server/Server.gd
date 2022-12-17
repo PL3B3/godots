@@ -52,7 +52,7 @@ func _ready():
 func start_game_offline():
 	add_map()
 	add_our_player()
-	spawn_targets(10)
+	spawn_targets(5)
 	wap.play()
 
 func start_game_multiplayer():

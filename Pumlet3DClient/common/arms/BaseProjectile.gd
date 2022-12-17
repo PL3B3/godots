@@ -20,7 +20,7 @@ func fire(origin : Vector3, dir : Vector3, rel_vel : Vector3):
 
 func set_collision(parent_layer, parent_mask):
 	collision_layer = parent_layer
-	print("pl", parent_layer)
+#	print("pl", parent_layer)
 	collision_mask = parent_mask
 
 
@@ -36,11 +36,14 @@ func explode():
 	emit_signal("projectile_dealt_damage", damage_dealt)
 
 func damage_body(body, dist_ratio):
+#	print("body hit by explosion: ", body)
 	if body.has_method("hit"):
 		var damage_scale = exp(-1 * falloff * dist_ratio)
 		var damage = base_damage * damage_scale
 		body.hit(damage)
 		damage_dealt += damage
+	if body.has_method("blast"):
+		body.blast(get_global_transform().origin)
 
 func remove():
 	queue_free()
@@ -49,7 +52,7 @@ func _physics_process(delta):
 	if fired:
 		var collision = move_and_collide(velocity * delta)
 		if not collision == null:
-			print(collision.collider)
+#			print(collision.collider)
 			if collision.collider.has_method("hit"):
 				collision.collider.hit(direct_hit_damage)
 				damage_dealt += direct_hit_damage
