@@ -72,6 +72,14 @@ physics_material_override = SubResource( 1 )
 transform = Transform( 6, 0, 0, 0, 2, 0, 0, 0, 1, 21, 2, -30 )
 physics_material_override = SubResource( 1 )
 
+[node name="Block21" parent="Geometry/Obstacles" instance=ExtResource( 1 )]
+transform = Transform( -2.62268e-07, 0, 1, 0, 2, 0, -3, 0, -2.18557e-08, -1, 2, 21 )
+physics_material_override = SubResource( 1 )
+
+[node name="Block22" parent="Geometry/Obstacles" instance=ExtResource( 1 )]
+transform = Transform( 3, 0, -2.18557e-08, 0, 2, 0, -1.31134e-07, 0, 1, -1, 2, 21 )
+physics_material_override = SubResource( 1 )
+
 [node name="Block11" parent="Geometry/Obstacles" instance=ExtResource( 1 )]
 transform = Transform( 1.41421, 0, -1.41421, 0, 2, 0, 1.41421, 0, 1.41421, 23.3078, 2, -27.9986 )
 physics_material_override = SubResource( 1 )
@@ -289,4 +297,4 @@ shadow_enabled = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.536, 9.30212, -5.874 )
 
 [node name="RigidBody2" parent="." instance=ExtResource( 2 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 40.449, 2, -9.006 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 33.5583, 4.3447, -9.47211 )
