@@ -5,3 +5,6 @@
 
 [node name="ClientCharacter" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
+
+[node name="OldWeapon" parent="CameraOrigin/Camera" index="0"]
+visible = true

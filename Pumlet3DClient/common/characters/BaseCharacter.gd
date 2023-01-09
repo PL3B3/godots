@@ -36,16 +36,16 @@ var species : int
 
 # -----------------------------------------------------------------Movement Vars
 enum DIRECTION {STOP, NORTH, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST, NORTHWEST}
-var speed = 4
+var speed = 6
 var speed_mult = 1
-var acceleration = 4
+var acceleration = 15
 var acceleration_air = 1.5
 var air_control = 0.3
-var gravity = 0.8
+var gravity = 1
 var jump_cap = 2
 var jump_tick_limit = 40 * jump_cap
-var jump_speed_limit = 7
-var wall_climb_speed = 0.7
+var jump_speed = 30
+var wall_climb_speed = 0
 var wall_climb_vertical_speed_limit = 7
 var wall_climb_tick_limit = 50
 var ticks_spent_pushing_against_foot_of_wall = 0
@@ -82,6 +82,7 @@ var initialization_attributes = [
 
 
 func _ready():
+#	print(self)
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	
 	
@@ -143,7 +144,9 @@ func _physics_process(delta):
 		
 		initialize_movement(delta)
 		
-		climb_wall()
+#		climb_wall()
+		if is_on_ceiling():
+			velocity.y = 0
 		
 		process_dash_vectors()
 		
@@ -160,15 +163,15 @@ func initialize_movement(delta):
 		up_dir = get_floor_normal()
 	else:
 		up_dir = Vector3.UP
-		if not is_on_wall():
-			accel_to_use = acceleration_air
+#		if not is_on_wall():
+		accel_to_use = acceleration_air
 	
 	velocity = velocity.linear_interpolate(
 		direction * (speed * speed_mult + air_control * velocity.length()),
 		accel_to_use * delta)
 	
-	if (not ticks_since_walled < 5) or (ticks_spent_wall_climbing >= wall_climb_tick_limit):
-		velocity -= gravity * up_dir
+#	if (not ticks_since_walled < 5) or (ticks_spent_wall_climbing >= wall_climb_tick_limit):
+	velocity -= gravity * up_dir
 
 func move_and_record_movement_delta(delta):
 	var slid_vel = move_and_slide(
@@ -226,13 +229,21 @@ var ticks_spent_grounded = 0
 var jump_reset_grounded_limit = 10
 
 func jump():
-	dash(
-		Vector3(0, 1, 0),
-		gravity * 2.1,
-		20)
+#	dash(
+#		Vector3(0, 1, 0),
+#		gravity * 5.1,
+#		5)
+	velocity.y = jump_speed
 	
 	ticks_spent_grounded = 0
 	jumps_left -= 1
+
+func blast(blast_origin):
+	var blast_vector = (
+		get_global_transform().origin - blast_origin
+	).normalized()
+	
+	velocity += blast_vector * 30
 
 func dash(direction: Vector3, speed: float, ticks: int):
 	dash_ticks_dict[direction * speed] = ticks

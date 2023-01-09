@@ -3,8 +3,8 @@ extends "res://common/arms/BaseWeapon.gd"
 var projectile = preload("res://common/arms/BaseProjectile.tscn")
 
 func init():
-	fire_rate_default = 1
-	reload_time_default = 2.5
+	fire_rate_default = 0.6
+	reload_time_default = 1.2
 	clip_size_default = 4
 	clip_remaining = clip_size_default
 	ammo_default = 200
@@ -23,6 +23,7 @@ func fire_projectile(fire_transform: Transform, fire_parameters, explosive_dmg, 
 	var projectile_to_fire = projectile.instance()
 	projectile_to_fire.set_as_toplevel(true)
 	projectile_to_fire.connect("projectile_dealt_damage", self, "notify_dealt_damage")
+#	print("wielder mask ", wielder.collision_mask)
 	projectile_to_fire.set_collision(wielder.collision_layer, wielder.collision_mask)
 	projectile_to_fire.base_damage = explosive_dmg
 	projectile_to_fire.direct_hit_damage = direct_dmg
