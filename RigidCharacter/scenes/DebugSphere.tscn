@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://scenes/DebugSphere.gd" type="Script" id=1]
+
+[sub_resource type="SphereMesh" id=1]
+
+[sub_resource type="SpatialMaterial" id=2]
+albedo_color = Color( 0.101961, 0, 1, 1 )
+
+[node name="DebugSphere" type="MeshInstance"]
+mesh = SubResource( 1 )
+material/0 = SubResource( 2 )
+script = ExtResource( 1 )

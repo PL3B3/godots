@@ -1,0 +1,14 @@
+extends RigidBody
+
+func detect_ground(state) -> Array:
+    return []
+
+# use raycast to check if a spherecast would collide at the given normal
+# return normal and point of collision
+func simulate_spherecast(origin, normal, motion, radius) -> Array:
+    return []
+
+# last resort, use raycast from center + simulate spherecast
+func detect_ground_raycast():
+    pass
+

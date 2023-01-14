@@ -25,7 +25,7 @@ run/main_scene="res://scenes/Map.tscn"
 
 [debug]
 
-settings/fps/force_fps=120
+settings/fps/force_fps=60
 
 [gui]
 

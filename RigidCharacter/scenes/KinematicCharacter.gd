@@ -61,10 +61,22 @@ func _physics_process(delta):
 		if Input.is_action_pressed("jump"):
 			velocity.y = jump_force
 	else:
-		velocity.y -= gravity * delta
-	velocity = move_and_slide(velocity, Vector3.UP)
+		velocity = velocity.linear_interpolate(direction * speed, accel_gnd * delta)
+#		velocity.y -= gravity * delta
+	velocity = move_and_slide(velocity)
 	last_position = global_transform.origin
-	
+#	debug_print()
+
+var print_ctr = 0
+var zs = []
+func debug_print():
+	zs.append(global_transform.origin.z)
+	if print_ctr % 240 == 0:
+		zs.sort()
+		print(zs.slice(0, 10))
+		zs = []
+	print_ctr += 1
+
 func _integrate_forces(state):
 	return
 	position = state.transform.origin

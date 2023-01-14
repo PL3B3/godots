@@ -1,9 +1,11 @@
 extends RigidBody
 
+onready var SphereCast = preload("res://scenes/SphereCast.tscn")
+onready var DebugSphere = preload("res://scenes/DebugSphere.tscn")
 const SHAPECAST_DISTANCE:float = 0.1
 const SHAPECAST_TOLERANCE:float = 0.04
 const TOLERANCE:float = 0.01
-const FLOOR_ANGLE:float = deg2rad(45)
+const FLOOR_ANGLE:float = deg2rad(46)
 const STEP_HEIGHT:float = 0.5
 const SNAP_LENGTH:float = 0.25
 const GROUND_CHECK_DIST:float = 0.25
@@ -13,6 +15,7 @@ onready var camera = $VisualRoot/Camera
 onready var mesh = $VisualRoot/MeshInstance
 onready var delta = 1.0 / Engine.iterations_per_second
 onready var collider_radius = collider.shape.radius
+onready var test_body = $TestBody
 var speed:float = 10.0
 var max_speed_ratio:float = 1.5
 var accel_gnd:float = 12.0
@@ -36,6 +39,8 @@ func _ready():
 #    query_shape.height = 1.0
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	visual_root.set_as_toplevel(true)
+	test_body.set_as_toplevel(true)
+	test_body.global_transform.origin = Vector3(0, -200, 0)
 
 func _unhandled_input(event):
 	if (event is InputEventMouseMotion && Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED):
@@ -105,13 +110,13 @@ else:
 # regardless of the wall slide down force (unless it's 0)
 # lowering the wall check distance seems to work...
 var print_ctr = 0
+var zs = []
 func _integrate_forces(state):
 	velocity = linear_velocity
 	position = state.transform.origin
 #    pvecs([position])
 	var direction = direction()
 	var h_velocity = Vector3(velocity.x, 0, velocity.z)
-#    detect_ground(state)
 	var res := PhysicsTestMotionResult.new()
 	test_motion(position, Vector3.DOWN * SNAP_LENGTH, res)
 	floor_normal = res.collision_normal
@@ -128,36 +133,7 @@ func _integrate_forces(state):
 		# maintain horizontal velocity (x and z) on slopes
 		var target_vel = Math.get_slope_velocity(direction * speed, floor_normal)
 		velocity = velocity.linear_interpolate(target_vel, clamp(accel_gnd * delta, 0.0, 1.0))
-		# slide along obstructions, instead of pushing into them (jiggly)
-		h_velocity = Vector3(velocity.x, 0, velocity.z)
-		var wall_check_point = position + (Vector3.UP * TOLERANCE) + h_velocity.normalized() * 0.1
-		var wall_result = collide_shape(wall_check_point, SphereShape.new(), 1)
-#        pvecs([position, h_velocity])
-		if wall_result:
-			var wall_normal = wall_result[0].normal
-#            pvecs([h_velocity, wall_normal])
-#            print("wall found")
-#            if should_wall_slide(velocity, wall_normal):
-##                print("Sliding ", OS.get_ticks_msec())
-#                var slide_normal = wall_normal.slide(floor_normal).normalized()
-#                velocity = velocity.slide(slide_normal)
-#        else:
-#            print("no wall")
-#        var wall_normal:Vector3 = collide(position + h_velocity.normalized() * 0.005)
-#        res = PhysicsTestMotionResult.new()
-#        var sliding = false
-#        if test_motion(position + Vector3.UP * TOLERANCE, h_velocity.normalized() * 0.01, res):
-#            var wall_normal = res.collision_normal
-#            pvecs([velocity, floor_normal, wall_normal])
-#            if should_wall_slide(velocity, wall_normal):
-#                var slide_normal = wall_normal.slide(floor_normal).normalized()
-#                velocity = velocity.slide(slide_normal)
-##                velocity -= floor_normal * 0.25
-#                sliding = true
-#            print("hit")
-#        else:
-#            print("no hit")
-#        print(sliding)
+#		detect_wall(state)
 		if Input.is_action_pressed("jump"):
 #            print("JUMP")
 			velocity.y = jump_force
@@ -166,36 +142,134 @@ func _integrate_forces(state):
 		if h_velocity.dot(direction) <= speed:
 			velocity += direction * (speed - h_velocity.dot(direction)) * accel_air * delta
 		velocity.y -= gravity * delta
-
 	linear_velocity = velocity
 #	debug_move(state)
-
-#	if Input.is_action_pressed("down"):
-#		state.transform.origin += direction * 0.001
-#	else:
-#		state.transform.origin += direction * 0.1
-		
-#    if Input.is_action_pressed("jump"):
-#        linear_velocity.y += 5
-#    elif Input.is_action_pressed("down"):
-#        linear_velocity.y -= 5
-#	if Input.is_action_just_pressed("alt_click"):
+	if Input.is_action_pressed("alt_click"):
+		print(state.transform.origin)
+		var gnd = detect_ground(state)
+		if gnd:
+			pvecs(gnd)
+#			var dbs = DebugSphere.instance()
+#			add_child(dbs)
+#			dbs.set_as_toplevel(true)
+#			dbs.mesh.height = 0.1
+#			dbs.mesh.radius = 0.05
+#			dbs.global_transform.origin = gnd[1]
+		else:
+			print("no ground")
+#	print_ctr += 1
 	debug_print(state)
 
+
+func detect_ground(state):
+	var ground_normal := Vector3()
+	var sweep_result := PhysicsTestMotionResult.new()
+	var sweep_start = state.transform.origin
+	var motion = Vector3.DOWN * GROUND_CHECK_DIST
+	var sweep_iters = 2
+	for i in range(sweep_iters):
+		var hit = test_body.test_motion(sweep_start, motion, sweep_result, [self], 0.95)
+		if not hit:
+			return []
+		var sweep_normal = sweep_result.collision_normal
+		var sweep_end = sweep_result.collision_point + sweep_normal * collider_radius
+		# sweep hit ceiling -> stuck, so redo sweep from depenetrated position
+		if sweep_normal.angle_to(Vector3.DOWN) < PI/2 - TOLERANCE:
+			sweep_start = sweep_end
+			continue
+		elif is_floor(sweep_normal):
+			return [sweep_normal, sweep_result.collision_point]
+		else:
+			# offset along normal to avoid raycast hitting wall
+			var hit_point = sweep_result.collision_point + sweep_normal * TOLERANCE
+			var down_wall_dir = Plane(sweep_normal, 0).project(Vector3.DOWN).normalized()
+			var down_wall_ray = down_wall_dir * 10
+			var space_state = get_world().direct_space_state
+			var wall_ray_result = space_state.intersect_ray(
+				hit_point, hit_point + down_wall_ray, [self]
+			)
+			if wall_ray_result and is_floor(wall_ray_result.normal):
+				ground_normal = wall_ray_result.normal
+				# snap to ground
+				var contact_point = sweep_end + (collider_radius * -ground_normal) - down_wall_dir * TOLERANCE
+				var ground_result = space_state.intersect_ray(
+					contact_point, contact_point + down_wall_ray, [self]
+				)
+				pvecs([sweep_end, contact_point, ground_normal, ground_result.normal])
+				if ground_result and ground_result.normal.is_equal_approx(ground_normal):
+					return [ground_normal, ground_result.position]
+#					print("snap to ground")
+#					pvecs([state.transform.origin, contact_point])
+#					state.transform.origin += sweep_result.motion
+#					state.transform.origin += ground_contact_result.position - contact_point
+#					pvecs([state.transform.origin, sweep_result.motion, ground_contact_result.position - contact_point])
+
+func detect_wall(state):
+	# slide along obstructions, instead of pushing into them (jiggly)
+	var wall_check_point = position + (Vector3.UP * TOLERANCE) + velocity.normalized() * 0.1
+	var wall_result = collide_shape(wall_check_point, SphereShape.new(), 1)
+	pvecs([position, velocity])
+	if wall_result:
+		var wall_normal = wall_result[0].normal
+		pvecs([velocity, wall_normal])
+		print("wall found")
+		if should_wall_slide(velocity, wall_normal):
+#                print("Sliding ", OS.get_ticks_msec())
+			var slide_normal = wall_normal.slide(floor_normal).normalized()
+			velocity = velocity.slide(slide_normal)
+	else:
+		print("no wall")
+#	var wall_normal:Vector3 = collide(position + h_velocity.normalized() * 0.005)
+#	res = PhysicsTestMotionResult.new()
+#	var sliding = false
+#	if test_motion(position + Vector3.UP * TOLERANCE, h_velocity.normalized() * 0.01, res):
+#		var wall_normal = res.collision_normal
+#		pvecs([velocity, floor_normal, wall_normal])
+#		if should_wall_slide(velocity, wall_normal):
+#			var slide_normal = wall_normal.slide(floor_normal).normalized()
+#			velocity = velocity.slide(slide_normal)
+##                velocity -= floor_normal * 0.25
+#			sliding = true
+#		print("hit")
+#	else:
+#		print("no hit")
+#	print(sliding)
+	return
+
 func debug_print(state):
-	if print_ctr % 1 == 0:
-#		print("testing")
-		var res = PhysicsTestMotionResult.new()
-		test_motion(position, Vector3.DOWN, res)
-		if res.collision_normal.y != 1.0:
-			pvecs([res.collision_normal, res.collision_point])
-			print(collide_shape(state.transform.origin + Vector3(0, 0.6, 0), SphereShape.new()))
-#		spherecast(
-#			position, 
-#			Vector3.DOWN, # * (SNAP_LENGTH + 0.05), 
-#			collider_radius # - 0.05
+#	pvecs([state.transform.origin])
+	zs.append(state.transform.origin.z)
+#	if print_ctr % 5 == 0:
+#		var res = PhysicsTestMotionResult.new()
+#		if test_body.test_motion(state.transform.origin, Vector3.DOWN * SNAP_LENGTH, res, [self], 0.95):
+#			pvecs([res.collision_normal, res.motion])
+#	if print_ctr % 15 == 0:
+##		print("testing")
+#		var res = PhysicsTestMotionResult.new()
+#		PhysicsServer.body_test_motion(
+#			test_body.get_rid(), 
+#			Transform(Basis.IDENTITY, Vector3(0, 2, -2)), 
+#			Vector3.DOWN * SNAP_LENGTH, 
+#			false, 
+#			res,
+#			true,
+#			[self]
 #		)
-#		detect_ground(state)
+#		pvecs([res.collision_normal, res.collision_point])
+##		test_motion(position, Vector3.DOWN, res)
+#		if res.collision_normal.y != 1.0:
+#			pvecs([state.transform.origin, res.collision_normal, res.collision_point])
+##			print(collide_shape(state.transform.origin + Vector3(0, 0.6, 0), SphereShape.new()))
+##		spherecast(
+##			position, 
+##			Vector3.DOWN, # * (SNAP_LENGTH + 0.05), 
+##			collider_radius # - 0.05
+##		)
+##		detect_ground(state)
+	if print_ctr % 240 == 0:
+		zs.sort()
+		print(zs.slice(0, 10))
+		zs = []
 	print_ctr += 1
 
 func debug_move(state):
@@ -205,60 +279,7 @@ func debug_move(state):
 	var debug_speed = 0.001 if Input.is_action_pressed("slow") else 0.1
 	state.transform.origin += debug_dir * debug_speed
 
-func detect_ground(state):
-#    print("begin")
-#    pvecs([state.transform.origin, velocity])
-	var sweep_result := PhysicsTestMotionResult.new()
-	var ground_normal := Vector3()
-	var motion = Vector3.DOWN * GROUND_CHECK_DIST
-	if test_motion(state.transform.origin, motion, sweep_result):
-		var sweep_normal = sweep_result.collision_normal
-#        print("normal and collision point")
-#        pvecs([sweep_normal, sweep_result.collision_point])
-		if is_floor(sweep_normal):
-#            print("hit_floor")
-			ground_normal = sweep_normal
-			# sweep motion is sometimes upwards when you clip into a wall, so we don't snap
-			if sweep_result.motion.dot(motion) > 0: 
-#                pvecs([state.transform.origin, sweep_normal, sweep_result.collision_point, sweep_result.motion])
-				state.transform.origin += sweep_result.motion.project(ground_normal)
-#                print(sweep_result.motion.project(ground_normal))
-#            elif sweep_result.motion.dot(motion) < -TOLERANCE:
-#                state.transform.origin += sweep_result.motion
-#            pvecs([state.transform.origin, sweep_result.motion])
-		else:
-#            print("hit wall")
-			# offset along normal to avoid raycast hitting wall
-			var hit_point = sweep_result.collision_point + sweep_normal * TOLERANCE
-			var down_wall_dir = Plane(sweep_normal, 0).project(Vector3.DOWN).normalized()
-			# HARDCODED
-			var target_y = state.transform.origin.y - collider_radius - GROUND_CHECK_DIST
-			var down_wall_ray = down_wall_dir * (target_y - hit_point.y) / down_wall_dir.y
-			var space_state = get_world().direct_space_state
-			var wall_ray_result = space_state.intersect_ray(
-				hit_point, hit_point + down_wall_ray, [self]
-			)
-			if wall_ray_result:
-#                print("wall ray")
-#                pvecs([floor_normal, wall_ray_result.normal, wall_ray_result.position])
-				if is_floor(wall_ray_result.normal):
-#                    print("hit floor at base of wall")
-					ground_normal = wall_ray_result.normal
-					# snap to ground
-					var sweep_end = state.transform.origin + sweep_result.motion
-					var contact_point = sweep_end + (collider_radius * -ground_normal) 
-					var ground_contact_result = space_state.intersect_ray(
-						contact_point, contact_point + down_wall_ray, [self]
-					)
-#                    if ground_contact_result and is_floor(ground_contact_result.normal):
-#                        print("snap to ground")
-#                        pvecs([state.transform.origin, contact_point])
-#                        state.transform.origin += sweep_result.motion
-#                        state.transform.origin += ground_contact_result.position - contact_point
-#                        pvecs([state.transform.origin, sweep_result.motion, ground_contact_result.position - contact_point])
-#    else:
-#        print("nothing hit")
-			
+
 
 func should_wall_slide(motion:Vector3, wall_normal:Vector3) -> bool:
 	return (
@@ -408,12 +429,16 @@ func vtos(vector:Vector3):
 	return "(%+.3f, %+.3f, %+.3f)" % [vector.x, vector.y, vector.z]
 
 func is_floor(normal:Vector3) -> bool:
-	if not normal:
-		return false
-	return normal.angle_to(Vector3.UP) <= FLOOR_ANGLE + TOLERANCE
+	return (normal) and normal.angle_to(Vector3.UP) <= FLOOR_ANGLE + TOLERANCE
 
+func is_wall(normal:Vector3) -> bool:
+	if is_floor(normal): 
+		return false
+	return (normal) and normal.angle_to(Vector3.UP) <= FLOOR_ANGLE + TOLERANCE
 
 func pvecs(vecs):
+	if not vecs:
+		return
 	var vec_str = ""
 	for vec in vecs:
 		vec_str += vtos(vec) + " - "
@@ -422,3 +447,60 @@ func pvecs(vecs):
 func phvel():
 	var h_vel = Vector3(velocity.x, 0, velocity.z)
 	print("%.2f" % h_vel.length())
+
+"""
+func detect_ground(state):
+#    print("begin")
+#    pvecs([state.transform.origin, velocity])
+	var sweep_result := PhysicsTestMotionResult.new()
+	var ground_normal := Vector3()
+	var motion = Vector3.DOWN * GROUND_CHECK_DIST
+	if test_motion(state.transform.origin, motion, sweep_result):
+		var sweep_normal = sweep_result.collision_normal
+#        print("normal and collision point")
+#        pvecs([sweep_normal, sweep_result.collision_point])
+		if is_floor(sweep_normal):
+#            print("hit_floor")
+			ground_normal = sweep_normal
+			# sweep motion is sometimes upwards when you clip into a wall, so we don't snap
+			if sweep_result.motion.dot(motion) > 0: 
+#                pvecs([state.transform.origin, sweep_normal, sweep_result.collision_point, sweep_result.motion])
+				state.transform.origin += sweep_result.motion.project(ground_normal)
+#                print(sweep_result.motion.project(ground_normal))
+#            elif sweep_result.motion.dot(motion) < -TOLERANCE:
+#                state.transform.origin += sweep_result.motion
+#            pvecs([state.transform.origin, sweep_result.motion])
+		else:
+#            print("hit wall")
+			# offset along normal to avoid raycast hitting wall
+			var hit_point = sweep_result.collision_point + sweep_normal * TOLERANCE
+			var down_wall_dir = Plane(sweep_normal, 0).project(Vector3.DOWN).normalized()
+			# HARDCODED
+			var target_y = state.transform.origin.y - collider_radius - GROUND_CHECK_DIST
+			var down_wall_ray = down_wall_dir * (target_y - hit_point.y) / down_wall_dir.y
+			var space_state = get_world().direct_space_state
+			var wall_ray_result = space_state.intersect_ray(
+				hit_point, hit_point + down_wall_ray, [self]
+			)
+			if wall_ray_result:
+#                print("wall ray")
+#                pvecs([floor_normal, wall_ray_result.normal, wall_ray_result.position])
+				if is_floor(wall_ray_result.normal):
+#                    print("hit floor at base of wall")
+					ground_normal = wall_ray_result.normal
+					# snap to ground
+					var sweep_end = state.transform.origin + sweep_result.motion
+					var contact_point = sweep_end + (collider_radius * -ground_normal) 
+					var ground_contact_result = space_state.intersect_ray(
+						contact_point, contact_point + down_wall_ray, [self]
+					)
+#                    if ground_contact_result and is_floor(ground_contact_result.normal):
+#                        print("snap to ground")
+#                        pvecs([state.transform.origin, contact_point])
+#                        state.transform.origin += sweep_result.motion
+#                        state.transform.origin += ground_contact_result.position - contact_point
+#                        pvecs([state.transform.origin, sweep_result.motion, ground_contact_result.position - contact_point])
+#    else:
+#        print("nothing hit")
+			
+"""
