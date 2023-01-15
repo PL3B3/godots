@@ -15,6 +15,8 @@ size = Vector2( 0.1, 0.1 )
 mode = 2
 physics_material_override = SubResource( 5 )
 custom_integrator = true
+contacts_reported = 8
+contact_monitor = true
 can_sleep = false
 script = ExtResource( 2 )
 

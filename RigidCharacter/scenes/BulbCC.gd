@@ -2,13 +2,14 @@ extends RigidBody
 
 onready var SphereCast = preload("res://scenes/SphereCast.tscn")
 onready var DebugSphere = preload("res://scenes/DebugSphere.tscn")
+const MIN_CONTACT_DEPTH:float = 0.00001
 const SHAPECAST_DISTANCE:float = 0.1
 const SHAPECAST_TOLERANCE:float = 0.04
 const TOLERANCE:float = 0.01
 const FLOOR_ANGLE:float = deg2rad(46)
 const STEP_HEIGHT:float = 0.5
 const SNAP_LENGTH:float = 0.25
-const floor_CHECK_DIST:float = 0.25
+const FLOOR_CHECK_DIST:float = 0.25
 onready var collider = $CollisionShape
 onready var visual_root = $VisualRoot
 onready var camera = $VisualRoot/Camera
@@ -82,37 +83,9 @@ func _physics_process(delta):
 #    print(linear_velocity)
 	last_position = global_transform.origin
 	
-"""
-NOTE: 0.25 is used everywhere, but nothing special about it, tune if needed
-
-down_dist = how far you can cast_motion down
-[makes floor check more precise on stairs/ledges]
-
-if down_dist < FLOOR_CHECK_DIST:
-	do floor check @ down_dist + TOLERANCE
-
-if floor below:
-	snap to floor
-	friction / speed limit
-	lerp velocity towards input direction
-	for i in 2: # in case wall immediately after step up/down (may be too edgy of an edge case)
-		check if walking into wall
-		if wall:
-			if stair step:
-				step up
-			else:
-				wall slide
-	do jump
-else:
-	air strafing
-	gravity
-
-"""
-# TODO: wall sliding in flat corner...seems like velocity has a downwards y component, always .25
-# regardless of the wall slide down force (unless it's 0)
-# lowering the wall check distance seems to work...
 var print_ctr = 0
 var zs = []
+var sprint = 1.0
 func _integrate_forces(state):
 	velocity = linear_velocity
 	position = state.transform.origin
@@ -145,37 +118,56 @@ func _integrate_forces(state):
 			velocity += direction * (speed - h_velocity.dot(direction)) * accel_air * delta
 		velocity.y -= gravity * delta
 #	linear_velocity = velocity
+	if Input.is_action_just_pressed("click"):
+		sprint = 3.0 / sprint
 	debug_move(state)
-	if Input.is_action_just_pressed("alt_click"):
-		var space_state = get_world().direct_space_state
-		var pos = state.transform.origin + DOWN * floor_CHECK_DIST
-		var pts = collision_points(pos, SphereShape.new())
-		print("CHECKING POINTS: ", len(pts))
-		var hit_normals = []
-		for pt in pts:
-			var ray_end = pos + (pt - pos) * 1.1
-			var hit = space_state.intersect_ray(pos, ray_end, [self])
-			if hit:
-				hit_normals.append(hit.normal)
-			else:
-				print("miss!")
-				debug_sphere(pt, 0.1, 5)
-		hit_normals.sort()
-		pvecs(hit_normals)
-		var uq = []
-		var gnd = []
-		for n in hit_normals:
-			if (not uq) or (uq.back().distance_to(n) > TOLERANCE):
-				if is_floor(n): gnd.append(n)
-				uq.append(n)
-		pvecs(uq)
-		var best_gnd = Vector3()
-		for n in gnd:
-			if n.dot(UP) > best_gnd.dot(UP):
-				best_gnd = n
-		print(best_gnd)
-		print(get_rest_info(pos, query_shape))
+	if true: #Input.is_action_just_pressed("alt_click"):
+		var pos = state.transform.origin # + DOWN * FLOOR_CHECK_DIST
+		var collisions = collide_shape(pos, query_shape, 4)
+		var normals = []
+		for c in collisions:
+			normals.append(c.normal)
+		normals.sort()
+
+#		print("floor: ", best_floor_normal(normals))
+		
+#		var motion = DOWN * FLOOR_CHECK_DIST
+#		var last_res = null
+#		for i in range(40):
+#			var res2 := PhysicsTestMotionResult.new()
+#			var hit = test_body.test_motion(pos, motion, res2, [self], 1.0)
+#			if last_res and (last_res.collision_normal != res2.collision_normal or last_res.collision_point != res2.collision_point):
+#				print("DESYNC!")
+#			last_res = res2
+#		pvecs([last_res.collision_normal, last_res.collision_point])
+		
+		var normals_2 = get_rest_normals(pos, query_shape)
+		normals_2.sort()
+		
+		
+		var n_match = true
+		if len(normals) == len(normals_2):
+			for i in range(len(normals)):
+				n_match = n_match and (normals[i].distance_to(normals_2[i]) < TOLERANCE)
+		else:
+			n_match = false
+		if not n_match:
+			print("normals don't match")
+			pvecs(normals)
+			pvecs(normals_2)
+			pvecs(collision_points(pos, query_shape))
+
+#		print("CHECKING POINTS: ", len(pts))
+#		print(best_floor_normal(pts))
+#		var ri_last = {}
+#		for i in range(40):
+#			var ri = get_rest_info(pos, query_shape)
+#			if ri_last and (ri.normal != ri_last.normal or ri.point != ri_last.point):
+#				print("DESYNC!")
+#			ri_last = ri
+#		print(ri_last)
 #		print(cast_sphere(state.transform.origin, DOWN, 1))
+		
 #		var test_sphere = SphereShape.new()
 #		test_sphere.radius = 0.95
 #		var restinf = get_rest_info(state.transform.origin, test_sphere)
@@ -184,12 +176,6 @@ func _integrate_forces(state):
 #		var gnd = detect_floor_2(state)
 #		if gnd:
 #			pvecs(gnd)
-##			var dbs = DebugSphere.instance()
-##			add_child(dbs)
-##			dbs.set_as_toplevel(true)
-##			dbs.mesh.height = 0.1
-##			dbs.mesh.radius = 0.05
-##			dbs.global_transform.origin = gnd[1]
 #		else:
 #			print("no floor")
 	print_ctr += 1
@@ -219,7 +205,7 @@ func detect_floor_2(state):
 	var floor_normal := Vector3()
 	var sweep_result := PhysicsTestMotionResult.new()
 	var sweep_start = rest_pos
-	var motion = DOWN * floor_CHECK_DIST
+	var motion = DOWN * FLOOR_CHECK_DIST
 	test_sphere.radius = 0.95
 #	print("failsafe 1: ", get_rest_info(state.transform.origin + motion, test_sphere))
 	var sweep_iters = 3
@@ -248,15 +234,48 @@ func detect_floor_2(state):
 	return []
 
 func best_floor_normal(normals):
+	# if using sphere, this is equivalent to sorting by closeness to center
+	# flatter ground -> closer to center of sphere (in 'xz' plane)
 	var best = Vector3()
 	for n in normals:
 		if is_floor(n) and (n.dot(UP) > best.dot(UP)):
 			best = n
 	return best
 
-func intersected_normals(position, shape):
+func get_rest_normals(position, shape):
+	var normals = []
 	var space_state = get_world().direct_space_state
-	var points = collision_points(position, SphereShape.new())
+	# collide_shape returns a flattened list of pairs of points
+	# even-index: point on surface of query shape (inside the collided object)
+	# odd-index : corresponding point on surface of the collided object
+	# margin of 0.0001 is used to mimic get_rest_info
+	var points = collision_points(position, shape, 0.0001)
+	for i in range(len(points) / 2):
+		var inner_point = points[i * 2]
+		var outer_point = points[i * 2 + 1]
+		var contact_depth = outer_point.distance_to(inner_point)
+		if contact_depth >= MIN_CONTACT_DEPTH:
+			normals.append((outer_point - inner_point).normalized())
+		else:
+			print("below min depth ", OS.get_ticks_msec())
+			if shape.get_class() == "SphereShape":
+				normals.append((position - inner_point).normalized())
+			else:
+				var ray_end = position + (outer_point - position) * (1 + TOLERANCE)
+				var hit = space_state.intersect_ray(position, ray_end, [self])
+				if hit:
+					normals.append(hit.normal)
+				else:
+					normals.append((position - inner_point.normalized()))
+	return normals
+
+func intersected_normals(position, shape):
+	# raycasts toward all points the shape is intersecting
+	# useful for finding floor normal when stuck in corners
+	# not reliable on ledges
+	var space_state = get_world().direct_space_state
+	var points = collision_points(position, shape)
+	pvecs(points)
 	var hit_normals = []
 	for point in points:
 		var ray_end = position + (point - position) * (1 + TOLERANCE)
@@ -271,6 +290,7 @@ func intersected_normals(position, shape):
 	return unique
 
 func detect_wall_floor(wall_point, wall_normal):
+	# find floor at base of wall (if it exists)
 	# offset along normal to avoid raycast hitting wall
 	var sweep_end = wall_point + wall_normal * collider_radius
 	var hit_point = wall_point + wall_normal * TOLERANCE
@@ -307,7 +327,7 @@ func detect_floor(state):
 	var floor_normal := Vector3()
 	var sweep_result := PhysicsTestMotionResult.new()
 	var sweep_start = state.transform.origin
-	var motion = DOWN * floor_CHECK_DIST
+	var motion = DOWN * FLOOR_CHECK_DIST
 	var sweep_iters = 2
 	for i in range(sweep_iters):
 		var hit = test_body.test_motion(sweep_start, motion, sweep_result, [self], 0.99)
@@ -422,7 +442,7 @@ func debug_move(state):
 		Input.get_action_strength("jump") - Input.get_action_strength("down")
 	) * UP
 	var debug_speed = 0.001 if Input.is_action_pressed("slow") else 0.1
-	state.transform.origin += debug_dir * debug_speed
+	state.transform.origin += debug_dir * debug_speed * sprint
 
 func debug_sphere(position, radius, lifetime):
 	var dbs = DebugSphere.instance()
@@ -518,13 +538,14 @@ func raycast():
 	if result and is_instance_valid(result.collider):
 		print("Hit ", result.collider)
 
-func collision_points(position, shape):
+func collision_points(position, shape=query_shape, margin=0):
 	var space_state = get_world().direct_space_state
 	var shape_query = PhysicsShapeQueryParameters.new()
 	shape_query.exclude = [self]
 	shape_query.set_shape(shape)
+	shape_query.margin = margin
 	shape_query.transform.origin = position
-	return space_state.collide_shape(shape_query, 16)
+	return space_state.collide_shape(shape_query)
 
 func get_rest_info(position:Vector3, shape:Shape=query_shape):
 	var space_state = get_world().direct_space_state
@@ -534,7 +555,6 @@ func get_rest_info(position:Vector3, shape:Shape=query_shape):
 	shape_query.transform.origin = position
 	return space_state.get_rest_info(shape_query)
 
-# TODO exclude specific collision shapes, not whole colliders
 func collide_shape(position:Vector3, shape:Shape=query_shape, iters:int=1):
 	var space_state = get_world().direct_space_state
 	var shape_query = PhysicsShapeQueryParameters.new()
