@@ -15,7 +15,7 @@ onready var visual_root = $VisualRoot
 onready var camera = $VisualRoot/Camera
 onready var mesh = $VisualRoot/MeshInstance
 onready var delta = 1.0 / Engine.iterations_per_second
-onready var collider_radius = collider.shape.radius
+onready var body_radius = collider.shape.radius
 onready var test_body = $TestBody
 var speed:float = 10.0
 var max_speed_ratio:float = 1.5
@@ -44,6 +44,7 @@ func _ready():
 	visual_root.set_as_toplevel(true)
 	test_body.set_as_toplevel(true)
 	test_body.global_transform.origin = Vector3(0, -200, 0)
+	test()
 
 func _unhandled_input(event):
 	if (event is InputEventMouseMotion && Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED):
@@ -82,7 +83,10 @@ func _physics_process(delta):
 		sleeping = false
 #    print(linear_velocity)
 	last_position = global_transform.origin
-	
+
+func test():
+	pass
+
 var print_ctr = 0
 var zs = []
 var sprint = 1.0
@@ -92,14 +96,13 @@ func _integrate_forces(state):
 #    pvecs([position])
 	var direction = direction()
 	var h_velocity = Vector3(velocity.x, 0, velocity.z)
-	var res := PhysicsTestMotionResult.new()
-	test_motion(position, DOWN * SNAP_LENGTH, res)
-	floor_normal = res.collision_normal
+	var floor_contact = find_floor(state)
+	if floor_contact: pvecs([floor_contact.normal])
+	else: print("no floor")
 #    floor_normal = collide_floor(position + DOWN * 0.25)
 #    pvecs([position])
-	if floor_normal and is_floor(floor_normal):
-#        print("floor")
-#        snap_to_floor(state)
+	if floor_contact:
+		floor_normal = floor_contact.normal
 		position = state.transform.origin
 		var speed_ratio = h_velocity.length() / speed
 		if speed_ratio > max_speed_ratio:
@@ -117,68 +120,72 @@ func _integrate_forces(state):
 		if h_velocity.dot(direction) <= speed:
 			velocity += direction * (speed - h_velocity.dot(direction)) * accel_air * delta
 		velocity.y -= gravity * delta
-#	linear_velocity = velocity
+	linear_velocity = velocity
 	if Input.is_action_just_pressed("click"):
 		sprint = 3.0 / sprint
-	debug_move(state)
+#	debug_move(state)
 	if true: #Input.is_action_just_pressed("alt_click"):
 		var pos = state.transform.origin # + DOWN * FLOOR_CHECK_DIST
-		var collisions = collide_shape(pos, query_shape, 4)
-		var normals = []
-		for c in collisions:
-			normals.append(c.normal)
-		normals.sort()
-
-#		print("floor: ", best_floor_normal(normals))
-		
-#		var motion = DOWN * FLOOR_CHECK_DIST
-#		var last_res = null
-#		for i in range(40):
-#			var res2 := PhysicsTestMotionResult.new()
-#			var hit = test_body.test_motion(pos, motion, res2, [self], 1.0)
-#			if last_res and (last_res.collision_normal != res2.collision_normal or last_res.collision_point != res2.collision_point):
-#				print("DESYNC!")
-#			last_res = res2
-#		pvecs([last_res.collision_normal, last_res.collision_point])
-		
-		var normals_2 = get_rest_normals(pos, query_shape)
-		normals_2.sort()
-		
-		
-		var n_match = true
-		if len(normals) == len(normals_2):
-			for i in range(len(normals)):
-				n_match = n_match and (normals[i].distance_to(normals_2[i]) < TOLERANCE)
+		print_ctr += 1
+"""
+		print("floor: ", best_floor_normal(normals))
+		var motion = DOWN * FLOOR_CHECK_DIST
+		var last_res = null
+		for i in range(40):
+			var res2 := PhysicsTestMotionResult.new()
+			var hit = test_body.test_motion(pos, motion, res2, [self], 1.0)
+			if last_res and (last_res.collision_normal != res2.collision_normal or last_res.collision_point != res2.collision_point):
+				print("DESYNC!")
+			last_res = res2
+		print("CHECKING POINTS: ", len(pts))
+		print(best_floor_normal(pts))
+		var ri_last = {}
+		for i in range(40):
+			var ri = get_rest_info(pos, query_shape)
+			if ri_last and (ri.normal != ri_last.normal or ri.point != ri_last.point):
+				print("DESYNC!")
+			ri_last = ri
+		print(ri_last)
+		print(cast_sphere(state.transform.origin, DOWN, 1))
+		var test_sphere = SphereShape.new()
+		test_sphere.radius = 0.95
+		var restinf = get_rest_info(state.transform.origin, test_sphere)
+		if restinf: pvecs([restinf.normal, restinf.point])
+		else: print("no collide")
+		var gnd = detect_floor_2(state)
+		if gnd:
+			pvecs(gnd)
 		else:
-			n_match = false
-		if not n_match:
-			print("normals don't match")
-			pvecs(normals)
-			pvecs(normals_2)
-			pvecs(collision_points(pos, query_shape))
+			print("no floor")
+"""
 
-#		print("CHECKING POINTS: ", len(pts))
-#		print(best_floor_normal(pts))
-#		var ri_last = {}
-#		for i in range(40):
-#			var ri = get_rest_info(pos, query_shape)
-#			if ri_last and (ri.normal != ri_last.normal or ri.point != ri_last.point):
-#				print("DESYNC!")
-#			ri_last = ri
-#		print(ri_last)
-#		print(cast_sphere(state.transform.origin, DOWN, 1))
-		
-#		var test_sphere = SphereShape.new()
-#		test_sphere.radius = 0.95
-#		var restinf = get_rest_info(state.transform.origin, test_sphere)
-#		if restinf: pvecs([restinf.normal, restinf.point])
-#		else: print("no collide")
-#		var gnd = detect_floor_2(state)
-#		if gnd:
-#			pvecs(gnd)
-#		else:
-#			print("no floor")
-	print_ctr += 1
+func find_floor(state):
+	# ---- Static Test @ Start ----
+	var start_pos = state.transform.origin
+	var rest_contacts = get_rest_contacts(start_pos)
+	var best_floor = best_floor(rest_contacts)
+	if best_floor: return best_floor
+	# ---- Sweep Test ----
+	var motion = cast_sphere(start_pos, DOWN * FLOOR_CHECK_DIST)
+	var sweep_end_pos = start_pos + motion[1] * DOWN * FLOOR_CHECK_DIST
+	rest_contacts = get_rest_contacts(sweep_end_pos)
+	best_floor = best_floor(rest_contacts, 1.0 - motion[1])
+	if best_floor: return best_floor
+	return {}
+
+func best_floor(contacts, motion_left=FLOOR_CHECK_DIST, iters=3):
+	contacts.sort_custom(self, "more_upward_contact")
+	for i in range(min(iters, len(contacts))):
+		var contact = contacts[i]
+		if is_floor(contact.normal):
+			return contact
+		elif is_ceil(contact.point):
+			return {}
+		else: # wall
+			var wall_result = find_wall_floor(contact, motion_left)
+			if wall_result and is_floor(wall_result.normal):
+				return wall_result
+	return {}
 
 func detect_floor_2(state):
 	var test_sphere = SphereShape.new()
@@ -195,7 +202,7 @@ func detect_floor_2(state):
 			if i == rest_iters - 1:
 				pass # call failsafes
 			else:
-				rest_pos = rest_info.point + rest_norm * (collider_radius + TOLERANCE)
+				rest_pos = rest_info.point + rest_norm * (body_radius + TOLERANCE)
 		elif is_floor(rest_norm):
 			print("rest detect gnd")
 			return [rest_norm, rest_info.point]
@@ -214,7 +221,7 @@ func detect_floor_2(state):
 		if not hit:
 			return []
 		var sweep_normal = sweep_result.collision_normal
-		var sweep_end = sweep_result.collision_point + sweep_normal * collider_radius
+		var sweep_end = sweep_result.collision_point + sweep_normal * body_radius
 #		pvecs([sweep_normal, sweep_end])
 		# sweep hit ceiling -> stuck, so redo sweep from depenetrated position
 		if is_ceil(sweep_normal):
@@ -226,12 +233,21 @@ func detect_floor_2(state):
 		elif is_floor(sweep_normal):
 			return [sweep_normal, sweep_result.collision_point]
 		else:
-			var wall_result = detect_wall_floor(
+			var wall_result = find_wall_floor(
 				sweep_result.collision_point, sweep_normal)
 			if wall_result:
 				pvecs(wall_result)
 				return wall_result
 	return []
+
+func most_upward_normal(normals):
+	var best = Vector3()
+	for n in normals:
+		if n.dot(UP) > best.dot(UP): best = n
+	return best
+
+func more_upward_contact(a, b):
+	return a.normal.dot(UP) >= b.normal.dot(UP)
 
 func best_floor_normal(normals):
 	# if using sphere, this is equivalent to sorting by closeness to center
@@ -242,86 +258,95 @@ func best_floor_normal(normals):
 			best = n
 	return best
 
-func get_rest_normals(position, shape):
-	var normals = []
+# return list of [normal, point]
+func get_rest_contacts(position, shape=query_shape):
+	var contacts = []
 	var space_state = get_world().direct_space_state
-	# collide_shape returns a flattened list of pairs of points
-	# even-index: point on surface of query shape (inside the collided object)
-	# odd-index : corresponding point on surface of the collided object
-	# margin of 0.0001 is used to mimic get_rest_info
+	# margin is used to mimic get_rest_info
 	var points = collision_points(position, shape, 0.0001)
 	for i in range(len(points) / 2):
 		var inner_point = points[i * 2]
 		var outer_point = points[i * 2 + 1]
 		var contact_depth = outer_point.distance_to(inner_point)
+		var contact_vec:Vector3
 		if contact_depth >= MIN_CONTACT_DEPTH:
-			normals.append((outer_point - inner_point).normalized())
+			contact_vec = outer_point - inner_point
 		else:
-			print("below min depth ", OS.get_ticks_msec())
 			if shape.get_class() == "SphereShape":
-				normals.append((position - inner_point).normalized())
+				contact_vec = position - inner_point
 			else:
 				var ray_end = position + (outer_point - position) * (1 + TOLERANCE)
 				var hit = space_state.intersect_ray(position, ray_end, [self])
 				if hit:
-					normals.append(hit.normal)
+					contact_vec = hit.normal
 				else:
-					normals.append((position - inner_point.normalized()))
-	return normals
+					contact_vec = position - inner_point
+		contacts.append({"normal": contact_vec.normalized(), "point": outer_point})
+	return contacts
 
-func intersected_normals(position, shape):
-	# raycasts toward all points the shape is intersecting
-	# useful for finding floor normal when stuck in corners
-	# not reliable on ledges
-	var space_state = get_world().direct_space_state
-	var points = collision_points(position, shape)
-	pvecs(points)
-	var hit_normals = []
-	for point in points:
-		var ray_end = position + (point - position) * (1 + TOLERANCE)
-		var hit = space_state.intersect_ray(position, ray_end, [self])
-		if hit: hit_normals.append(hit.normal)
-	# deduplicate normals
-	var unique = []
-	hit_normals.sort()
-	for n in hit_normals:
-		if (not unique) or (unique.back().distance_to(n) > TOLERANCE):
-			unique.append(n)
-	return unique
-
-func detect_wall_floor(wall_point, wall_normal):
-	# find floor at base of wall (if it exists)
+func find_wall_floor(contact, motion_left):
+	"""
+	find floor at base of wall by simulating a spherecast down the wall
+	- motion_left: max distance the 'spherecast' can travel
+	returns floor contact if found, else {}
+	"""
 	# offset along normal to avoid raycast hitting wall
-	var sweep_end = wall_point + wall_normal * collider_radius
-	var hit_point = wall_point + wall_normal * TOLERANCE
-	var down_wall_dir = Plane(wall_normal, 0).project(DOWN).normalized()
+	var hit_point = contact.point + contact.normal * TOLERANCE
+	var start_pos = contact.point + contact.normal * body_radius
+	var down_wall_dir = Plane(contact.normal, 0).project(DOWN).normalized()
 	var down_wall_ray = down_wall_dir * 10
 	var space_state = get_world().direct_space_state
-	var wall_ray_result = space_state.intersect_ray(
-		hit_point, hit_point + down_wall_ray, [self]
-	)
-#	pvecs([hit_point, down_wall_dir])
-	print(wall_ray_result)
-	if wall_ray_result and is_floor(wall_ray_result.normal):
-		var ray_normal = wall_ray_result.normal
-		var floor_contact = simulate_spherecast(
-			sweep_end, down_wall_ray, ray_normal, collider_radius)
-#		pvecs([sweep_end, floor_contact])
-		if floor_contact and floor_contact.normal.is_equal_approx(ray_normal):
-			return [ray_normal, floor_contact.position]
-	return []
+	for point in [hit_point, start_pos]:
+		var base_hit = space_state.intersect_ray(
+			point, point + down_wall_ray, [self])
+		if base_hit and is_floor(base_hit.normal):
+			var floor_hit = verify_sphere_contact(
+				start_pos, down_wall_dir, base_hit.normal, motion_left)
+			if floor_hit: return floor_hit
+#			var base_normal = base_hit.normal
+#			var contact_point = start_pos + (-base_normal * body_radius)
+#			# offset ray start in case contact_point is inside floor
+#			var floor_hit = space_state.intersect_ray(
+#				contact_point - down_wall_dir * 0.01, 
+#				contact_point + down_wall_ray, [self])
+#			if (floor_hit and 
+#				floor_hit.normal.distance_to(base_normal) < TOLERANCE and
+#				floor_hit.point.distance_to(contact_point) < motion_left):
+#				return {"normal": base_normal, "point": floor_hit.position}
+	return {}
 
-func detect_floor_last_resort(state):
-	pass
+func find_floor_last_resort(start_pos):
+	var space_state = get_world().direct_space_state
+	var hit = space_state.intersect_ray(
+		start_pos, start_pos + DOWN * (body_radius + 4 * FLOOR_CHECK_DIST), [self])
+	if hit and is_floor(hit.normal):
+		var final_contact = verify_sphere_contact(
+			start_pos, DOWN, hit.normal, FLOOR_CHECK_DIST)
+		if final_contact: 
+			return final_contact
+	return {}
 
 # use raycast to check if a spherecast would collide at the given normal
-# return raycast result
-func simulate_spherecast(position, motion, normal, radius) -> Dictionary:
+func verify_sphere_contact(
+	position, direction, normal, distance=FLOOR_CHECK_DIST, radius=body_radius):
 	var space_state = get_world().direct_space_state
-	var contact_point = position + (-normal * radius) - motion * 0.05
-	return space_state.intersect_ray(
-		contact_point, contact_point + motion, [self]
-	)
+	var contact_point = position + (-normal * radius)
+	# offset a bit in case contact_point is inside another shape
+	var contact_hit = space_state.intersect_ray(
+		contact_point - direction * TOLERANCE, 
+		contact_point + direction * distance, [self])
+	if contact_hit and contact_hit.normal.distance_to(normal) < TOLERANCE:
+		return {"normal": normal, "point": contact_hit.position}
+	return {}
+
+# return raycast result
+#func simulate_spherecast(position, motion, normal, radius) -> Dictionary:
+#	var space_state = get_world().direct_space_state
+#	# offset a bit in case contact_point is inside another shape
+#	var contact_point = position + (-normal * radius) - motion * 0.01
+#	return space_state.intersect_ray(
+#		contact_point, contact_point + motion, [self]
+#	)
 
 func detect_floor(state):
 	var floor_normal := Vector3()
@@ -334,7 +359,7 @@ func detect_floor(state):
 		if not hit:
 			return []
 		var sweep_normal = sweep_result.collision_normal
-		var sweep_end = sweep_result.collision_point + sweep_normal * collider_radius
+		var sweep_end = sweep_result.collision_point + sweep_normal * body_radius
 #		pvecs([sweep_normal, sweep_end])
 		# sweep hit ceiling -> stuck, so redo sweep from depenetrated position
 		if sweep_normal.angle_to(DOWN) < PI/2 - TOLERANCE:
@@ -359,7 +384,7 @@ func detect_floor(state):
 			if wall_ray_result and is_floor(wall_ray_result.normal):
 				floor_normal = wall_ray_result.normal
 				# snap to floor
-				var contact_point = sweep_end + (collider_radius * -floor_normal) - down_wall_dir * 0.1
+				var contact_point = sweep_end + (body_radius * -floor_normal) - down_wall_dir * 0.1
 				var floor_result = space_state.intersect_ray(
 					contact_point, contact_point + down_wall_ray, [self]
 				)
@@ -428,7 +453,7 @@ func debug_print(state):
 ##		spherecast(
 ##			position, 
 ##			DOWN, # * (SNAP_LENGTH + 0.05), 
-##			collider_radius # - 0.05
+##			body_radius # - 0.05
 ##		)
 ##		detect_floor(state)
 	if print_ctr % 240 == 0:
@@ -469,7 +494,7 @@ func cast_motion(position, motion, shape):
 	shape_query.transform.origin = position
 	return space_state.cast_motion(shape_query, motion)
 
-func cast_sphere(position, motion, radius):
+func cast_sphere(position, motion, radius=1):
 	var sphere = SphereShape.new()
 	sphere.radius = radius
 	return cast_motion(position, motion, sphere)
@@ -640,3 +665,49 @@ func pvecs(vecs):
 func phvel():
 	var h_vel = Vector3(velocity.x, 0, velocity.z)
 	print("%.2f" % h_vel.length())
+
+func test_get_rest_contacts_equivalent_to_get_rest_info(position):
+	var collisions = collide_shape(position, query_shape, 4)
+	var normals = []
+	for c in collisions:
+		normals.append(c.normal)
+	normals.sort()
+	
+	var static_res = get_rest_contacts(position, query_shape)
+	var normals_2 = []
+	for contact in static_res:
+		normals_2.append(contact.normal)
+	normals_2.sort()
+	
+	var n_match = true
+	if len(normals) == len(normals_2):
+		for i in range(len(normals)):
+			n_match = n_match and (normals[i].distance_to(normals_2[i]) < TOLERANCE)
+	else:
+		n_match = false
+	if not n_match:
+		print("normals don't match")
+		pvecs(normals)
+		pvecs(normals_2)
+		pvecs(collision_points(position, query_shape))
+
+# deprec
+func intersected_normals(position, shape):
+	# raycasts toward all points the shape is intersecting
+	# useful for finding floor normal when stuck in corners
+	# not reliable on ledges
+	var space_state = get_world().direct_space_state
+	var points = collision_points(position, shape)
+	pvecs(points)
+	var hit_normals = []
+	for point in points:
+		var ray_end = position + (point - position) * (1 + TOLERANCE)
+		var hit = space_state.intersect_ray(position, ray_end, [self])
+		if hit: hit_normals.append(hit.normal)
+	# deduplicate normals
+	var unique = []
+	hit_normals.sort()
+	for n in hit_normals:
+		if (not unique) or (unique.back().distance_to(n) > TOLERANCE):
+			unique.append(n)
+	return unique
