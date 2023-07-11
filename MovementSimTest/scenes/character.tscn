@@ -1,0 +1,45 @@
+[gd_scene load_steps=7 format=3 uid="uid://c6wngq4sedtq1"]
+
+[ext_resource type="Texture2D" uid="uid://b0pwfecyilbk2" path="res://cheese.jpg" id="1_2c7c7"]
+[ext_resource type="Script" path="res://scenes/character.gd" id="1_75ft4"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_oiqno"]
+friction = 0.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jy8fv"]
+radius = 0.25
+height = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5ssb7"]
+diffuse_mode = 3
+specular_mode = 1
+albedo_color = Color(0.721569, 0.721569, 0.721569, 1)
+albedo_texture = ExtResource("1_2c7c7")
+metallic = 0.21
+metallic_specular = 0.66
+roughness = 0.81
+emission = Color(0.333333, 0.333333, 0.333333, 1)
+normal_texture = ExtResource("1_2c7c7")
+heightmap_texture = ExtResource("1_2c7c7")
+uv1_triplanar = true
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_6uhfv"]
+radius = 0.25
+height = 1.0
+
+[node name="Character" type="RigidBody3D"]
+physics_material_override = SubResource("PhysicsMaterial_oiqno")
+custom_integrator = true
+can_sleep = false
+lock_rotation = true
+script = ExtResource("1_75ft4")
+
+[node name="Collider" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_jy8fv")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+material_override = SubResource("StandardMaterial3D_5ssb7")
+mesh = SubResource("CapsuleMesh_6uhfv")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+fov = 90.0

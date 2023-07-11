@@ -1,0 +1,28 @@
+[gd_resource type="Environment" load_steps=5 format=3 uid="uid://cwjnu3fulwik2"]
+
+[sub_resource type="Gradient" id="5"]
+
+[sub_resource type="GradientTexture1D" id="4"]
+gradient = SubResource("5")
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_0pq20"]
+sky_top_color = Color(0.239216, 0.490196, 0.556863, 1)
+sky_horizon_color = Color(0.811765, 0.6, 0.517647, 1)
+ground_bottom_color = Color(0.0941176, 0.180392, 0.368627, 1)
+ground_horizon_color = Color(0.807843, 0.596078, 0.541176, 1)
+ground_curve = 0.0254912
+
+[sub_resource type="Sky" id="Sky_438ap"]
+sky_material = SubResource("ProceduralSkyMaterial_0pq20")
+
+[resource]
+background_mode = 2
+background_color = Color(1, 1, 1, 1)
+sky = SubResource("Sky_438ap")
+tonemap_mode = 3
+tonemap_exposure = 1.5
+ssao_intensity = 2.31
+ssao_light_affect = 1.0
+glow_enabled = true
+glow_bloom = 0.3
+adjustment_color_correction = SubResource("4")

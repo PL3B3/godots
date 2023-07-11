@@ -1,0 +1,27 @@
+[gd_scene load_steps=6 format=3 uid="uid://bk4ipbml72wvj"]
+
+[ext_resource type="Script" path="res://scenes/wall.gd" id="1_d2o1u"]
+[ext_resource type="Texture2D" uid="uid://bndftgr1xjdg4" path="res://addons/kenney_prototype_textures/orange/texture_08.png" id="1_xmf8v"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_u4xfa"]
+size = Vector3(4, 4, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u6gx8"]
+albedo_texture = ExtResource("1_xmf8v")
+metallic = 0.25
+roughness = 0.8
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_phkst"]
+size = Vector3(4, 4, 1)
+
+[node name="Wall" type="StaticBody3D"]
+script = ExtResource("1_d2o1u")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_u4xfa")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+material_override = SubResource("StandardMaterial3D_u6gx8")
+mesh = SubResource("BoxMesh_phkst")
