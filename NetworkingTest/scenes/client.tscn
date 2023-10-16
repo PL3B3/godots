@@ -1,0 +1,47 @@
+[gd_scene load_steps=7 format=3 uid="uid://clb01f0ifogre"]
+
+[ext_resource type="Script" path="res://scenes/client.gd" id="1_x1e1o"]
+[ext_resource type="PackedScene" uid="uid://bmyetss0yrpp5" path="res://scenes/spawners/map_spawner.tscn" id="2_pgb0g"]
+[ext_resource type="PackedScene" uid="uid://btlnnfbdmap5w" path="res://scenes/spawners/character_spawner.tscn" id="3_r7d4j"]
+[ext_resource type="PackedScene" uid="uid://b43a0dnmkibyw" path="res://scenes/client_input_handler.tscn" id="4_53bko"]
+[ext_resource type="PackedScene" uid="uid://cmc8wrkuejr2u" path="res://scenes/network_messenger.tscn" id="5_ilfw4"]
+[ext_resource type="Texture2D" uid="uid://c3gay1fpow7ck" path="res://icon.svg" id="5_kty4v"]
+
+[node name="NetworkRoot" type="Node"]
+script = ExtResource("1_x1e1o")
+
+[node name="Label" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Client"
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+spawn_path = NodePath("../Spawns")
+
+[node name="Spawns" type="Node" parent="."]
+
+[node name="MapSpawner" parent="." instance=ExtResource("2_pgb0g")]
+
+[node name="CharacterSpawner" parent="." instance=ExtResource("3_r7d4j")]
+
+[node name="ClientInputHandler" parent="." instance=ExtResource("4_53bko")]
+
+[node name="NetworkMessenger" parent="." instance=ExtResource("5_ilfw4")]
+
+[node name="TextureRect" type="TextureRect" parent="."]
+visible = false
+modulate = Color(1, 1, 1, 0.207843)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -64.0
+offset_top = -64.0
+offset_right = 64.0
+offset_bottom = 64.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.115, 0.115)
+pivot_offset = Vector2(64, 64)
+texture = ExtResource("5_kty4v")

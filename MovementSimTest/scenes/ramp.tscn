@@ -11,7 +11,6 @@ albedo_texture = ExtResource("1_dv23q")
 metallic = 0.25
 roughness = 0.8
 uv1_triplanar = true
-uv1_world_triplanar = true
 
 [sub_resource type="BoxMesh" id="BoxMesh_amt7i"]
 size = Vector3(2, 1, 3)

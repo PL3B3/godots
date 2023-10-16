@@ -42,4 +42,5 @@ material_override = SubResource("StandardMaterial3D_5ssb7")
 mesh = SubResource("CapsuleMesh_6uhfv")
 
 [node name="Camera3D" type="Camera3D" parent="."]
+current = true
 fov = 90.0

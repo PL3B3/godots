@@ -1,0 +1,14 @@
+Hi,
+
+Thanks for downloading the PSD Demo pack. Feel free to explore and edit the PSDs provided to get an idea of how they were created and make your own texture variations.
+
+Here is a quick note on the workflow I used:
+
+All of the textures in this pack are created using Solid Colour Fills and masks.
+This allows for quick and easy editing of the textures without having to use adjustments layers. You can double click the Solid Colour and change the colour whenever you please.
+
+Please see the image provide for a really basic overview of the workflow.
+
+This PSD demo pack contains 3 different textures that each required different leves of complexity but they were all created using Solid Colours and Masks.
+
+Thanks!

@@ -22,23 +22,23 @@ func _ready():
 	state_history.push_back({TRANSFORM_KEY: global_transform, VELOCITY_KEY: linear_velocity, TICK_KEY: game_tick})
 
 
+
 func _integrate_forces(state):
 	pass
 
 
 func _physics_process(delta):
-#	print("BULB: ", delta)
 	if game_tick == tick_limit:
 		errors.sort()
 		print(errors.slice(-50))
 		get_tree().quit()
 	game_tick += 1
-	var state_at_frame_begin = {TRANSFORM_KEY: global_transform, VELOCITY_KEY: linear_velocity, TICK_KEY: game_tick}
+	var state_at_frame_begin = current_state()
 	var simulated_state = simulate(delta)
 	var position_error = (simulated_state[TRANSFORM_KEY].origin - state_at_frame_begin[TRANSFORM_KEY].origin).length()
 	print(position_error)
 	errors.push_back(position_error)
-	update_state(state_at_frame_begin)
+	reset_state_to_before_simulation(state_at_frame_begin)
 	state_history.push_back(state_at_frame_begin)
 
 
@@ -61,11 +61,10 @@ func calculate_random_velocity(state: Dictionary):
 func calculate_back_forth_velocity(state: Dictionary):
 	return Vector3.FORWARD if sin(state[TICK_KEY] * physics_fps) > 0 else Vector3.BACK
 
-# 0 1 2 3 4 5
 
 func simulate(delta):
 	if len(state_history) < SIM_TICKS:
-		return {TRANSFORM_KEY: global_transform, VELOCITY_KEY: linear_velocity, TICK_KEY: game_tick}
+		return current_state()
 	var recorded_states: Array = state_history.slice(-SIM_TICKS)
 	global_transform = state_history[-SIM_TICKS][TRANSFORM_KEY]
 	for past_state in recorded_states:
@@ -73,3 +72,11 @@ func simulate(delta):
 		update_state(sim_state)
 		PhysicsServer3D.simulate(delta)
 	return {TRANSFORM_KEY: global_transform, VELOCITY_KEY: linear_velocity, TICK_KEY: state_history.back()[TICK_KEY]}
+
+
+func current_state():
+	return {TRANSFORM_KEY: global_transform, VELOCITY_KEY: linear_velocity, TICK_KEY: game_tick}
+
+
+func reset_state_to_before_simulation(state_before_simulation):
+	update_state(state_before_simulation)

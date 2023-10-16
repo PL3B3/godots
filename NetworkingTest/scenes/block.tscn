@@ -1,0 +1,26 @@
+[gd_scene load_steps=6 format=3 uid="uid://f8b0rlfdw0bm"]
+
+[ext_resource type="Script" path="res://scenes/block.gd" id="1_rqkpk"]
+[ext_resource type="Texture2D" uid="uid://dvsdqx4qq7yi5" path="res://addons/kenney_prototype_textures/dark/texture_02.png" id="1_s0mua"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_xk5fd"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_t4ggf"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vg5e4"]
+albedo_texture = ExtResource("1_s0mua")
+metallic = 0.5
+roughness = 0.7
+uv1_triplanar = true
+
+[node name="Block" type="Node3D"]
+script = ExtResource("1_rqkpk")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("BoxShape3D_xk5fd")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+mesh = SubResource("BoxMesh_t4ggf")
+surface_material_override/0 = SubResource("StandardMaterial3D_vg5e4")

@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://btlnnfbdmap5w"]
+
+[ext_resource type="Script" path="res://scenes/spawners/character_spawner.gd" id="1_y2572"]
+
+[node name="CharacterSpawner" type="MultiplayerSpawner"]
+spawn_path = NodePath(".")
+script = ExtResource("1_y2572")

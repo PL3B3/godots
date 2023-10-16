@@ -1,0 +1,161 @@
+[gd_scene load_steps=16 format=3 uid="uid://ku5qfg1p0dr8"]
+
+[ext_resource type="Shader" uid="uid://dx0jj1a2ywyfd" path="res://scenes/rotate_tile.tres" id="1_i5v3q"]
+[ext_resource type="Texture2D" uid="uid://urykiv2qq33a" path="res://addons/Pixel Textures Pack 2/Grass/s2 Grass 02 Green 2.png" id="2_6rf65"]
+[ext_resource type="Environment" uid="uid://b5rbq227iuecn" path="res://environment.tres" id="2_wovje"]
+[ext_resource type="Texture2D" uid="uid://bnop8ebuj8qpy" path="res://addons/Pixel Textures Pack 2/Bricks/s2 Brick 02 Grey.png" id="3_7ssd1"]
+[ext_resource type="Texture2D" uid="uid://cso73p1u6okcs" path="res://cheese.jpg" id="3_idutk"]
+[ext_resource type="PackedScene" uid="uid://f8b0rlfdw0bm" path="res://scenes/block.tscn" id="5_4w47m"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_hunba"]
+size = Vector3(50, 1, 50)
+
+[sub_resource type="BoxMesh" id="BoxMesh_asnw7"]
+size = Vector3(50, 1, 50)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_661oe"]
+noise_type = 3
+frequency = 0.0629
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_rnr1x"]
+noise = SubResource("FastNoiseLite_661oe")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1tbyn"]
+render_priority = 0
+shader = ExtResource("1_i5v3q")
+shader_parameter/Tiling = 50
+shader_parameter/Seed = 27
+shader_parameter/RotationFactor = 0.48
+shader_parameter/BaseTexture = ExtResource("2_6rf65")
+shader_parameter/NoiseTexture = SubResource("NoiseTexture2D_rnr1x")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ssojq"]
+size = Vector3(50, 2, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_36wc2"]
+size = Vector3(50, 2, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lqxeh"]
+albedo_texture = ExtResource("3_7ssd1")
+uv1_scale = Vector3(0.255, 0.255, 0.255)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pj7sh"]
+diffuse_mode = 3
+specular_mode = 1
+albedo_texture = ExtResource("3_idutk")
+metallic = 0.2
+roughness = 0.8
+emission_enabled = true
+emission = Color(0.392157, 0.341176, 0.113725, 1)
+rim = 0.42
+uv1_triplanar = true
+
+[node name="Map" type="Node3D"]
+
+[node name="Bounds" type="Node3D" parent="."]
+
+[node name="Floor" type="StaticBody3D" parent="Bounds"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bounds/Floor"]
+shape = SubResource("BoxShape3D_hunba")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Bounds/Floor"]
+mesh = SubResource("BoxMesh_asnw7")
+surface_material_override/0 = SubResource("ShaderMaterial_1tbyn")
+
+[node name="Wall" type="StaticBody3D" parent="Bounds"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -25)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bounds/Wall"]
+shape = SubResource("BoxShape3D_ssojq")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Bounds/Wall"]
+mesh = SubResource("BoxMesh_36wc2")
+surface_material_override/0 = SubResource("StandardMaterial3D_lqxeh")
+
+[node name="Wall2" type="StaticBody3D" parent="Bounds"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 25)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bounds/Wall2"]
+shape = SubResource("BoxShape3D_ssojq")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Bounds/Wall2"]
+mesh = SubResource("BoxMesh_36wc2")
+surface_material_override/0 = SubResource("StandardMaterial3D_lqxeh")
+
+[node name="Wall3" type="StaticBody3D" parent="Bounds"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -25, 1.5, -1.90735e-06)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bounds/Wall3"]
+shape = SubResource("BoxShape3D_ssojq")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Bounds/Wall3"]
+mesh = SubResource("BoxMesh_36wc2")
+surface_material_override/0 = SubResource("StandardMaterial3D_lqxeh")
+
+[node name="Wall4" type="StaticBody3D" parent="Bounds"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 25, 1.5, 2.78221e-07)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bounds/Wall4"]
+shape = SubResource("BoxShape3D_ssojq")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Bounds/Wall4"]
+mesh = SubResource("BoxMesh_36wc2")
+surface_material_override/0 = SubResource("StandardMaterial3D_lqxeh")
+
+[node name="Obstacles" type="Node3D" parent="."]
+
+[node name="Block" parent="Obstacles" instance=ExtResource("5_4w47m")]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 4, 0.433982, -5.48755)
+
+[node name="Ramp" parent="Obstacles" instance=ExtResource("5_4w47m")]
+transform = Transform3D(2, 0, 0, 0, 0.866025, -2, 0, 0.5, 3.4641, 4, 1, -2)
+
+[node name="Ramp2" parent="Obstacles" instance=ExtResource("5_4w47m")]
+transform = Transform3D(2, 0, 0, 0, 0.707107, 2.82843, 0, -0.707107, 2.82843, 7, 3, -7)
+
+[node name="Decoration" type="Node3D" parent="."]
+
+[node name="CheeseBro1" type="CSGCombiner3D" parent="Decoration"]
+transform = Transform3D(0.655378, 0.375448, -0.655378, -0.265482, 0.926843, 0.265482, 0.707107, 0, 0.707107, -8.04523, 6.50279, -9.1629)
+material_override = SubResource("StandardMaterial3D_pj7sh")
+use_collision = true
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Decoration/CheeseBro1"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Decoration/CheeseBro1"]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 1, 0, 0)
+operation = 2
+
+[node name="CheeseBro2" type="CSGCombiner3D" parent="Decoration"]
+transform = Transform3D(-0.711791, -0.26022, -0.652411, -0.655857, 0.578693, 0.484734, 0.251408, 0.772917, -0.582575, 4.41925, 9.87303, -9.1629)
+material_override = SubResource("StandardMaterial3D_pj7sh")
+use_collision = true
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Decoration/CheeseBro2"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Decoration/CheeseBro2"]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 1, 0, 0)
+operation = 2
+
+[node name="CheeseBro3" type="CSGCombiner3D" parent="Decoration"]
+transform = Transform3D(1.73205, 0, 1, 0, 2, 0, -1, 0, 1.73205, -9.73818, 16.7157, 12.5381)
+material_override = SubResource("StandardMaterial3D_pj7sh")
+use_collision = true
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Decoration/CheeseBro3"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Decoration/CheeseBro3"]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 1, 0, 0)
+operation = 2
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.965926, -0.183013, -0.183013, 0.25, 0.476727, 0.842752, -0.0669873, -0.859789, 0.506236, 0, 4, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("2_wovje")
