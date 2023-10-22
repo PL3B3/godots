@@ -6,7 +6,7 @@ extends Node
 
 var test_scene = preload("res://scenes/test_spawn.tscn")
 
-var client_character: CharacterMovementBody = null
+var client_character: CharacterMovementRigidBody = null
 var client_id: int = -1
 var client_inputs = []
 var statistics = {}
@@ -56,8 +56,8 @@ func _physics_process(delta):
 #		add_random_movement(input["tick"])
 #		print(Time.get_unix_time_from_system() - input["client_timestamp"])
 #		print("usec diff: ", (Time.get_ticks_usec() - input["client_timestamp"]) - initial_tick_diff, " input buff: ", client_inputs.size())
-		var character_state_after_handling_input = client_character.handle_input_frame(input)
-		messenger.send_message_to_client(client_id, character_state_after_handling_input)
+		var character_state_after_handling_input = client_character.move_and_update_view(input["input"], delta) # client_character.handle_input_frame(input)
+		messenger.send_message_to_client(client_id, {"state": character_state_after_handling_input, "tick": input["tick"]})
 	last_phys_ts = Time.get_ticks_usec()
 
 func add_random_movement(tick):
@@ -72,7 +72,7 @@ func resize_window():
 	get_window().position = Vector2(screen_size.x / 2, 0)
 
 func _on_client_connected(id: int):
-	client_character = character_spawner.spawn({"id": id, "position": Vector3(0, 2, 0)})
+	client_character = character_spawner.spawn({"id": id, "position": Vector3(0, 2.5, 0)})
 	client_id = id
 	print("Client with id ", id, " connected")
 	

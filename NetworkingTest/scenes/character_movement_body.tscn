@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/character_movement_body.gd" id="1_h8egj"]
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_12wb5"]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_j35ov"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_8nr8h"]
 
@@ -10,16 +10,16 @@
 albedo_color = Color(0.996078, 0, 1, 1)
 
 [node name="CharacterMovementBody" type="CharacterBody3D"]
+motion_mode = 1
 floor_stop_on_slope = false
 floor_block_on_wall = false
 floor_snap_length = 0.0
 script = ExtResource("1_h8egj")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-shape = SubResource("CapsuleShape3D_12wb5")
+shape = SubResource("CapsuleShape3D_j35ov")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-visible = false
 mesh = SubResource("CapsuleMesh_8nr8h")
 surface_material_override/0 = SubResource("StandardMaterial3D_7r5bs")
 

@@ -22,20 +22,23 @@ func _unhandled_input(event):
 		elif Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
-func record_input_for_tick(tick, delta):
-	var input_frame = {
-		"tick": tick,
-		"yaw": _yaw,
-		"pitch": _pitch,
-		"delta": delta,
-		"jump": Input.is_action_pressed("jump"),
+func record_input_for_tick(tick) -> Dictionary:
+	var player_input = {
+		"yaw": _yaw, 
+		"pitch": _pitch, 
+		"is_jumping": Input.is_action_pressed("jump"),
 		"direction": Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
 	}
-	input_per_tick[tick] = input_frame
-	return input_frame
+	input_per_tick[tick] = player_input
+	return player_input
 
-func get_input_for_tick(tick):
-	return input_per_tick[tick]
+func get_inputs_since_tick(initial_tick) -> Array:
+	var tick = initial_tick
+	var inputs_since_tick = []
+	while input_per_tick.has(tick):
+		inputs_since_tick.push_back(input_per_tick.get(tick))
+		tick += 1
+	return inputs_since_tick
 
 func normalize_angle_to_positive_degrees(angle: float):
 	angle = fmod(angle, FULL_ROTATION_DEGREES)

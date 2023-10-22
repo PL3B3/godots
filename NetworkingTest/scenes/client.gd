@@ -5,24 +5,23 @@ var test_scene = preload("res://scenes/test_spawn.tscn")
 # _physics_process is called a bunch of times in quick succession on startup
 # so it will flood the server with like 8 messages, creating a megabuffer
 const WARMUP_TIME = 0.5
-const RECONCILIATION_SNAP_THRESHOLD = 0.5
+const RECONCILIATION_SNAP_THRESHOLD = 0
 const RECONCILIATION_EXPONENTIAL_FALLOFF = 0.5
 const RECONCILIATION_VELOCITY_CORRECTION_FACTOR = 4.0
 const RECONCILIATION_POSITION_CORRECTION_FACTOR = 0.0
 const NO_SERVER_STATE = {"tick": -1}
 
-@onready var input_handler = $ClientInputHandler
+@onready var input_handler: ClientInputHandler = $ClientInputHandler
 @onready var character_spawner = $CharacterSpawner
 @onready var messenger: NetworkMessenger = $NetworkMessenger
 
-var client_character: CharacterMovementBody = null
+var client_character: CharacterMovementRigidBody = null
 var tick = 0
 
 var reconciliation_vector_ = Vector3.ZERO
-var is_reconciliation_enabled_ = true
+var is_reconciliation_enabled_ = false
 var last_received_server_state: Dictionary = NO_SERVER_STATE
 var latest_handled_tick: int = 0
-var input_for_tick_ = {} 
 var warmed_up = false
 var statistics = {}
 
@@ -37,7 +36,7 @@ func _ready():
 	messenger.received_server_message.connect(_handle_server_message)
 	get_tree().create_timer(WARMUP_TIME).timeout.connect(func(): warmed_up = true)
 	add_statistic("phys_frame_msec", true, 1000)
-	add_statistic("simulation_error", false, 0.5)
+	add_statistic("simulation_error", false, 1110.5)
 	# done last so  we don't connect before spawn_function gets set
 	start_client()
 
@@ -57,15 +56,19 @@ func start_client():
 		return error
 	multiplayer.multiplayer_peer = peer
 
-
-
+var character_physics_state: Dictionary = {}
 func _physics_process(delta):
-#	print("cl time: ", Time.get_unix_time_from_system())
 	statistics["phys_frame_msec"].add_sample(Time.get_ticks_usec())
 	if !warmed_up or client_character == null:
 		return
 	# check if unhandled tick state from server
-	var state = last_received_server_state.duplicate(true)
+#	reconcile_server_state(last_received_server_state.duplicate(true), delta)
+	var player_input: Dictionary = input_handler.record_input_for_tick(tick)
+#	messenger.send_message_to_server({"input": player_input, "tick": tick})
+	character_physics_state = client_character.move_and_update_view(player_input, delta, character_physics_state)
+	tick += 1
+
+func reconcile_server_state(state, delta):
 	if is_reconciliation_enabled_ and state["tick"] > latest_handled_tick:
 		var simulation_result = simulate(state, delta)
 		var predicted_state = simulation_result["predicted_state"]
@@ -80,31 +83,19 @@ func _physics_process(delta):
 			var corrected_state = predicted_state.duplicate()
 			corrected_state["velocity"] = simulated_state["velocity"] + (reconciliation_vector_ * RECONCILIATION_VELOCITY_CORRECTION_FACTOR)
 			corrected_state["position"] = corrected_state["position"] + (reconciliation_vector_ * RECONCILIATION_POSITION_CORRECTION_FACTOR)
-#			client_character.update_state(corrected_state)
+			client_character.update_state(corrected_state)
 		latest_handled_tick = state["tick"]
 		last_received_server_state = NO_SERVER_STATE
-	# get input for frame
-	var input = input_handler.record_input_for_tick(tick, delta)
-	input_for_tick_[tick] = input
-	input["client_timestamp"] = Time.get_ticks_usec()
-	messenger.send_message_to_server(input)
-	client_character.handle_input_frame(input)
-	tick += 1
 
-func simulate(server_state, delta):
-	var character_state_before_simulation = client_character.get_current_state()
-	var inputs_since_state_tick = []
+func simulate(server_state: PlayerPhysicsState, delta: float):
+	var character_state_before_simulation: PlayerPhysicsState = client_character.get_current_physics_state()
 	# server state with tick X is from after input X has been processed. So next input is X+1 
-	var simulation_tick = server_state["tick"] + 1
-	while input_for_tick_.has(simulation_tick):
-		inputs_since_state_tick.push_back(input_for_tick_[simulation_tick])
-		simulation_tick += 1
+	var inputs_since_state_tick = input_handler.get_inputs_since_tick(server_state["tick"] + 1)
 #	statistics["simulation_error"].add_sample(inputs_since_state_tick.size())
 	
 	var character_simulation_state = server_state.duplicate()
 	for simulation_input in inputs_since_state_tick:
-		client_character.update_state(character_simulation_state)
-		character_simulation_state = client_character.move(simulation_input)
+		character_simulation_state = client_character.move(character_simulation_state, simulation_input, delta)
 		
 	return {
 		"simulated_state": character_simulation_state,
