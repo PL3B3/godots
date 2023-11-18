@@ -109,6 +109,51 @@ surface_material_override/0 = SubResource("StandardMaterial3D_lqxeh")
 [node name="Block" parent="Obstacles" instance=ExtResource("5_4w47m")]
 transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 4, 0.433982, -5.48755)
 
+[node name="Block11" parent="Obstacles" instance=ExtResource("5_4w47m")]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 4, 0.433982, 2.51245)
+
+[node name="Block12" parent="Obstacles" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.51, 1.67695, 4.84)
+
+[node name="Block13" parent="Obstacles" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.29695, 1.58797, 4.84)
+
+[node name="Block14" parent="Obstacles" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.16379, 1.51388, 4.84)
+
+[node name="Block15" parent="Obstacles" instance=ExtResource("5_4w47m")]
+transform = Transform3D(2, 0, 0, 0, 1, 0, 0, 0, 2, 4.81433, 1.41799, 4.84)
+
+[node name="Block16" parent="Obstacles" instance=ExtResource("5_4w47m")]
+transform = Transform3D(2, 0, 0, 0, 0.277667, -1.92135, 0, 0.960677, 0.555334, 8.00496, 1.15587, 4.84)
+
+[node name="Block2" parent="Obstacles" instance=ExtResource("5_4w47m")]
+transform = Transform3D(4.71431, 0.280119, -1.33207, -1.03794, 1.3695, 0, 1.30305, 0.0774259, 4.81929, -2, 3.43398, -8.48755)
+
+[node name="Block3" parent="Obstacles" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1.86327, 0, -0.726795, 0, 1, 0, 0.726795, 0, 1.86327, -6, 5.43398, -3.48755)
+
+[node name="Block4" parent="Obstacles" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1.76244, 0, 0.945409, 0, 1, 0, -0.945409, 0, 1.76244, -4, 6.43398, 0.51245)
+
+[node name="Block5" parent="Obstacles" instance=ExtResource("5_4w47m")]
+transform = Transform3D(6.49519, 0, 2.5, 0, 0.6, 0, -3.75, 0, 4.33013, -11.518, 7.05238, -0.942845)
+
+[node name="Block6" parent="Obstacles" instance=ExtResource("5_4w47m")]
+transform = Transform3D(4.00905, 0.196357, 2.5, -1.88945, 0.555511, -5.50624e-15, -2.31463, -0.113367, 4.33013, -16.5116, 7.96913, 1.97521)
+
+[node name="Block7" parent="Obstacles" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1.76777, 0, 15.9099, 0, 1.8, 0, -1.76777, 0, 15.9099, -12.4475, 8.43398, 11.0649)
+
+[node name="Block8" parent="Obstacles" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1.76777, 0, 4.40257, 0, 1.8, 0, -1.76777, 0, 4.40257, -5.49162, 10.2258, 15.5768)
+
+[node name="Block9" parent="Obstacles" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1.76777, 0, 2.3404, 0, 1.8, 0, -1.76777, 0, 2.3404, -3.36535, 12.027, 15.4274)
+
+[node name="Block10" parent="Obstacles" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1.76777, 0, 5.85099, 0, 1.8, 0, -1.76777, 0, 5.85099, -3.99147, 13.719, 12.4854)
+
 [node name="Ramp" parent="Obstacles" instance=ExtResource("5_4w47m")]
 transform = Transform3D(2, 0, 0, 0, 0.866025, -2, 0, 0.5, 3.4641, 4, 1, -2)
 
@@ -117,6 +162,80 @@ transform = Transform3D(1.41421, -0.353553, -2.44949, 0, 0.866025, -2, 1.41421, 
 
 [node name="Ramp2" parent="Obstacles" instance=ExtResource("5_4w47m")]
 transform = Transform3D(2, 0, 0, 0, 0.707107, 2.82843, 0, -0.707107, 2.82843, 7, 3, -7)
+
+[node name="Stair" type="Node3D" parent="Obstacles"]
+
+[node name="Block12" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.51, 1.67695, 8.08925)
+
+[node name="Block13" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.59686, 1.58797, 8.08925)
+
+[node name="Block14" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.68801, 1.50442, 8.08925)
+
+[node name="Block15" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7645, 1.44088, 8.08925)
+
+[node name="Block16" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8348, 1.38036, 8.08925)
+
+[node name="Block17" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.91167, 1.3165, 8.08925)
+
+[node name="Block18" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.99544, 1.24272, 8.08925)
+
+[node name="Block19" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.07272, 1.17208, 8.08925)
+
+[node name="Block20" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.15978, 1.10007, 8.08925)
+
+[node name="Block21" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.24664, 1.01109, 8.08925)
+
+[node name="Block22" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.33779, 0.927539, 8.08925)
+
+[node name="Block23" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.41428, 0.863993, 8.08925)
+
+[node name="Block24" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.48458, 0.803478, 8.08925)
+
+[node name="Block25" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.56145, 0.739616, 8.08925)
+
+[node name="Block26" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.64522, 0.665841, 8.08925)
+
+[node name="Block27" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.72251, 0.595201, 8.08925)
+
+[node name="Block28" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.81458, 0.517281, 8.08925)
+
+[node name="Block29" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.90144, 0.428301, 8.08925)
+
+[node name="Block30" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.99259, 0.344752, 8.08925)
+
+[node name="Block31" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.06908, 0.281206, 8.08925)
+
+[node name="Block32" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.13938, 0.220691, 8.08925)
+
+[node name="Block33" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.21625, 0.156829, 8.08925)
+
+[node name="Block34" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.30002, 0.0830544, 8.08925)
+
+[node name="Block35" parent="Obstacles/Stair" instance=ExtResource("5_4w47m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.37731, 0.0124144, 8.08925)
 
 [node name="Decoration" type="Node3D" parent="."]
 
@@ -155,6 +274,32 @@ transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0)
 [node name="CSGBox3D2" type="CSGBox3D" parent="Decoration/CheeseBro3"]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 1, 0, 0)
 operation = 2
+
+[node name="OmniLight3D2" type="OmniLight3D" parent="Decoration/CheeseBro3"]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 1.33842, -0.236997, 1.66893e-06)
+light_color = Color(0.878431, 0.494118, 0.686275, 1)
+light_energy = 2.981
+light_specular = 2.329
+omni_range = 3.642
+
+[node name="LargeSisterOfCheese" type="CSGCombiner3D" parent="Decoration"]
+transform = Transform3D(-5.02219, -1.25403, 19.3185, -4.84521, 19.4042, 0, -18.743, -4.68011, -5.17638, 52.3889, 52.9715, 71.2885)
+material_override = SubResource("StandardMaterial3D_pj7sh")
+use_collision = true
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Decoration/LargeSisterOfCheese"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Decoration/LargeSisterOfCheese"]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 1, 0, 0)
+operation = 2
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Decoration/LargeSisterOfCheese"]
+transform = Transform3D(0.05, 1.86265e-09, -9.31323e-10, -9.31323e-10, 0.05, 6.98492e-10, 9.31323e-10, -6.98492e-10, 0.05, 0.665893, -1.19209e-07, -3.57628e-07)
+light_color = Color(0.278431, 1, 1, 1)
+light_energy = 2.067
+omni_range = 36.229
+omni_attenuation = 0.466516
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.965926, -0.183013, -0.183013, 0.25, 0.476727, 0.842752, -0.0669873, -0.859789, 0.506236, 0, 4, 0)

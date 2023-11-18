@@ -2,7 +2,7 @@ extends RigidBody3D
 
 class_name CharacterMovementRigidBody
 
-const SPEED = 6.0
+const SPEED = 5.0
 const GROUND_ACCEL = 12.0
 const AIR_ACCEL = 4.0
 const GROUND_REVERSE_ACCEL_FACTOR = 1.0
@@ -24,6 +24,7 @@ const FLOOR_CHECK_RADIUS:float = 0.5
 @onready var next_head_position: Vector3 = head.position
 @onready var last_head_position: Vector3 = head.position
 
+var integrating_forces = false
 var query_shape := SphereShape3D.new()
 var tick = -1
 var height = 2.0
@@ -36,37 +37,24 @@ func _process(delta):
 #	head.position = last_head_position.lerp(next_head_position, 0.5)
 #	last_head_position = head.position
 
-func move_and_update_view(player_input: Dictionary, delta: float, initial_physics_state: Dictionary = {}):
+var counter = 0
+func move_and_update_view(player_input: Dictionary, delta: float, initial_physics_state: Dictionary, correction_velocity: Vector3 = Vector3.ZERO):
+	counter += 1
 	head.rotation_degrees.y = player_input["yaw"]
 	camera.rotation_degrees.x = player_input["pitch"]
 	initial_physics_state = initial_physics_state if !initial_physics_state.is_empty() else get_physics_state()
-	var state_after_move: Dictionary = move(initial_physics_state, player_input, delta)
+	var state_after_move: Dictionary = move(initial_physics_state, player_input, delta, correction_velocity)
 	next_head_position = state_after_move["position"]
 	return state_after_move
 
-var order = 0
-var integrating_forces = false
-func _integrate_forces(state: PhysicsDirectBodyState3D):
-#	cl_print([integrating_forces])
-#	print("i ", get_world_3d().direct_space_state)
-	if !integrating_forces:
-		return
-#	cl_print(['i', Time.get_ticks_msec(), linear_velocity])
-#	print("i", order)
-#	print("i", Time.get_ticks_usec())
+#var order = 0
+#func _integrate_forces(state: PhysicsDirectBodyState3D):
+#	if !integrating_forces:
+#		return
 
-#func _physics_process(delta):
-#	print("p ", get_world_3d().direct_space_state)
-#	print("p", order)
-#	print("p", Time.get_ticks_usec())
-#	order += 1
-#	integrating_forces = true
-#	PhysicsServer3D.simulate(delta)
-#	integrating_forces = false
-
-func move(initial_physics_state: Dictionary, player_input: Dictionary, delta: float) -> Dictionary:
+func move(initial_physics_state: Dictionary, player_input: Dictionary, delta: float, correction_velocity: Vector3 = Vector3.ZERO) -> Dictionary:
 #	return debug_move(player_input)
-	var state_to_simulate: Dictionary = compute_movement(initial_physics_state, player_input, delta)
+	var state_to_simulate: Dictionary = compute_movement(initial_physics_state, player_input, delta, correction_velocity)
 	return step_physics(state_to_simulate, delta)
 
 func debug_move(player_input):
@@ -75,16 +63,19 @@ func debug_move(player_input):
 	var debug_dir = direction + (
 		Input.get_action_strength("ui_up") - Input.get_action_strength("ui_down")
 	) * UP
-	var debug_speed = 0.001 if Input.is_action_pressed("slow") else 0.1
+	var debug_speed = 0.0005 if Input.is_action_pressed("slow") else 0.01
 	position += debug_dir * debug_speed
 	
 	var floor = find_floor({"position": position + Vector3.DOWN * 0.5})
-	cl_print([floor, position])
+#	if counter % 120 == 0:
+#		cl_print([floor, position])
 	
 	return get_physics_state()
 
 var frames_since_grounded = 0
-func compute_movement(initial_physics_state: Dictionary, player_input: Dictionary, delta: float) -> Dictionary:
+var export_floor_contact = {}
+func compute_movement(initial_physics_state: Dictionary, player_input: Dictionary, delta: float, correction_velocity: Vector3 = Vector3.ZERO) -> Dictionary:
+#	cl_print(["delta", delta])
 	var next_velocity: Vector3 = initial_physics_state["velocity"]
 	var next_position: Vector3 = initial_physics_state["position"]
 	var h_velocity = Vector3(next_velocity.x, 0, next_velocity.z)
@@ -92,22 +83,25 @@ func compute_movement(initial_physics_state: Dictionary, player_input: Dictionar
 	var facing_horizontal_direction_basis = Basis.IDENTITY.rotated(Vector3.UP, deg_to_rad(player_input["yaw"]))
 	var direction = (facing_horizontal_direction_basis * Vector3(player_input["direction"].x, 0, player_input["direction"].y)).normalized()
 	var floor_contact = find_floor({"position": next_position + Vector3.DOWN * 0.5})
+#	cl_print(["floor contact", floor_contact])
+	export_floor_contact = floor_contact
 	if is_floor(floor_contact.normal):
 		var target_velocity = project_vector_onto_plane_along_direction(direction * SPEED, floor_contact.normal, UP)
 		next_velocity = next_velocity.lerp(target_velocity, GROUND_ACCEL * delta)
+#		next_velocity = Plane(floor_contact.normal).project(next_velocity)
 		if player_input["is_jumping"]:
 			next_velocity.y = JUMP_FORCE
-		elif frames_since_grounded > 5:
+		elif true: # elif frames_since_grounded > 5:
 			var snap_motion = compute_snap_motion(floor_contact.position, floor_contact.normal, next_position)
-			cl_print(["implied offset:", snap_motion, floor_contact, next_position])
+#			cl_print(["implied offset:", snap_motion, floor_contact, next_position])
 			next_position += snap_motion
-		frames_since_grounded += 1
+		frames_since_grounded += 1  
 	else:
 		frames_since_grounded = 0
 		if h_velocity.dot(direction) <= SPEED:
 			next_velocity += (direction * (SPEED - h_velocity.dot(direction))) * AIR_ACCEL * delta
 		next_velocity.y -= GRAVITY * delta
-	
+	next_position += correction_velocity
 	return {
 		"position": next_position,
 		"velocity": next_velocity
@@ -121,9 +115,7 @@ func set_physics_state(physics_state: Dictionary):
 func step_physics(state_to_simulate: Dictionary, delta: float) -> Dictionary:
 	set_physics_state(state_to_simulate)
 #	cl_print(["b4:", state_to_simulate])
-	integrating_forces = true
 	PhysicsServer3D.simulate(delta)
-	integrating_forces = false
 	var state_after_movement = get_physics_state()
 #	cl_print(["af:", state_after_movement])
 	freeze_physics()
@@ -152,7 +144,7 @@ func compute_snap_motion(floor_point, floor_normal, actual_position):
 	var implied_position_offset = implied_position_based_on_floor_contact - actual_position
 #	cl_print(["implied offset:", implied_position_offset, floor_point, actual_position])
 	if implied_position_offset.dot(UP) < -TOLERANCE:
-		return 0.8 * (implied_position_offset.project(floor_normal) * (1 - TOLERANCE))
+		return 0.4 * (implied_position_offset.project(floor_normal) * (1 - TOLERANCE))
 	else:
 		return Vector3.ZERO
 
@@ -161,12 +153,17 @@ func find_floor(state):
 	var start_pos = state.position
 	var rest_contacts = get_rest_contacts(start_pos)
 	var best_floor = best_floor(rest_contacts, start_pos)
+#	if counter % 120 == 0:
+#		cl_print(["contacts", rest_contacts, "\nbest floor", best_floor])
 	if best_floor != NOT_ON_FLOOR: return best_floor
 	# ---- Sweep Test ----
 	var motion = cast_sphere(start_pos, DOWN * FLOOR_CHECK_DIST)
 	var end_pos = start_pos + DOWN * ((FLOOR_CHECK_DIST * motion[1]) + TOLERANCE)
 	rest_contacts = get_rest_contacts(end_pos)
-	best_floor = best_floor(rest_contacts, end_pos, 1.0 - motion[1])
+#	if counter % 120 == 0:
+#		cl_print(["motion", motion, "\nmotion contacts", rest_contacts, "\nbest floor", best_floor])
+	var motion_left_for_wall_check = (1.0 - motion[1]) * FLOOR_CHECK_DIST
+	best_floor = best_floor(rest_contacts, end_pos, motion_left_for_wall_check)
 	return best_floor
 
 func best_floor(contacts: Array, current_position, motion_left=FLOOR_CHECK_DIST, iters=3):

@@ -13,7 +13,7 @@ config_version=5
 config/name="NetworkingTest"
 run/main_scene="res://scenes/root.tscn"
 config/features=PackedStringArray("4.1", "Forward Plus")
-run/max_fps=120
+run/max_fps=60
 config/icon="res://icon.svg"
 
 [input]
@@ -58,6 +58,7 @@ slow={
 
 common/physics_jitter_fix=0.0
 3d/solver/contact_max_separation=0.001
+3d/solver/default_contact_bias=0.99
 
 [rendering]
 
