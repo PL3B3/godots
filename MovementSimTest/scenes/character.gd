@@ -70,7 +70,7 @@ func simulate(delta):
 	for past_state in recorded_states:
 		var sim_state = {TRANSFORM_KEY: global_transform, VELOCITY_KEY: Vector3.ZERO, TICK_KEY: past_state[TICK_KEY]}
 		update_state(sim_state)
-		PhysicsServer3D.simulate(delta)
+#		PhysicsServer3D.simulate(delta)
 	return {TRANSFORM_KEY: global_transform, VELOCITY_KEY: linear_velocity, TICK_KEY: state_history.back()[TICK_KEY]}
 
 

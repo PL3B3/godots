@@ -1,0 +1,11 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://d4i3b424s406h"]
+
+[ext_resource type="Texture2D" uid="uid://diby1xdiwhx7e" path="res://addons/shapespark-low-poly-exterior-plants/textures/branch-1-02.png" id="1"]
+
+[resource]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+cull_mode = 2
+albedo_texture = ExtResource("1")
+metallic_specular = 0.0

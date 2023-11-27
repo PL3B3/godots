@@ -1,0 +1,38 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Common/gamer/Gamer.gd" type="Script" id=1]
+
+[sub_resource type="SphereShape" id=6]
+
+[sub_resource type="SphereShape" id=5]
+
+[sub_resource type="SpatialMaterial" id=3]
+albedo_color = Color( 0.333333, 0.792157, 0.760784, 1 )
+
+[sub_resource type="SphereMesh" id=4]
+
+[node name="Gamer" type="KinematicBody"]
+script = ExtResource( 1 )
+camera_path = NodePath("Camera")
+move_collider_path = NodePath("MoveCollider")
+hurt_collider_path = NodePath("HurtCollider")
+
+[node name="MoveCollider" type="CollisionShape" parent="."]
+shape = SubResource( 6 )
+
+[node name="HurtCollider" type="CollisionShape" parent="."]
+visible = false
+shape = SubResource( 5 )
+disabled = true
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.528439, 0 )
+keep_aspect = 0
+fov = 105.0
+
+[node name="Meshes" type="Spatial" parent="."]
+
+[node name="Body" type="MeshInstance" parent="Meshes"]
+material_override = SubResource( 3 )
+mesh = SubResource( 4 )
+material/0 = null

@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://ddo0gbp8w0y8c"]
+
+[ext_resource type="Script" path="res://scenes/kinematic_character.gd" id="1_4ba55"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_12wfh"]
+
+[node name="KinematicCharacter" type="CharacterBody3D"]
+script = ExtResource("1_4ba55")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_12wfh")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+top_level = true
