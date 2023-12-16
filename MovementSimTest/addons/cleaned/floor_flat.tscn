@@ -1,0 +1,56 @@
+[gd_scene load_steps=6 format=3]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_1h1uo"]
+load_path = "res://.godot/imported/floor_flat_cobblestoneAlternative.png-a591b88086858bfbb1a72ce70f28fb6c.s3tc.ctex"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_d5k4k"]
+resource_name = "bricks"
+vertex_color_use_as_albedo = true
+albedo_color = Color(1, 1, 1, 1)
+albedo_texture = SubResource("CompressedTexture2D_1h1uo")
+metallic_specular = 0.2
+roughness = 0.8
+emission_enabled = true
+texture_filter = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_hf1jo"]
+_surfaces = [{
+"aabb": AABB(-0.5, 0, -0.5, 1, 1e-05, 1.00001),
+"format": 4097,
+"index_count": 6,
+"index_data": PackedByteArray(2, 0, 0, 0, 1, 0, 1, 0, 3, 0, 2, 0),
+"name": "bricks",
+"primitive": 3,
+"vertex_count": 4,
+"vertex_data": PackedByteArray(0, 0, 0, 191, 0, 0, 0, 0, 0, 0, 0, 63, 0, 0, 0, 191, 0, 0, 0, 0, 0, 0, 0, 191, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 0, 63, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 0, 191)
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_mwxj0"]
+resource_name = "floor_flat_Mesh floor_flat"
+_surfaces = [{
+"aabb": AABB(-0.5, 0, -0.5, 1, 1e-05, 1.00001),
+"attribute_data": PackedByteArray(0, 0, 0, 0, 0, 0, 0, 64, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 128, 63, 0, 0, 0, 64, 0, 0, 128, 63, 0, 0, 128, 63),
+"format": 4119,
+"index_count": 6,
+"index_data": PackedByteArray(2, 0, 0, 0, 1, 0, 1, 0, 3, 0, 2, 0),
+"material": SubResource("StandardMaterial3D_d5k4k"),
+"name": "bricks",
+"primitive": 3,
+"vertex_count": 4,
+"vertex_data": PackedByteArray(0, 0, 0, 191, 0, 0, 0, 0, 0, 0, 0, 63, 255, 127, 255, 255, 255, 255, 255, 191, 0, 0, 0, 191, 0, 0, 0, 0, 0, 0, 0, 191, 255, 127, 255, 255, 255, 255, 255, 191, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 0, 63, 255, 127, 255, 255, 255, 255, 255, 191, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 0, 191, 255, 127, 255, 255, 255, 255, 255, 191)
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_hf1jo")
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_wqkv1"]
+points = PackedVector3Array(-0.5, 0, -0.5, -0.5, 0, 0.5, 0.5, 0, -0.5, 0.5, 0, 0.5)
+
+[node name="floor_flat" type="MeshInstance3D"]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
+mesh = SubResource("ArrayMesh_mwxj0")
+
+[node name="floor_flat_col" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="floor_flat_col"]
+shape = SubResource("ConvexPolygonShape3D_wqkv1")

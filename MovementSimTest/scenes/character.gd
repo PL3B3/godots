@@ -11,7 +11,7 @@ const TICK_KEY = "tick"
 @onready var physics_fps = ProjectSettings.get_setting("physics/common/physics_ticks_per_second")
 @onready var tick_limit: int = 60 * 10 * physics_fps
 
-var speed = 10.0
+var speed = 100.0
 var acceleration = 1.0
 var game_tick: int = 0
 var state_history: Array = []

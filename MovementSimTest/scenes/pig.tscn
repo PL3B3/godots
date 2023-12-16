@@ -1,9 +1,10 @@
-[gd_scene load_steps=34 format=3 uid="uid://cw23bmfgtlc8f"]
+[gd_scene load_steps=35 format=3 uid="uid://cw23bmfgtlc8f"]
 
 [ext_resource type="Script" path="res://scenes/pig.gd" id="1_dagx2"]
 [ext_resource type="Texture2D" uid="uid://ctxkv0i50dnru" path="res://assets/Pig_SkinTexture.png" id="1_viq2a"]
 [ext_resource type="PackedScene" uid="uid://vxgkx6rd0v7w" path="res://assets/Pig.glb" id="1_yq3sq"]
 [ext_resource type="Texture2D" uid="uid://ylwi8ac6t50n" path="res://assets/Pig_EyeTexture.png" id="2_rl1xj"]
+[ext_resource type="PackedScene" uid="uid://dsv8cuucx4u6o" path="res://assets/roughnessPig.tscn" id="5_7g86f"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ybm0s"]
 resource_name = "SkinTexture"
@@ -485,3 +486,6 @@ skeleton = NodePath("")
 transform = Transform3D(-1.5299e-08, 0, 0.35, 0, 0.35, 0, -0.35, 0, -1.5299e-08, 0, -0.378899, 0.0331399)
 
 [node name="Pig" parent="MeshOrigin" instance=ExtResource("1_yq3sq")]
+visible = false
+
+[node name="Pig2" parent="MeshOrigin" instance=ExtResource("5_7g86f")]

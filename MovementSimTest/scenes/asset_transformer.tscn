@@ -1,0 +1,166 @@
+[gd_scene load_steps=52 format=3 uid="uid://cni8vtyh8r0cb"]
+
+[ext_resource type="Script" path="res://scenes/asset_transformer.gd" id="1_lvi3y"]
+[ext_resource type="PackedScene" uid="uid://bi7tfowv6ndn7" path="res://addons/medieval/column.glb" id="2_086mg"]
+[ext_resource type="PackedScene" uid="uid://c5ey02wxlsayn" path="res://addons/medieval/battlement.glb" id="2_o1j0v"]
+[ext_resource type="PackedScene" uid="uid://0qnt4j2spwa7" path="res://addons/medieval/battlement_cornerInner.glb" id="3_eahab"]
+[ext_resource type="PackedScene" uid="uid://dk64f58277ye6" path="res://addons/medieval/battlement_cornerOuter.glb" id="4_t2p1e"]
+[ext_resource type="PackedScene" uid="uid://c6icx7xo6yycl" path="res://addons/medieval/battlement_half.glb" id="5_e3yeb"]
+[ext_resource type="PackedScene" uid="uid://v4b0g2f5sakh" path="res://addons/medieval/columnPaint.glb" id="7_gxj3d"]
+[ext_resource type="PackedScene" uid="uid://786goiwbx2h4" path="res://addons/medieval/columnPaint_damaged.glb" id="8_kojvu"]
+[ext_resource type="PackedScene" uid="uid://dof1bmjxy2x6u" path="res://addons/medieval/column_damaged.glb" id="9_5yjuv"]
+[ext_resource type="PackedScene" uid="uid://d0m5hb8kg524b" path="res://addons/medieval/detail_barrel.glb" id="10_srd56"]
+[ext_resource type="PackedScene" uid="uid://bfj4vfp51daic" path="res://addons/medieval/detail_crate.glb" id="11_wmpdi"]
+[ext_resource type="PackedScene" uid="uid://d1hmkjl0v5mdm" path="res://addons/medieval/detail_crateSmall.glb" id="12_5svw1"]
+[ext_resource type="PackedScene" uid="uid://duqu3b4nhh4d2" path="res://addons/medieval/fence.glb" id="13_t6yl3"]
+[ext_resource type="PackedScene" uid="uid://cken1f8gpjci5" path="res://addons/medieval/floor.glb" id="14_iytvx"]
+[ext_resource type="PackedScene" uid="uid://bb6bfu73qgcfc" path="res://addons/medieval/floor_flat.glb" id="15_tgk11"]
+[ext_resource type="PackedScene" uid="uid://cy6vrc8158rgh" path="res://addons/medieval/floor_stairs.glb" id="16_ac4ab"]
+[ext_resource type="PackedScene" uid="uid://d4jfwpkxocmsm" path="res://addons/medieval/floor_stairsCornerInner.glb" id="17_vewte"]
+[ext_resource type="PackedScene" uid="uid://7hfxs5e6ocvr" path="res://addons/medieval/floor_stairsCornerOuter.glb" id="18_xxnil"]
+[ext_resource type="PackedScene" uid="uid://bms7spqetsuxc" path="res://addons/medieval/floor_steps.glb" id="19_hge55"]
+[ext_resource type="PackedScene" uid="uid://47prhav2it4p" path="res://addons/medieval/floor_stepsCornerInner.glb" id="20_yoeac"]
+[ext_resource type="PackedScene" uid="uid://dd3vehe22brvw" path="res://addons/medieval/floor_stepsCornerOuter.glb" id="21_7wj6k"]
+[ext_resource type="PackedScene" uid="uid://djytpra5mn3w0" path="res://addons/medieval/overhang.glb" id="22_0peys"]
+[ext_resource type="PackedScene" uid="uid://bg0wppu5ctxt4" path="res://addons/medieval/overhang_fence.glb" id="23_bxnue"]
+[ext_resource type="PackedScene" uid="uid://xctfywy8p2gc" path="res://addons/medieval/overhang_round.glb" id="24_ijiqf"]
+[ext_resource type="PackedScene" uid="uid://6eaib8cldjqt" path="res://addons/medieval/roof.glb" id="25_tbprn"]
+[ext_resource type="PackedScene" uid="uid://b5nijs6uyte74" path="res://addons/medieval/roof_corner.glb" id="26_11kfh"]
+[ext_resource type="PackedScene" uid="uid://bceqbif20lmhn" path="res://addons/medieval/roof_edge.glb" id="27_6vxpp"]
+[ext_resource type="PackedScene" uid="uid://ctac3tp71ve8c" path="res://addons/medieval/structure.glb" id="28_5f6dv"]
+[ext_resource type="PackedScene" uid="uid://cvfn00nydvkul" path="res://addons/medieval/structure_poles.glb" id="29_utoyv"]
+[ext_resource type="PackedScene" uid="uid://np16k5redjpg" path="res://addons/medieval/structure_wall.glb" id="30_tq3lu"]
+[ext_resource type="PackedScene" uid="uid://jvvsdoilxwqy" path="res://addons/medieval/towerPaint.glb" id="32_yjn3g"]
+[ext_resource type="PackedScene" uid="uid://d4jumjj6826em" path="res://addons/medieval/towerPaint_base.glb" id="33_q4bdv"]
+[ext_resource type="PackedScene" uid="uid://hjgp46yy0qpi" path="res://addons/medieval/tower_base.glb" id="34_x0ia6"]
+[ext_resource type="PackedScene" uid="uid://tpmpas3f6u00" path="res://addons/medieval/tower_edge.glb" id="35_sea30"]
+[ext_resource type="PackedScene" uid="uid://d4m3v5np1pifx" path="res://addons/medieval/tower_top.glb" id="36_c0wkp"]
+[ext_resource type="PackedScene" uid="uid://c1rod3xbykvv1" path="res://addons/medieval/wall.glb" id="37_hbfcm"]
+[ext_resource type="PackedScene" uid="uid://bjdiv8bu2776w" path="res://addons/medieval/wallFortified.glb" id="38_r3kqj"]
+[ext_resource type="PackedScene" uid="uid://rsbbwdwjdhiu" path="res://addons/medieval/wallFortifiedPaint_gate.glb" id="40_apbt3"]
+[ext_resource type="PackedScene" uid="uid://b14e05snd6q4x" path="res://addons/medieval/wallFortifiedPaint_half.glb" id="41_q3xv2"]
+[ext_resource type="PackedScene" uid="uid://ccu1clloft4i5" path="res://addons/medieval/wallFortified_gate.glb" id="42_g8tfc"]
+[ext_resource type="PackedScene" uid="uid://d10wisebsw6y0" path="res://addons/medieval/wallFortified_gateHalf.glb" id="43_0ooio"]
+[ext_resource type="PackedScene" uid="uid://ct8tjudcq1r7c" path="res://addons/medieval/wallFortified_half.glb" id="44_w13ot"]
+[ext_resource type="PackedScene" uid="uid://ctx21a4mn6wv4" path="res://addons/medieval/wallPaint.glb" id="45_v74aw"]
+[ext_resource type="PackedScene" uid="uid://bsa5tf0qa4e1v" path="res://addons/medieval/wallPaint_detail.glb" id="46_ltjpg"]
+[ext_resource type="PackedScene" uid="uid://cr5wxah7ltfpf" path="res://addons/medieval/wallPaint_gate.glb" id="48_jwws4"]
+[ext_resource type="PackedScene" uid="uid://bfks2sh1x4nrr" path="res://addons/medieval/wallPaint_half.glb" id="49_0y2yy"]
+[ext_resource type="PackedScene" uid="uid://m6sg7x2gt1y6" path="res://addons/medieval/wall_detail.glb" id="50_sxivh"]
+[ext_resource type="PackedScene" uid="uid://m1dk810ju8ck" path="res://addons/medieval/wall_flat.glb" id="51_0d66o"]
+[ext_resource type="PackedScene" uid="uid://c5uc82bnxupv3" path="res://addons/medieval/wall_flatGate.glb" id="52_4fvhl"]
+[ext_resource type="PackedScene" uid="uid://crg3ksngbshw4" path="res://addons/medieval/wall_half.glb" id="55_g52ih"]
+[ext_resource type="PackedScene" uid="uid://chbrccn7qpi2s" path="res://addons/medieval/wall_low.glb" id="56_d223n"]
+
+[node name="MedievalAssets" type="Node3D"]
+script = ExtResource("1_lvi3y")
+
+[node name="battlement" parent="." instance=ExtResource("2_o1j0v")]
+
+[node name="battlement_cornerInner" parent="." instance=ExtResource("3_eahab")]
+
+[node name="battlement_cornerOuter" parent="." instance=ExtResource("4_t2p1e")]
+
+[node name="battlement_half" parent="." instance=ExtResource("5_e3yeb")]
+
+[node name="column" parent="." instance=ExtResource("2_086mg")]
+
+[node name="columnPaint" parent="." instance=ExtResource("7_gxj3d")]
+
+[node name="columnPaint_damaged" parent="." instance=ExtResource("8_kojvu")]
+
+[node name="column_damaged" parent="." instance=ExtResource("9_5yjuv")]
+
+[node name="detail_barrel" parent="." instance=ExtResource("10_srd56")]
+
+[node name="detail_crate" parent="." instance=ExtResource("11_wmpdi")]
+
+[node name="detail_crateSmall" parent="." instance=ExtResource("12_5svw1")]
+
+[node name="fence" parent="." instance=ExtResource("13_t6yl3")]
+
+[node name="floor" parent="." instance=ExtResource("14_iytvx")]
+
+[node name="floor_flat" parent="." instance=ExtResource("15_tgk11")]
+
+[node name="floor_stairs" parent="." instance=ExtResource("16_ac4ab")]
+
+[node name="floor_stairsCornerInner" parent="." instance=ExtResource("17_vewte")]
+
+[node name="floor_stairsCornerOuter" parent="." instance=ExtResource("18_xxnil")]
+
+[node name="floor_steps" parent="." instance=ExtResource("19_hge55")]
+
+[node name="floor_stepsCornerInner" parent="." instance=ExtResource("20_yoeac")]
+
+[node name="floor_stepsCornerOuter" parent="." instance=ExtResource("21_7wj6k")]
+
+[node name="overhang" parent="." instance=ExtResource("22_0peys")]
+
+[node name="overhang_fence" parent="." instance=ExtResource("23_bxnue")]
+
+[node name="overhang_round" parent="." instance=ExtResource("24_ijiqf")]
+
+[node name="roof" parent="." instance=ExtResource("25_tbprn")]
+
+[node name="roof_corner" parent="." instance=ExtResource("26_11kfh")]
+
+[node name="roof_edge" parent="." instance=ExtResource("27_6vxpp")]
+
+[node name="structure" parent="." instance=ExtResource("28_5f6dv")]
+
+[node name="structure_poles" parent="." instance=ExtResource("29_utoyv")]
+
+[node name="structure_wall" parent="." instance=ExtResource("30_tq3lu")]
+
+[node name="tower" parent="." instance=ExtResource("33_q4bdv")]
+
+[node name="towerPaint" parent="." instance=ExtResource("32_yjn3g")]
+
+[node name="towerPaint_base" parent="." instance=ExtResource("33_q4bdv")]
+
+[node name="tower_base" parent="." instance=ExtResource("34_x0ia6")]
+
+[node name="tower_edge" parent="." instance=ExtResource("35_sea30")]
+
+[node name="tower_top" parent="." instance=ExtResource("36_c0wkp")]
+
+[node name="wall" parent="." instance=ExtResource("37_hbfcm")]
+
+[node name="wallFortified" parent="." instance=ExtResource("38_r3kqj")]
+
+[node name="wallFortifiedPaint" parent="." instance=ExtResource("42_g8tfc")]
+
+[node name="wallFortifiedPaint_gate" parent="." instance=ExtResource("40_apbt3")]
+
+[node name="wallFortifiedPaint_half" parent="." instance=ExtResource("41_q3xv2")]
+
+[node name="wallFortified_gate" parent="." instance=ExtResource("42_g8tfc")]
+
+[node name="wallFortified_gateHalf" parent="." instance=ExtResource("43_0ooio")]
+
+[node name="wallFortified_half" parent="." instance=ExtResource("44_w13ot")]
+
+[node name="wallPaint" parent="." instance=ExtResource("45_v74aw")]
+
+[node name="wallPaint_detail" parent="." instance=ExtResource("46_ltjpg")]
+
+[node name="wallPaint_flat" parent="." instance=ExtResource("49_0y2yy")]
+
+[node name="wallPaint_gate" parent="." instance=ExtResource("48_jwws4")]
+
+[node name="wallPaint_half" parent="." instance=ExtResource("49_0y2yy")]
+
+[node name="wall_detail" parent="." instance=ExtResource("50_sxivh")]
+
+[node name="wall_flat" parent="." instance=ExtResource("51_0d66o")]
+
+[node name="wall_flatGate" parent="." instance=ExtResource("52_4fvhl")]
+
+[node name="wall_gate" parent="." instance=ExtResource("55_g52ih")]
+
+[node name="wall_gateHalf" parent="." instance=ExtResource("56_d223n")]
+
+[node name="wall_half" parent="." instance=ExtResource("55_g52ih")]
+
+[node name="wall_low" parent="." instance=ExtResource("56_d223n")]

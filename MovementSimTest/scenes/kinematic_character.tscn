@@ -1,10 +1,43 @@
-[gd_scene load_steps=3 format=3 uid="uid://ddo0gbp8w0y8c"]
+[gd_scene load_steps=10 format=3 uid="uid://ddo0gbp8w0y8c"]
 
 [ext_resource type="Script" path="res://scenes/kinematic_character.gd" id="1_4ba55"]
+[ext_resource type="Texture2D" uid="uid://ylwi8ac6t50n" path="res://assets/Pig_EyeTexture.png" id="2_06vcv"]
+[ext_resource type="PackedScene" uid="uid://sa2tob4fcxpb" path="res://scenes/prism_lab_head.tscn" id="3_1ydxy"]
+[ext_resource type="PackedScene" uid="uid://bfdvsvbc53m47" path="res://scenes/prism_lad_feet.tscn" id="4_33p4l"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_12wfh"]
+radius = 2.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_o5l2t"]
+albedo_texture = ExtResource("2_06vcv")
+metallic_specular = 1.0
+roughness = 0.0
+uv1_offset = Vector3(0.25, -0.245, 0)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_byl00"]
+material = SubResource("StandardMaterial3D_o5l2t")
+top_radius = 0.985
+height = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bea3n"]
+albedo_color = Color(0.996078, 0, 0.627451, 1)
+metallic_specular = 0.85
+roughness = 0.18
+rim = 0.0
+rim_tint = 1.0
+subsurf_scatter_strength = 0.17
+subsurf_scatter_skin_mode = true
+
+[sub_resource type="SphereMesh" id="SphereMesh_fysfn"]
+material = SubResource("StandardMaterial3D_bea3n")
+radius = 2.5
+height = 5.0
 
 [node name="KinematicCharacter" type="CharacterBody3D"]
+motion_mode = 1
+wall_min_slide_angle = 0.0
+floor_snap_length = 0.0
+safe_margin = 0.005
 script = ExtResource("1_4ba55")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
@@ -12,3 +45,39 @@ shape = SubResource("SphereShape3D_12wfh")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 top_level = true
+cull_mask = 1048573
+fov = 90.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -1.86022)
+visible = false
+mesh = SubResource("CylinderMesh_byl00")
+
+[node name="Head" parent="Camera3D" instance=ExtResource("3_1ydxy")]
+transform = Transform3D(-7.21238e-08, 0, 1.65, 0, 1.65, 0, -1.65, 0, -7.21238e-08, 0, 0, 0.172)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+visible = false
+mesh = SubResource("SphereMesh_fysfn")
+
+[node name="DebugLabels" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="DebugLabel1" type="Label" parent="DebugLabels"]
+layout_mode = 0
+offset_right = 92.0
+offset_bottom = 26.0
+theme_override_colors/font_color = Color(0.92549, 0, 0.54902, 1)
+text = "CHARACTER"
+
+[node name="MeshMount" type="Node3D" parent="."]
+
+[node name="Feet" parent="MeshMount" instance=ExtResource("4_33p4l")]
+transform = Transform3D(-7.21238e-08, 0, 1.65, 0, 1.65, 0, -1.65, 0, -7.21238e-08, 0, 1.23822, 0)
+
+[node name="ThirdPersonCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, -2.67859e-10, -1.91571e-11, 2.65928e-10, 0.977805, 0.209516, -3.73889e-11, -0.209516, 0.977805, 0, 2.54426, 6.96922)
+current = true

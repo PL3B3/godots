@@ -54,7 +54,7 @@ operator = 3
 
 [sub_resource type="VisualShaderNodeRandomRange" id="VisualShaderNodeRandomRange_sdcio"]
 output_port_for_preview = 0
-default_input_values = [0, Vector3(1, 1, 1), 1, 0.0, 2, 3.142]
+default_input_values = [0, Vector3(1, 1, 1), 1, 0.0, 2, 6.284]
 
 [sub_resource type="VisualShaderNodeVectorOp" id="VisualShaderNodeVectorOp_fsjnd"]
 operator = 2
@@ -64,6 +64,7 @@ parameter_name = "Seed"
 default_value_enabled = true
 
 [sub_resource type="VisualShaderNodeVectorOp" id="VisualShaderNodeVectorOp_s3cpn"]
+output_port_for_preview = 0
 
 [sub_resource type="VisualShaderNodeInput" id="VisualShaderNodeInput_g1cgc"]
 output_port_for_preview = 0
@@ -160,7 +161,7 @@ void fragment() {
 
 // RandomRange:28
 	float n_in28p1 = 0.00000;
-	float n_in28p2 = 3.14200;
+	float n_in28p2 = 6.28400;
 	float n_out28p0 = mix(n_in28p1, n_in28p2, hash_noise_range(n_out31p0).x);
 
 
@@ -265,18 +266,17 @@ void fragment() {
 
 }
 "
-graph_offset = Vector2(3248.46, 1834.3)
 nodes/fragment/0/position = Vector2(4960, 2420)
 nodes/fragment/2/node = SubResource("VisualShaderNodeTexture_sgg6c")
-nodes/fragment/2/position = Vector2(4500, 2320)
+nodes/fragment/2/position = Vector2(4520, 2320)
 nodes/fragment/4/node = SubResource("VisualShaderNodeInput_g1cgc")
-nodes/fragment/4/position = Vector2(800, 3320)
+nodes/fragment/4/position = Vector2(560, 3060)
 nodes/fragment/5/node = SubResource("VisualShaderNodeMultiplyAdd_8sw0r")
 nodes/fragment/5/position = Vector2(1440, 2420)
 nodes/fragment/6/node = SubResource("VisualShaderNodeVectorFunc_6nly6")
 nodes/fragment/6/position = Vector2(1680, 2780)
 nodes/fragment/8/node = SubResource("VisualShaderNodeTransformCompose_qapcq")
-nodes/fragment/8/position = Vector2(3680, 2420)
+nodes/fragment/8/position = Vector2(3680, 2400)
 nodes/fragment/11/node = SubResource("VisualShaderNodeTransformVecMult_aoom2")
 nodes/fragment/11/position = Vector2(3960, 2380)
 nodes/fragment/13/node = SubResource("VisualShaderNodeFloatFunc_4uq66")
@@ -302,19 +302,19 @@ nodes/fragment/25/position = Vector2(1200, 2440)
 nodes/fragment/26/node = SubResource("VisualShaderNodeVectorFunc_81pbr")
 nodes/fragment/26/position = Vector2(1680, 2380)
 nodes/fragment/27/node = SubResource("VisualShaderNodeVectorOp_wruau")
-nodes/fragment/27/position = Vector2(1940, 2380)
+nodes/fragment/27/position = Vector2(1900, 2440)
 nodes/fragment/28/node = SubResource("VisualShaderNodeRandomRange_sdcio")
-nodes/fragment/28/position = Vector2(2440, 2440)
+nodes/fragment/28/position = Vector2(2460, 2480)
 nodes/fragment/29/node = SubResource("VisualShaderNodeVectorOp_fsjnd")
 nodes/fragment/29/position = Vector2(2700, 2380)
 nodes/fragment/30/node = SubResource("VisualShaderNodeIntParameter_jdji3")
-nodes/fragment/30/position = Vector2(800, 2200)
+nodes/fragment/30/position = Vector2(820, 2200)
 nodes/fragment/31/node = SubResource("VisualShaderNodeVectorOp_s3cpn")
 nodes/fragment/31/position = Vector2(2200, 2380)
 nodes/fragment/40/node = SubResource("VisualShaderNodeTexture_hunql")
 nodes/fragment/40/position = Vector2(1960, 3140)
 nodes/fragment/48/node = SubResource("VisualShaderNodeTexture2DParameter_lpwgv")
-nodes/fragment/48/position = Vector2(4000, 2560)
+nodes/fragment/48/position = Vector2(4180, 2580)
 nodes/fragment/49/node = SubResource("VisualShaderNodeTexture2DParameter_nbasq")
 nodes/fragment/49/position = Vector2(400, 2720)
 nodes/fragment/50/node = SubResource("VisualShaderNodeColorOp_vr2gb")
