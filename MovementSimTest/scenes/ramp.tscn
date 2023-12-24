@@ -24,3 +24,6 @@ shape = SubResource("BoxShape3D_i87bg")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 material_override = SubResource("StandardMaterial3D_r874w")
 mesh = SubResource("BoxMesh_amt7i")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)

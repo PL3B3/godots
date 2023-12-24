@@ -1,0 +1,57 @@
+[gd_scene load_steps=6 format=3]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_rks7w"]
+load_path = "res://.godot/imported/wall_flat_cobblestone.png-933bed821d021a53f2cb2833f745028c.s3tc.ctex"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hkf1l"]
+resource_name = "stones"
+albedo_color = Color(1, 1, 1, 1)
+albedo_texture = SubResource("CompressedTexture2D_rks7w")
+metallic_specular = 0.2
+roughness = 0.8
+emission_enabled = true
+texture_filter = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_hieth"]
+_surfaces = [{
+"aabb": AABB(-0.5, 0, 0, 1.00001, 1, 1e-05),
+"format": 34896613377,
+"index_count": 12,
+"index_data": PackedByteArray(2, 0, 0, 0, 1, 0, 1, 0, 3, 0, 2, 0, 0, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0),
+"name": "stones",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray(254, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 254, 255, 255, 255, 0, 0, 0, 0, 0, 0, 255, 255, 0, 0, 0, 0)
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_s65dr"]
+resource_name = "wall_flat_Mesh wall_flat"
+_surfaces = [{
+"aabb": AABB(-0.5, 0, 0, 1.00001, 1, 1e-05),
+"attribute_data": PackedByteArray(255, 127, 255, 255, 0, 0, 255, 255, 255, 127, 255, 127, 0, 0, 255, 127, 255, 127, 255, 127, 0, 0, 255, 255, 255, 127, 255, 255, 0, 0, 255, 127),
+"format": 34896613399,
+"index_count": 12,
+"index_data": PackedByteArray(2, 0, 0, 0, 1, 0, 1, 0, 3, 0, 2, 0, 6, 0, 4, 0, 5, 0, 7, 0, 5, 0, 4, 0),
+"material": SubResource("StandardMaterial3D_hkf1l"),
+"name": "stones",
+"primitive": 3,
+"uv_scale": Vector4(2, 2, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray(254, 255, 0, 0, 0, 0, 255, 127, 0, 0, 0, 0, 0, 0, 255, 127, 254, 255, 255, 255, 0, 0, 255, 127, 0, 0, 255, 255, 0, 0, 255, 127, 254, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 254, 255, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 0, 0, 0, 0, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 255, 255, 255, 255, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127)
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_hieth")
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_i4rem"]
+points = PackedVector3Array(-0.5, 0, 0, 0.499995, 0, 0, -0.5, 1, 0, 0.499995, 1, 0)
+
+[node name="wall_flat" type="MeshInstance3D"]
+transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, 0, 0, 0)
+mesh = SubResource("ArrayMesh_s65dr")
+
+[node name="wall_flat_col" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="wall_flat_col"]
+shape = SubResource("ConvexPolygonShape3D_i4rem")

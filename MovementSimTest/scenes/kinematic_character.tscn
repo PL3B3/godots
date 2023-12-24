@@ -46,6 +46,7 @@ shape = SubResource("SphereShape3D_12wfh")
 [node name="Camera3D" type="Camera3D" parent="."]
 top_level = true
 cull_mask = 1048573
+current = true
 fov = 90.0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Camera3D"]
@@ -54,7 +55,7 @@ visible = false
 mesh = SubResource("CylinderMesh_byl00")
 
 [node name="Head" parent="Camera3D" instance=ExtResource("3_1ydxy")]
-transform = Transform3D(-7.21238e-08, 0, 1.65, 0, 1.65, 0, -1.65, 0, -7.21238e-08, 0, 0, 0.172)
+transform = Transform3D(-7.21238e-08, 0, 1.65, 0, 1.65, 0, -1.65, 0, -7.21238e-08, 0, 0, 0)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 visible = false
@@ -73,11 +74,18 @@ offset_bottom = 26.0
 theme_override_colors/font_color = Color(0.92549, 0, 0.54902, 1)
 text = "CHARACTER"
 
+[node name="DebugLabel2" type="Label" parent="DebugLabels"]
+layout_mode = 0
+offset_top = 28.0
+offset_right = 92.0
+offset_bottom = 54.0
+theme_override_colors/font_color = Color(0.92549, 0, 0.54902, 1)
+text = "Joe Biden HP: 15000"
+
 [node name="MeshMount" type="Node3D" parent="."]
 
 [node name="Feet" parent="MeshMount" instance=ExtResource("4_33p4l")]
 transform = Transform3D(-7.21238e-08, 0, 1.65, 0, 1.65, 0, -1.65, 0, -7.21238e-08, 0, 1.23822, 0)
 
 [node name="ThirdPersonCamera" type="Camera3D" parent="."]
-transform = Transform3D(1, -2.67859e-10, -1.91571e-11, 2.65928e-10, 0.977805, 0.209516, -3.73889e-11, -0.209516, 0.977805, 0, 2.54426, 6.96922)
-current = true
+transform = Transform3D(1, 0, 0, 0, 0.978148, 0.207912, 0, -0.207912, 0.978148, 0, 2.54426, 6.96922)

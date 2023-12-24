@@ -1,0 +1,91 @@
+[gd_scene load_steps=8 format=3]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_1vwe7"]
+load_path = "res://.godot/imported/floor_cobblestoneAlternative.png-a88a00b1d59e7a4c4f724757609e5268.s3tc.ctex"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0rwwd"]
+resource_name = "bricks"
+albedo_color = Color(1, 1, 1, 1)
+albedo_texture = SubResource("CompressedTexture2D_1vwe7")
+metallic_specular = 0.2
+roughness = 0.8
+emission_enabled = true
+texture_filter = 0
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_bypxn"]
+load_path = "res://.godot/imported/floor_cobblestone.png-bd5b14e19edbf93d5d0ed37483fdeaa8.s3tc.ctex"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2kn83"]
+resource_name = "stones"
+albedo_color = Color(1, 1, 1, 1)
+albedo_texture = SubResource("CompressedTexture2D_bypxn")
+metallic_specular = 0.2
+roughness = 0.8
+emission_enabled = true
+texture_filter = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_0ohyp"]
+_surfaces = [{
+"aabb": AABB(-0.5, 0, -0.5, 1, 0.05001, 1.00001),
+"format": 34896613377,
+"index_count": 6,
+"index_data": PackedByteArray(2, 0, 0, 0, 1, 0, 1, 0, 3, 0, 2, 0),
+"name": "bricks",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray(0, 0, 241, 255, 254, 255, 0, 0, 0, 0, 241, 255, 0, 0, 0, 0, 255, 255, 241, 255, 254, 255, 0, 0, 255, 255, 241, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 0, 0, 0, 0, 0, 0, 255, 255, 0, 0, 254, 255, 0, 0, 0, 0, 0, 0, 254, 255, 0, 0)
+}, {
+"aabb": AABB(-0.5, 0, -0.5, 1, 0.05001, 1.00001),
+"format": 34896613377,
+"index_count": 24,
+"index_data": PackedByteArray(1, 0, 4, 0, 5, 0, 5, 0, 3, 0, 1, 0, 5, 0, 6, 0, 2, 0, 2, 0, 3, 0, 5, 0, 1, 0, 0, 0, 7, 0, 7, 0, 4, 0, 1, 0, 2, 0, 6, 0, 7, 0, 7, 0, 0, 0, 2, 0),
+"name": "stones",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray(0, 0, 241, 255, 254, 255, 0, 0, 0, 0, 241, 255, 0, 0, 0, 0, 255, 255, 241, 255, 254, 255, 0, 0, 255, 255, 241, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 0, 0, 0, 0, 0, 0, 255, 255, 0, 0, 254, 255, 0, 0, 0, 0, 0, 0, 254, 255, 0, 0)
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_xt6kf"]
+resource_name = "floor_Mesh floor"
+_surfaces = [{
+"aabb": AABB(-0.5, 0, -0.5, 1, 0.05001, 1.00001),
+"attribute_data": PackedByteArray(56, 14, 255, 255, 56, 14, 255, 191, 255, 127, 255, 255, 255, 127, 255, 191, 255, 255, 255, 191, 56, 142, 255, 191, 255, 255, 204, 188, 56, 142, 204, 188, 113, 28, 255, 191, 113, 28, 204, 188, 56, 142, 255, 191, 56, 142, 204, 188, 198, 113, 204, 188, 198, 113, 255, 191, 0, 0, 204, 188, 0, 0, 255, 191, 255, 127, 50, 179, 56, 14, 50, 179, 255, 127, 255, 175, 56, 14, 255, 175),
+"format": 34896613399,
+"index_count": 6,
+"index_data": PackedByteArray(2, 0, 0, 0, 1, 0, 1, 0, 3, 0, 2, 0),
+"material": SubResource("StandardMaterial3D_0rwwd"),
+"name": "bricks",
+"primitive": 3,
+"uv_scale": Vector4(2.25, 4, 0, 0),
+"vertex_count": 20,
+"vertex_data": PackedByteArray(0, 0, 241, 255, 254, 255, 255, 191, 0, 0, 241, 255, 0, 0, 255, 191, 255, 255, 241, 255, 254, 255, 255, 191, 255, 255, 241, 255, 0, 0, 255, 191, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 255, 255, 0, 0, 241, 255, 0, 0, 255, 255, 255, 255, 241, 255, 0, 0, 255, 255, 255, 255, 0, 0, 254, 255, 84, 213, 255, 255, 241, 255, 254, 255, 84, 213, 255, 255, 0, 0, 0, 0, 84, 213, 255, 255, 241, 255, 0, 0, 84, 213, 0, 0, 241, 255, 254, 255, 84, 213, 0, 0, 0, 0, 254, 255, 84, 213, 0, 0, 241, 255, 0, 0, 84, 213, 0, 0, 0, 0, 0, 0, 84, 213, 255, 255, 0, 0, 254, 255, 255, 255, 0, 0, 0, 0, 254, 255, 255, 255, 255, 255, 241, 255, 254, 255, 255, 255, 0, 0, 241, 255, 254, 255, 255, 255, 255, 255, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 0, 0, 255, 127, 0, 0, 255, 127, 0, 0, 255, 127, 0, 0, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 255, 127, 255, 127, 255, 127, 255, 127, 255, 127, 255, 127, 255, 127)
+}, {
+"aabb": AABB(-0.5, 0, -0.5, 1, 0.05001, 1.00001),
+"attribute_data": PackedByteArray(56, 14, 255, 255, 56, 14, 255, 191, 255, 127, 255, 255, 255, 127, 255, 191, 255, 255, 255, 191, 56, 142, 255, 191, 255, 255, 204, 188, 56, 142, 204, 188, 113, 28, 255, 191, 113, 28, 204, 188, 56, 142, 255, 191, 56, 142, 204, 188, 198, 113, 204, 188, 198, 113, 255, 191, 0, 0, 204, 188, 0, 0, 255, 191, 255, 127, 50, 179, 56, 14, 50, 179, 255, 127, 255, 175, 56, 14, 255, 175),
+"format": 34896613399,
+"index_count": 24,
+"index_data": PackedByteArray(6, 0, 4, 0, 5, 0, 5, 0, 7, 0, 6, 0, 10, 0, 8, 0, 9, 0, 9, 0, 11, 0, 10, 0, 14, 0, 12, 0, 13, 0, 13, 0, 15, 0, 14, 0, 18, 0, 16, 0, 17, 0, 17, 0, 19, 0, 18, 0),
+"material": SubResource("StandardMaterial3D_2kn83"),
+"name": "stones",
+"primitive": 3,
+"uv_scale": Vector4(2.25, 4, 0, 0),
+"vertex_count": 20,
+"vertex_data": PackedByteArray(0, 0, 241, 255, 254, 255, 84, 213, 0, 0, 241, 255, 0, 0, 84, 213, 255, 255, 241, 255, 254, 255, 84, 213, 255, 255, 241, 255, 0, 0, 84, 213, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 255, 255, 0, 0, 241, 255, 0, 0, 255, 255, 255, 255, 241, 255, 0, 0, 255, 255, 255, 255, 0, 0, 254, 255, 255, 191, 255, 255, 241, 255, 254, 255, 255, 191, 255, 255, 0, 0, 0, 0, 255, 191, 255, 255, 241, 255, 0, 0, 255, 191, 0, 0, 241, 255, 254, 255, 255, 191, 0, 0, 0, 0, 254, 255, 255, 191, 0, 0, 241, 255, 0, 0, 255, 191, 0, 0, 0, 0, 0, 0, 255, 191, 255, 255, 0, 0, 254, 255, 255, 127, 0, 0, 0, 0, 254, 255, 255, 127, 255, 255, 241, 255, 254, 255, 255, 127, 0, 0, 241, 255, 254, 255, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 0, 0, 255, 127, 0, 0, 255, 127, 0, 0, 255, 127, 0, 0, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 255, 255, 255, 127, 255, 255)
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_0ohyp")
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_cjkra"]
+points = PackedVector3Array(-0.5, 0, -0.5, -0.5, 0.0499993, -0.5, 0.5, 0, -0.5, -0.5, 0, 0.499995, -0.5, 0.0499993, 0.499995, 0.5, 0.0499993, -0.5, 0.5, 0, 0.499995, 0.5, 0.0499993, 0.499995)
+
+[node name="floor" type="MeshInstance3D"]
+transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, 0, 0, 0)
+mesh = SubResource("ArrayMesh_xt6kf")
+
+[node name="floor_col" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="floor_col"]
+shape = SubResource("ConvexPolygonShape3D_cjkra")

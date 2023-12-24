@@ -15,10 +15,12 @@ const MOUSE_SENSITIVITY = 0.1
 @onready var debug_sphere = preload("res://scenes/debug_sphere.tscn")
 @onready var start_position = global_position
 @onready var camera = $Camera3D
+@onready var last_position = global_position 
 var player_gravity: float = 0
-var _yaw = 0
-var _pitch = 0
+var _yaw: float = 0
+var _pitch: float = 0
 var is_simulate = false
+
 
 #func _ready():
 #	collision_shape.radius = COLLISION_RADIUS
@@ -29,6 +31,7 @@ func _unhandled_input(event):
 	if (event is InputEventMouseMotion && Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED):
 		_yaw = normalize_angle_to_positive_degrees(_yaw - (event.relative.x) * MOUSE_SENSITIVITY)
 		_pitch = clamp(_pitch - (event.relative.y * MOUSE_SENSITIVITY), -90.0, 90.0)
+		#print("new yaw: ", _yaw, " + new pitch: ", _pitch)
 	elif event.is_action_pressed("toggle_mouse_mode"):
 		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -36,59 +39,74 @@ func _unhandled_input(event):
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func _process(delta):
-	camera.position = position + Vector3(0, COLLISION_RADIUS * 0.5, 0)
-	camera.rotation_degrees.y = _yaw
-	camera.rotation_degrees.x = _pitch
+	#_yaw += 1
+	var frame_lerped_position = last_position.lerp(global_position, Engine.get_physics_interpolation_fraction())
+	#var predicted_position = position + (position - last_position) * Engine.get_physics_interpolation_fraction()
+	camera.global_position = frame_lerped_position + Vector3(0, COLLISION_RADIUS * 0.5, 0)
+	#camera.rotation_degrees.y = _yaw
+	#camera.rotation_degrees.x = _pitch
+	
+	# There are two layers of "issues" contributing to the jitter when moving and rotating
+	# One is syncing up to the physics interp frac (I think)
+	# Other is intrinsic jitteriness of mouse input
+	
+	var current_rotation_basis = Quaternion(Basis.IDENTITY.from_euler(Vector3(deg_to_rad(_pitch), deg_to_rad(_yaw), 0)))
+	#var interpolated_rotation_basis = Quaternion(last_camera_basis).slerp(current_rotation_basis,  Engine.get_physics_interpolation_fraction())
+	var interpolated_rotation_basis = Quaternion(last_camera_basis).slerp(Quaternion(current_camera_basis),  Engine.get_physics_interpolation_fraction())
+	#var interpolated_rotation_basis = Quaternion(camera.basis).slerp(Quaternion(current_rotation_basis),  Engine.get_physics_interpolation_fraction())
+	camera.basis = Basis(Quaternion(camera.basis).slerp(interpolated_rotation_basis, 0.5))
+	
 	$MeshMount.rotation_degrees.y = _yaw
 
 var counter = 0
+@onready var last_camera_basis = camera.basis
+@onready var current_camera_basis = camera.basis
 func _physics_process(delta):
+	last_camera_basis = current_camera_basis
+	current_camera_basis = Basis.IDENTITY.from_euler(Vector3(deg_to_rad(_pitch), deg_to_rad(_yaw), 0))
+	#print(Quaternion(current_camera_basis).angle_to(Quaternion(last_camera_basis)))
+	last_position = global_position
 	if is_simulate:
 		run_simulation(delta)
 	else:
 		player_move(delta)
 
+func is_valid_floor(floor_contact):
+	if is_moving_along_floor:
+		return is_floor(floor_contact.normal)
+	else:
+		return is_floor(floor_contact.normal) && compute_vertical_distance_from_floor(floor_contact, global_position) < 0.05
+
 var player_velocity = Vector3()
 var frames_since_grounded = 0
+var last_floor_normal = Vector3()
+var is_moving_along_floor = false
 func player_move(delta):
-#	if game_tick > 30:
-#		global_position = Vector3(4.5, 19.5, -51.878)
-#		return
-
 	var h_velocity = Vector3(player_velocity.x, 0, player_velocity.z)
 	var input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
 	var facing_horizontal_direction_basis = Basis.IDENTITY.rotated(Vector3.UP, deg_to_rad(_yaw))
 	var vertical_direction = Input.get_axis("move_down", "move_up")
 	var direction = (facing_horizontal_direction_basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
-	
-	$DebugLabels/DebugLabel1.text = "HORIZONTAL_SPEED: %f" % h_velocity.length()
 
-	var floor_contact = find_floor(global_position)
-#	print(vtos(floor_contact.normal))
+	$DebugLabels/DebugLabel1.text = "HORIZONTAL_SPEED: %f" % h_velocity.length()
+	var floor_contact = find_floor(global_position, 1.0 if is_moving_along_floor else 0.01)
+	#print(vtos(floor_contact.normal))
 	if is_floor(floor_contact.normal):
 		var target_velocity = project_vector_onto_plane_along_direction(direction * SPEED, floor_contact.normal, UP)
 		player_velocity = player_velocity.lerp(target_velocity, GROUND_ACCEL * delta)
-#		var vertical_distance_from_floor = compute_vertical_distance_from_floor(floor_contact, global_position)
-#		player_velocity.y -= vertical_distance_from_floor * delta
-#		var implied_contact_point_on_player_collider: Vector3 = global_position - (floor_contact.normal * COLLISION_RADIUS)
-#		var distance_from_floor_along_normal = implied_contact_point_on_player_collider.distance_to(floor_contact.position)
-#		if distance_from_floor_along_normal > 0.01:
-#			if game_tick < 100:
-#				print("Implied ", vtos(implied_contact_point_on_player_collider), ". Contact: ", vtos(floor_contact.position), ". Normal: ", vtos(floor_contact.normal))
-#				add_debug_sphere(implied_contact_point_on_player_collider)
-#				add_debug_sphere(floor_contact.position)
-##			player_velocity.y -= GRAVITY * delta
-#			player_velocity -= floor_contact.normal
-#			print("Dist from floor: ", distance_from_floor_along_normal)
 		if Input.is_action_pressed("move_up"):
 			player_velocity.y = JUMP_FORCE
+			is_moving_along_floor = false
 		elif Input.is_action_pressed("move_down"):
 			player_velocity.y = 2 * JUMP_FORCE
 			player_velocity += 50 * direction
-		elif frames_since_grounded > 5:
-			global_position += compute_snap_motion(floor_contact.position, floor_contact.normal, global_position)
-		frames_since_grounded += 1 
+			is_moving_along_floor = false
+		else:
+			is_moving_along_floor = true
+			global_position += compute_snap_motion(floor_contact.position, floor_contact.normal, global_position, player_velocity)
+		frames_since_grounded += 1
 	else:
+		is_moving_along_floor = false
 		frames_since_grounded = 0
 		var fraction_to_turn = 0.2
 		if (direction.dot(h_velocity.normalized()) > 0): # don't want to turn backwards
@@ -102,8 +120,10 @@ func player_move(delta):
 		player_velocity.y -= GRAVITY * delta
 	
 	if Input.is_action_just_pressed("click"):
-		$Camera3D.make_current()
-#		player_velocity += - 100 * $Camera3D.global_transform.basis.z
+		if $ThirdPersonCamera.current:
+			$Camera3D.make_current()
+		else:
+			$ThirdPersonCamera.make_current()
 	
 #	velocity = velocity.lerp(direction * SPEED, SPEED * delta)
 #	move_and_slide()
@@ -116,9 +136,14 @@ func compute_vertical_distance_from_floor(floor_contact: Dictionary, player_posi
 	var distance_from_floor_along_normal = implied_contact_point_on_player_collider.distance_to(floor_contact.position)
 	return distance_from_floor_along_normal / floor_contact.normal.dot(UP)
 
-func compute_snap_motion(floor_point, floor_normal, player_position):
+func compute_snap_motion(floor_point, floor_normal, player_position, current_velocity):
 	var implied_position_based_on_floor_contact = (floor_point + (floor_normal * COLLISION_RADIUS))
 	var implied_position_offset = implied_position_based_on_floor_contact - player_position
+	#if (implied_position_offset.length() > 0.01 
+		#and implied_position_offset.normalized().dot(UP) < -TOLERANCE
+		#and (current_velocity == Vector3.ZERO or implied_position_offset.normalized().dot(current_velocity.normalized()) < -TOLERANCE)):
+		#var snap_magnitude = min(implied_position_offset.length(), 0.2) # max(0.01, 0.5 * implied_position_offset.length())
+		#return implied_position_offset
 	if implied_position_offset.length() > 0.01 and implied_position_offset.normalized().dot(UP) < -TOLERANCE:
 		var snap_magnitude = min(implied_position_offset.length(), 0.1) # max(0.01, 0.5 * implied_position_offset.length())
 		return snap_magnitude * -floor_normal
@@ -318,7 +343,7 @@ func run_simulation(delta):
 		print(state_history.slice(-SIM_TICKS))
 	reset_state_to_before_simulation(state_at_frame_begin)
 	state_history.push_back(state_at_frame_begin)
-	floor_results[game_tick] = find_floor(global_position)
+	floor_results[game_tick] = find_floor(global_position, -999)
 	move(delta)
 	game_tick += 1
 
@@ -355,7 +380,7 @@ func simulate(delta):
 	return {POSITION_KEY: global_position, VELOCITY_KEY: linear_velocity, TICK_KEY: state_history.back()[TICK_KEY]}
 
 func validate_floor_result(sim_tick, sim_position):
-	var simulated_floor_result = find_floor(sim_position)
+	var simulated_floor_result = find_floor(sim_position, -999)
 	var original_floor_result = floor_results[sim_tick]
 	if abs(simulated_floor_result.normal.angle_to(original_floor_result.normal)) > ERROR_MARGIN:
 		print("Simulated floor normal for tick ", sim_tick, " has different value than original",
@@ -387,28 +412,28 @@ func add_debug_sphere(location):
 const UP = Vector3.UP
 const DOWN = -UP 
 const NOT_ON_FLOOR: Dictionary = {"normal": Vector3.ZERO, "position": Vector3.ZERO}
-const FLOOR_CHECK_DIST:float = 0.5
+const FLOOR_CHECK_DIST:float = 1
 const FLOOR_CHECK_TOLERANCE:float = 0.01
 const FLOOR_ANGLE:float = deg_to_rad(46)
 const MIN_FLOOR_CONTACT_DEPTH:float = 0.00001
-func find_floor(start_pos: Vector3):
+func find_floor(start_pos: Vector3, floor_check_distance: float):
 	# ---- Static Test @ Start ----
 	var rest_contacts = get_rest_contacts(start_pos)
-	var best_floor = best_floor(rest_contacts, start_pos)
+	var best_floor = best_floor(rest_contacts, start_pos, floor_check_distance)
 #	if counter % 120 == 0:
 #		cl_print(["contacts", rest_contacts, "\nbest floor", best_floor])
 	if best_floor != NOT_ON_FLOOR: return best_floor
 	# ---- Sweep Test ----
-	var motion = cast_sphere(start_pos, DOWN * FLOOR_CHECK_DIST)
-	var end_pos = start_pos + DOWN * ((FLOOR_CHECK_DIST * motion[1]) + FLOOR_CHECK_TOLERANCE)
+	var motion = cast_sphere(start_pos, DOWN * floor_check_distance)
+	var end_pos = start_pos + DOWN * ((floor_check_distance * motion[1]) + FLOOR_CHECK_TOLERANCE)
 	rest_contacts = get_rest_contacts(end_pos)
 #	if counter % 120 == 0:
 #		cl_print(["motion", motion, "\nmotion contacts", rest_contacts, "\nbest floor", best_floor])
-	var motion_left_for_wall_check = (1.0 - motion[1]) * FLOOR_CHECK_DIST
+	var motion_left_for_wall_check = (1.0 - motion[1]) * floor_check_distance
 	best_floor = best_floor(rest_contacts, end_pos, motion_left_for_wall_check)
 	return best_floor
 
-func best_floor(contacts: Array, current_position, motion_left=FLOOR_CHECK_DIST, iters=3):
+func best_floor(contacts: Array, current_position, motion_left, iters=3):
 	if not contacts: return NOT_ON_FLOOR
 	contacts.sort_custom(self.compare_contact_flatness)
 	var closest = contacts[0]
@@ -463,7 +488,7 @@ func find_wall_floor(contact, motion_left, current_position):
 #				return {"normal": base_normal, "point": floor_hit.position}
 	return NOT_ON_FLOOR
 
-func verify_sphere_contact(point, direction, normal, distance=FLOOR_CHECK_DIST, radius=COLLISION_RADIUS):
+func verify_sphere_contact(point, direction, normal, distance, radius=COLLISION_RADIUS):
 	# use raycast to check if a spherecast would collide at the given normal
 	var space_state = get_world_3d().direct_space_state
 	var contact_point = point + (-normal * radius)
@@ -535,3 +560,27 @@ func cast_sphere(position, motion, radius=COLLISION_RADIUS):
 	var sphere = SphereShape3D.new()
 	sphere.radius = radius
 	return cast_motion(position, motion, sphere)
+
+class EvictingFifoQueue:
+	var _size:int = 0
+	var _backing_array:Array = []
+	
+	func _init(size: int):
+		_size = size
+	
+	func add(element):
+		if _backing_array.size() > _size:
+			_backing_array.pop_front()
+		_backing_array.push_back(element)
+	
+	func peek_front():
+		if _backing_array.is_empty():
+			return null
+		else:
+			return _backing_array.front()
+	
+	func pop_front():
+		return _backing_array.pop_front()
+	
+	func elements():
+		return _backing_array.duplicate()

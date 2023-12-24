@@ -1,15 +1,36 @@
-[gd_scene load_steps=4 format=3 uid="uid://bwkvqx4bu8568"]
+[gd_scene load_steps=6 format=3 uid="uid://bwkvqx4bu8568"]
 
 [ext_resource type="PackedScene" uid="uid://ddo0gbp8w0y8c" path="res://scenes/kinematic_character.tscn" id="1_cnuov"]
-[ext_resource type="PackedScene" uid="uid://d00bwrhnbpyes" path="res://scenes/big_map.tscn" id="2_a3w5c"]
+[ext_resource type="PackedScene" uid="uid://ltcaiaybb0hf" path="res://scenes/koth_map_1.tscn" id="2_ff82b"]
 [ext_resource type="PackedScene" uid="uid://c25pmmyyx8knp" path="res://assets/PrismLad.glb" id="3_3x3dm"]
+[ext_resource type="PackedScene" uid="uid://cw23bmfgtlc8f" path="res://scenes/pig.tscn" id="4_rlgaj"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_lftf5"]
+radius = 1.25
+height = 3.0
 
 [node name="WorldRoot" type="Node3D"]
 
-[node name="BigMap" parent="." instance=ExtResource("2_a3w5c")]
-
 [node name="KinematicCharacter" parent="." instance=ExtResource("1_cnuov")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.8, 2.6, -9.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 80.4, 23.6, 179.4)
 
 [node name="PrismLad" parent="." instance=ExtResource("3_3x3dm")]
-transform = Transform3D(1.00405, 0, -1.24575, 0, 1.6, 0, 1.24575, 0, 1.00405, -77.9066, 3.67817, 0.945056)
+transform = Transform3D(1.00405, 0, -1.24575, 0, 1.6, 0, 1.24575, 0, 1.00405, 30.093, 3.67817, 183.945)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PrismLad"]
+transform = Transform3D(1, 0, 2.98023e-08, 0, 1, 0, -2.98023e-08, 0, 1, 0, -0.790282, 0)
+visible = false
+mesh = SubResource("CapsuleMesh_lftf5")
+
+[node name="PrismLad2" parent="." instance=ExtResource("3_3x3dm")]
+transform = Transform3D(-0.576826, 0, -1.49241, 0, 1.6, 0, 1.49241, 0, -0.576826, -29.907, 3.67817, 203.945)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PrismLad2"]
+transform = Transform3D(1, 0, 2.98023e-08, 0, 1, 0, -2.98023e-08, 0, 1, 0, -0.790282, 0)
+visible = false
+mesh = SubResource("CapsuleMesh_lftf5")
+
+[node name="KothMap1" parent="." instance=ExtResource("2_ff82b")]
+
+[node name="Pig" parent="." instance=ExtResource("4_rlgaj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 184)

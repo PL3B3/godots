@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=3 uid="uid://d00bwrhnbpyes"]
+[gd_scene load_steps=50 format=3 uid="uid://d00bwrhnbpyes"]
 
 [ext_resource type="Texture2D" uid="uid://d36akl066r5uv" path="res://addons/kenney_prototype_textures/dark/texture_09.png" id="1_k5dqd"]
 [ext_resource type="Texture2D" uid="uid://3qdoneodpcyp" path="res://assets/s2 Grass 02 Green 2.png" id="2_yf4bq"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://doa5eui5jubju" path="res://assets/s2 Brick 02 Grey.png" id="4_wnjkm"]
 [ext_resource type="Texture2D" uid="uid://bb8buwkf0p3a1" path="res://assets/bricksNormalMap.png" id="5_jphu1"]
 [ext_resource type="PackedScene" uid="uid://dso6xl46vrqer" path="res://addons/cleaned/tower/tower.tscn" id="7_1d353"]
+[ext_resource type="Texture2D" uid="uid://b7a5lnl3oc3g1" path="res://assets/wall_cobble_half_normal.png" id="7_kc7oo"]
 [ext_resource type="PackedScene" uid="uid://b0g5ds8m63rmo" path="res://addons/cleaned/tower/tower_edge.tscn" id="8_eup8f"]
 [ext_resource type="PackedScene" uid="uid://brsrv05mqafvq" path="res://addons/cleaned/tower/tower_top.tscn" id="9_dqhxf"]
 [ext_resource type="PackedScene" uid="uid://bdmytbag7b03b" path="res://addons/cleaned/walls/wall_half.tscn" id="10_k1w3o"]
@@ -22,6 +23,13 @@
 [ext_resource type="PackedScene" uid="uid://bs7n7dkkymyxw" path="res://addons/cleaned/walls/wall_half_top.tscn" id="19_pu4tc"]
 [ext_resource type="PackedScene" path="res://addons/cleaned/roof_corner.tscn" id="20_t0etl"]
 [ext_resource type="PackedScene" path="res://addons/cleaned/roof.tscn" id="21_u43r3"]
+[ext_resource type="PackedScene" uid="uid://eujhe6cpjrok" path="res://assets/buildings/Tower/tower.tscn" id="24_a2orc"]
+[ext_resource type="PackedScene" path="res://assets/buildings/Tower/tower_base.tscn" id="25_l76w4"]
+[ext_resource type="PackedScene" path="res://assets/buildings/Tower/tower_edge.tscn" id="26_6m2vq"]
+[ext_resource type="PackedScene" path="res://assets/buildings/Tower/tower_top.tscn" id="27_2qigp"]
+[ext_resource type="PackedScene" path="res://assets/buildings/Details/detail_barrel.tscn" id="28_qist3"]
+[ext_resource type="PackedScene" path="res://assets/buildings/Details/detail_crate.tscn" id="29_3tq3m"]
+[ext_resource type="PackedScene" path="res://assets/buildings/Details/detail_crateSmall.tscn" id="30_x1vpa"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_lbgl6"]
 radius = 2.5
@@ -29,17 +37,17 @@ height = 5.0
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_1g4uu"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rwm6p"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_n6ota"]
 albedo_texture = ExtResource("2_yf4bq")
 uv1_scale = Vector3(0.025, 0.025, 0.025)
 uv1_triplanar = true
 texture_filter = 0
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_xnx0e"]
-material = SubResource("StandardMaterial3D_rwm6p")
+material = SubResource("StandardMaterial3D_n6ota")
 size = Vector2(500, 500)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_motr4"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_k4g83"]
 albedo_color = Color(0, 0.419608, 0.431373, 1)
 albedo_texture = ExtResource("4_wnjkm")
 metallic = 0.4
@@ -52,7 +60,7 @@ uv1_scale = Vector3(0.01, 0.01, 0.01)
 uv1_triplanar = true
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_bl5xs"]
-material = SubResource("StandardMaterial3D_motr4")
+material = SubResource("StandardMaterial3D_k4g83")
 size = Vector2(100, 1000)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_jfdpe"]
@@ -71,15 +79,18 @@ size = Vector3(50, 20, 50)
 [sub_resource type="BoxShape3D" id="BoxShape3D_4gapi"]
 size = Vector3(10, 10, 10)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_00si5"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_44k7y"]
 albedo_texture = ExtResource("3_wo5sl")
 metallic_specular = 1.0
 roughness = 0.0
-uv1_scale = Vector3(0.05, 0.05, 0.05)
+normal_enabled = true
+normal_scale = 2.0
+normal_texture = ExtResource("7_kc7oo")
+uv1_scale = Vector3(0.2, 0.2, 0.2)
 uv1_triplanar = true
 
 [sub_resource type="BoxMesh" id="BoxMesh_b8u0b"]
-material = SubResource("StandardMaterial3D_00si5")
+material = SubResource("StandardMaterial3D_44k7y")
 size = Vector3(10, 10, 10)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_twvva"]
@@ -128,6 +139,7 @@ height = 5.0
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(0.531399, 6.68332e-09, 0.847122, 0, 1, -7.88944e-09, -0.847122, 4.19244e-09, 0.531399, 20.8317, 14.9815, 24.149)
+current = true
 fov = 90.0
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -135,9 +147,9 @@ environment = ExtResource("4_5pg65")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.779162, 0.442229, -0.444231, -0.100942, 0.787975, 0.607376, 0.618642, -0.428403, 0.6586, 0, -6, 0)
-light_energy = 2.0
 shadow_enabled = true
 shadow_opacity = 0.7
+directional_shadow_mode = 0
 directional_shadow_max_distance = 150.0
 
 [node name="Marker" type="MeshInstance3D" parent="."]
@@ -223,8 +235,92 @@ shape = SubResource("BoxShape3D_jfdpe")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Platform/GreyBlock3"]
 mesh = SubResource("BoxMesh_cqn7k")
 
+[node name="Platform2" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 245, 6, 251)
+
+[node name="GreyBlock" type="StaticBody3D" parent="Platform2"]
+transform = Transform3D(0.866025, 0.5, 0, -0.5, 0.866025, 0, 0, 0, 1, -43.647, -1.66, -113.701)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Platform2/GreyBlock"]
+shape = SubResource("BoxShape3D_jfdpe")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Platform2/GreyBlock"]
+mesh = SubResource("BoxMesh_cqn7k")
+
+[node name="GreyBlock2" type="StaticBody3D" parent="Platform2"]
+transform = Transform3D(0.851562, 0.524253, 0, -0.524253, 0.851562, 0, 0, 0, 1, -86.6037, 23.8595, -113.701)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Platform2/GreyBlock2"]
+shape = SubResource("BoxShape3D_jfdpe")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Platform2/GreyBlock2"]
+mesh = SubResource("BoxMesh_cqn7k")
+
+[node name="GreyBlock3" type="StaticBody3D" parent="Platform2"]
+transform = Transform3D(0.823265, 0.567657, 0, -0.567657, 0.823265, 0, 0, 0, 1, -128.573, 51.1819, -113.701)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Platform2/GreyBlock3"]
+shape = SubResource("BoxShape3D_jfdpe")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Platform2/GreyBlock3"]
+mesh = SubResource("BoxMesh_cqn7k")
+
+[node name="GreyBlock4" type="StaticBody3D" parent="Platform2"]
+transform = Transform3D(0.776838, 0.6297, 0, -0.6297, 0.776838, 0, 0, 0, 1, -168.289, 80.7425, -113.701)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Platform2/GreyBlock4"]
+shape = SubResource("BoxShape3D_jfdpe")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Platform2/GreyBlock4"]
+mesh = SubResource("BoxMesh_cqn7k")
+
+[node name="GreyBlock5" type="StaticBody3D" parent="Platform2"]
+transform = Transform3D(0.776838, 0.6297, 0, -0.6297, 0.776838, 0, 0, 0, 1, -206.01, 111.29, -113.701)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Platform2/GreyBlock5"]
+shape = SubResource("BoxShape3D_jfdpe")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Platform2/GreyBlock5"]
+mesh = SubResource("BoxMesh_cqn7k")
+
+[node name="GreyBlock6" type="StaticBody3D" parent="Platform2"]
+transform = Transform3D(0.776838, 0.6297, 0, -0.6297, 0.776838, 0, 0, 0, 1, -244.852, 142.775, -113.701)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Platform2/GreyBlock6"]
+shape = SubResource("BoxShape3D_jfdpe")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Platform2/GreyBlock6"]
+mesh = SubResource("BoxMesh_cqn7k")
+
+[node name="GreyBlock7" type="StaticBody3D" parent="Platform2"]
+transform = Transform3D(0.776838, 0.6297, 0, -0.6297, 0.776838, 0, 0, 0, 1, -283.694, 174.26, -113.701)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Platform2/GreyBlock7"]
+shape = SubResource("BoxShape3D_jfdpe")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Platform2/GreyBlock7"]
+mesh = SubResource("BoxMesh_cqn7k")
+
+[node name="GreyBlock8" type="StaticBody3D" parent="Platform2"]
+transform = Transform3D(0.776838, 0.6297, 0, -0.6297, 0.776838, 0, 0, 0, 1, -322.535, 205.745, -113.701)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Platform2/GreyBlock8"]
+shape = SubResource("BoxShape3D_jfdpe")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Platform2/GreyBlock8"]
+mesh = SubResource("BoxMesh_cqn7k")
+
+[node name="GreyBlock9" type="StaticBody3D" parent="Platform2"]
+transform = Transform3D(0.776838, 0.6297, 0, -0.6297, 0.776838, 0, 0, 0, 1, -361.377, 237.23, -113.701)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Platform2/GreyBlock9"]
+shape = SubResource("BoxShape3D_jfdpe")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Platform2/GreyBlock9"]
+mesh = SubResource("BoxMesh_cqn7k")
+
 [node name="Cube" type="StaticBody3D" parent="."]
-transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 21.7361, 5.0032, -93.8841)
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -62.4096, 5.0032, -223.285)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Cube"]
 shape = SubResource("BoxShape3D_4gapi")
@@ -1122,3 +1218,26 @@ skeleton = NodePath("../../..")
 [node name="roof4" parent="ChamberOfPower/RoofRow4" instance=ExtResource("21_u43r3")]
 transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, -5, 0, 15)
 skeleton = NodePath("../../..")
+
+[node name="Node3D" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -147, 0, 0)
+
+[node name="tower" parent="Node3D" instance=ExtResource("24_a2orc")]
+transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, 0, 30, 0)
+
+[node name="tower_base" parent="Node3D" instance=ExtResource("25_l76w4")]
+
+[node name="tower_edge" parent="Node3D" instance=ExtResource("26_6m2vq")]
+transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, 0, 60, 0)
+
+[node name="tower_top" parent="Node3D" instance=ExtResource("27_2qigp")]
+transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, 0, 72, 0)
+
+[node name="detail_barrel" parent="Node3D" instance=ExtResource("28_qist3")]
+transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, -8.07568, 0, 36.5833)
+
+[node name="detail_crate" parent="Node3D" instance=ExtResource("29_3tq3m")]
+transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, 18.8322, 0, 31.8973)
+
+[node name="detail_crateSmall" parent="Node3D" instance=ExtResource("30_x1vpa")]
+transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, 20.5466, 0, 15.452)
