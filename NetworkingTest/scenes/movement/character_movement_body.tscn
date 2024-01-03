@@ -1,0 +1,30 @@
+[gd_scene load_steps=5 format=3 uid="uid://7dwdwq3rg7x8"]
+
+[ext_resource type="Script" path="res://scenes/movement/character_movement_body.gd" id="1_h8egj"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_j35ov"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_8nr8h"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7r5bs"]
+albedo_color = Color(0.996078, 0, 1, 1)
+
+[node name="CharacterMovementBody" type="CharacterBody3D"]
+motion_mode = 1
+floor_stop_on_slope = false
+floor_block_on_wall = false
+floor_snap_length = 0.0
+script = ExtResource("1_h8egj")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_j35ov")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_8nr8h")
+surface_material_override/0 = SubResource("StandardMaterial3D_7r5bs")
+
+[node name="Head" type="Node3D" parent="."]
+top_level = true
+
+[node name="Camera3D" type="Camera3D" parent="Head"]
+fov = 90.0

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dvvjvns8jsx2y"]
+
+[ext_resource type="Script" path="res://scenes/movement/floor_finder.gd" id="1_5d6vh"]
+
+[node name="FloorFinder" type="Node3D"]
+script = ExtResource("1_5d6vh")

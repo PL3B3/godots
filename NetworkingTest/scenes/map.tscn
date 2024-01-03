@@ -2,10 +2,10 @@
 
 [ext_resource type="Shader" uid="uid://dx0jj1a2ywyfd" path="res://scenes/rotate_tile.tres" id="1_i5v3q"]
 [ext_resource type="Texture2D" uid="uid://urykiv2qq33a" path="res://addons/Pixel Textures Pack 2/Grass/s2 Grass 02 Green 2.png" id="2_6rf65"]
-[ext_resource type="Environment" uid="uid://b5rbq227iuecn" path="res://environment.tres" id="2_wovje"]
 [ext_resource type="Texture2D" uid="uid://bnop8ebuj8qpy" path="res://addons/Pixel Textures Pack 2/Bricks/s2 Brick 02 Grey.png" id="3_7ssd1"]
 [ext_resource type="Texture2D" uid="uid://cso73p1u6okcs" path="res://cheese.jpg" id="3_idutk"]
 [ext_resource type="PackedScene" uid="uid://f8b0rlfdw0bm" path="res://scenes/block.tscn" id="5_4w47m"]
+[ext_resource type="Environment" uid="uid://cwjnu3fulwik2" path="res://assets/environment_bright.tres" id="6_q3kjs"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hunba"]
 size = Vector3(50, 1, 50)
@@ -17,7 +17,7 @@ size = Vector3(50, 1, 50)
 noise_type = 3
 frequency = 0.0629
 
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_rnr1x"]
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_101m2"]
 noise = SubResource("FastNoiseLite_661oe")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1tbyn"]
@@ -27,7 +27,7 @@ shader_parameter/Tiling = 50
 shader_parameter/Seed = 27
 shader_parameter/RotationFactor = 0.48
 shader_parameter/BaseTexture = ExtResource("2_6rf65")
-shader_parameter/NoiseTexture = SubResource("NoiseTexture2D_rnr1x")
+shader_parameter/NoiseTexture = SubResource("NoiseTexture2D_101m2")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ssojq"]
 size = Vector3(50, 2, 1)
@@ -303,7 +303,9 @@ omni_attenuation = 0.466516
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.965926, -0.183013, -0.183013, 0.25, 0.476727, 0.842752, -0.0669873, -0.859789, 0.506236, 0, 4, 0)
+light_energy = 1.2
 shadow_enabled = true
+shadow_opacity = 0.6
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = ExtResource("2_wovje")
+environment = ExtResource("6_q3kjs")

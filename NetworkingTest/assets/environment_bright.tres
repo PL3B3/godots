@@ -1,0 +1,33 @@
+[gd_resource type="Environment" load_steps=6 format=3 uid="uid://cwjnu3fulwik2"]
+
+[ext_resource type="Texture2D" uid="uid://dr8v8pe21j6y2" path="res://assets/hdriThievedFromUnrealEngineArtist.png" id="1_k8f6h"]
+
+[sub_resource type="Gradient" id="5"]
+
+[sub_resource type="GradientTexture1D" id="4"]
+gradient = SubResource("5")
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_imya5"]
+panorama = ExtResource("1_k8f6h")
+
+[sub_resource type="Sky" id="Sky_438ap"]
+sky_material = SubResource("PanoramaSkyMaterial_imya5")
+
+[resource]
+background_mode = 2
+background_color = Color(1, 1, 1, 1)
+sky = SubResource("Sky_438ap")
+ambient_light_source = 3
+ambient_light_color = Color(0.878431, 0.784314, 0.811765, 1)
+ambient_light_sky_contribution = 0.7
+reflected_light_source = 2
+tonemap_mode = 3
+tonemap_white = 16.0
+ssao_power = 1.97926
+glow_strength = 0.5
+fog_sky_affect = 0.0
+volumetric_fog_density = 0.0102
+volumetric_fog_length = 58.9
+volumetric_fog_sky_affect = 0.0
+adjustment_saturation = 1.2
+adjustment_color_correction = SubResource("4")

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dc0ealpfm6y0x"]
+
+[ext_resource type="Script" path="res://util/logs_and_metrics.gd" id="1_3nfl5"]
+
+[node name="LogsAndMetrics" type="Node"]
+script = ExtResource("1_3nfl5")

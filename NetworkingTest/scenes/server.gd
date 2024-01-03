@@ -1,92 +1,134 @@
 extends Node
 
+const EMPTY_PHYSICS_STATE = {}
+const SPAWN_POINT_RANDOM_VARIATION = 5
+const SPAWN_POINT = Vector3(0, 2.5, 0)
+
 @onready var messenger: NetworkMessenger = $NetworkMessenger
 @onready var map_spawner: MultiplayerSpawner = $MapSpawner
 @onready var character_spawner: MultiplayerSpawner = $CharacterSpawner
 
 var test_scene = preload("res://scenes/test_spawn.tscn")
 
-var client_character: CharacterMovementRigidBody = null
+var rng = RandomNumberGenerator.new()
+var client_character: CharacterMovementKinematicBody = null
 var character_physics_state: Dictionary = {}
 var client_id: int = -1
 var client_inputs = []
-var statistics = {}
+
+var character_simulation_per_client: Dictionary = {}
 
 func _ready():
 	resize_window()
 	multiplayer.peer_connected.connect(_on_client_connected)
 	multiplayer.peer_disconnected.connect(_on_client_disconnected)
 	messenger.received_client_message.connect(_handle_client_message)
-#	add_statistic("input_receive_to_process_usec", false, 2)
-	add_statistic("cl_ts_to_sv_ts", false, 2000)
-	add_statistic("sv_buffer_size", false, 2000)
+	LogsAndMetrics.add_server_stat("sv_buffer_size")
 	map_spawner.spawn(null)
-	# creates a frametime offset 
-#	Engine.max_fps = 53
-#	get_tree().create_timer(0.8).timeout.connect(func(): Engine.max_fps = 120)
 
-var last_recv_ts = 0
 func _handle_client_message(id, message):
-	var enriched_message = message.duplicate()
-	enriched_message["received_usec"] = Time.get_ticks_usec()
-	client_inputs.push_back(enriched_message)
-#	print("recv usec: ", Time.get_ticks_usec())
-#	print("diff usec: ", Time.get_ticks_usec() - last_phys_ts)
-	last_recv_ts = Time.get_ticks_usec()
+	character_simulation_per_client[id].add_client_message(message)
 
 var last_phys_ts = 0
-var ewma_factor = 0.99
 var initial_tick_diff = 0
 func _physics_process(delta):
-#	if Input.is_action_just_pressed("ui_down"):
-#		print("waiting")
-#		await get_tree().create_timer(5.0).timeout
-#	if !client_inputs.is_empty():
-#		print("usec diff: ", (Time.get_ticks_usec() - client_inputs[0]["client_timestamp"]) - initial_tick_diff, " input buff: ", client_inputs.size())
-#		print(fmod(Time.get_ticks_usec() - client_inputs[-1]["client_timestamp"], 16666))
-#		statistics["cl_ts_to_sv_ts"].add_sample(fmod(Time.get_ticks_usec() - client_inputs[-1]["client_timestamp"], 16666))
-#		initial_tick_diff = (initial_tick_diff * ewma_factor) + (1 - ewma_factor) * (Time.get_ticks_usec() - client_inputs[0]["client_timestamp"])
-#		print(initial_tick_diff)
-#	print("sv time: ", Time.get_ticks_usec() - last_phys_ts)
-#	print("input size: ", client_inputs.size())
-	statistics["sv_buffer_size"].add_sample(client_inputs.size())
-	if client_character != null and !client_inputs.is_empty():
-		while client_inputs.size() > 10:
-			print(Time.get_time_string_from_system(), " Too many queued inputs, popping")
-			client_inputs.pop_front()
-		var input = client_inputs.pop_front()
-#		print(Time.get_unix_time_from_system() - input["client_timestamp"])
-#		print("usec diff: ", (Time.get_ticks_usec() - input["client_timestamp"]) - initial_tick_diff, " input buff: ", client_inputs.size())
-#		if character_physics_state:
-#			character_physics_state.position = character_physics_state.position + add_random_movement(input["tick"])
-		character_physics_state = client_character.move_and_update_view(input["input"], delta, character_physics_state) # client_character.handle_input_frame(input)
-		messenger.send_message_to_client(client_id, {"state": character_physics_state, "tick": input["tick"]})
-	last_phys_ts = Time.get_ticks_usec()
+	for client_id in character_simulation_per_client:
+		var simulation_for_client: CharacterSimulation = character_simulation_per_client[client_id]
+		simulation_for_client.advance_state_and_notify_clients(character_simulation_per_client.keys())
 
-func add_random_movement(tick):
-	var rng = RandomNumberGenerator.new()
-	if tick % 60 == 0:
-		var horizontal_component = 0.1 * Vector3.FORWARD.rotated(Vector3.UP, rng.randf_range(0, 2 * PI))
-		var vertical_component = Vector3(0, rng.randf_range(0, 1), 0)
-		return horizontal_component
-	else:
-		return Vector3.ZERO
-
-func resize_window():
+func resize_window(index=0):
 	var screen_size: Vector2 = DisplayServer.screen_get_size()
-	get_window().size = Vector2(screen_size.x / 2, screen_size.y)
-	get_window().position = Vector2(screen_size.x / 2, 0)
+	get_window().size = Vector2(screen_size.x / 2, screen_size.y / 2)
+	get_window().position = Vector2(screen_size.x / 2, index * (screen_size.y / 2))
 
 func _on_client_connected(id: int):
-	client_character = character_spawner.spawn({"id": id, "position": Vector3(5.251241, 3.197067, 4.925832)})
-	client_id = id
+	var spawn_point = SPAWN_POINT + SPAWN_POINT_RANDOM_VARIATION * Vector3(rng.randf_range(-1,1), 0, rng.randf_range(-1,1))
+	var client_connection_index = character_simulation_per_client.size()
+	var client_character = character_spawner.spawn({"id": id, "position": spawn_point})
+	character_simulation_per_client[id] = CharacterSimulation.new(id, client_character, messenger)
+	messenger.send_message_to_client(id, { "resize": client_connection_index , "type": Network.MessageType.RESIZE })
+	resize_window(client_connection_index)
 	print("Client with id ", id, " connected")
 	
 func _on_client_disconnected(id: int):
 	print("Client with id ", id, " disconnected")
+
+class CharacterSimulation:
+	const EMPTY_INPUT_FOR_BUFFERING = { "INPUT": "EMPTY" }
+	const ARTIFICIAL_INPUT_BUFFER_AMOUNT = 6
 	
+	var client_id_: int
+	var character_
+	var messages_: Array = []
+	var network_messenger_: NetworkMessenger
+	var character_physics_state_: Dictionary
+	var rng_ = RandomNumberGenerator.new()
 	
-func add_statistic(stat_name, use_diff, interval):
-	var statistic = Statistics.new(stat_name, use_diff, interval)
-	statistics[stat_name] = statistic
-	add_child(statistic)
+	func _init(client_id, character, network_messenger):
+		character_physics_state_ = character.starting_physics_state()
+		character_ = character
+		client_id_ = client_id
+		network_messenger_ = network_messenger
+	
+	func add_client_message(message):
+		if messages_.is_empty():
+			for i in ARTIFICIAL_INPUT_BUFFER_AMOUNT:
+				messages_.push_back(EMPTY_INPUT_FOR_BUFFERING)
+		messages_.push_back(message)
+	
+	func advance_state_and_notify_clients(client_ids: Array):
+		#print("buff size: %d" % messages_.size())
+		if messages_.is_empty():
+			#print(Time.get_unix_time_from_system(), " ---- NO CLIENT INPUTS")
+			return
+		
+		var message_to_process = messages_.pop_front()
+		if message_to_process != EMPTY_INPUT_FOR_BUFFERING:
+			#character_physics_state_.position += compute_random_movement(message_to_process["tick"])
+			var input_to_simulate = message_to_process["input"]
+			character_physics_state_ = character_.compute_next_physics_state(character_physics_state_, input_to_simulate)
+			var player_state_message = { 
+				"type": Network.MessageType.PLAYER_STATE,
+				"state": character_physics_state_, 
+				"tick": message_to_process["tick"] 
+			}
+			network_messenger_.send_message_to_client(client_id_, player_state_message)
+			for other_client_id in client_ids.filter(func(peer_id): return peer_id != client_id_):
+				var puppet_state_message = { 
+					"type": Network.MessageType.PUPPET_STATE,
+					"position": character_physics_state_.position, 
+					"tick": message_to_process["tick"],
+					"pitch": input_to_simulate.pitch,
+					"yaw": input_to_simulate.yaw,
+					"puppet_id": client_id_
+				}
+				network_messenger_.send_message_to_client(other_client_id, puppet_state_message)
+	
+	func compute_random_movement(tick):
+		if tick % 60 == 0:
+			var horizontal_component = 2 * Vector3.FORWARD.rotated(Vector3.UP, rng_.randf_range(0, 2 * PI))
+			var vertical_component = Vector3(0, rng_.randf_range(0, 1), 0)
+			return horizontal_component
+		else:
+			return Vector3.ZERO
+
+func old_simulate():
+	last_phys_ts = Time.get_ticks_usec()
+	if client_character != null:
+		$Label2.set_text(str(client_inputs.size()))
+		LogsAndMetrics.add_sample("sv_buffer_size", client_inputs.size())
+		if client_inputs.is_empty():
+			pass
+			#print(Time.get_unix_time_from_system(), " ---- NO CLIENT INPUTS")
+		else:
+			#while client_inputs.size() > 1500:
+				#print(Time.get_time_string_from_system(), " Too many queued inputs, popping")
+				#client_inputs.pop_front()
+			var input = client_inputs.pop_front()
+			#if input != EMPTY_INPUT_FOR_BUFFERING:
+				##print(Time.get_unix_time_from_system() - input["client_timestamp"])
+				##print("usec diff: ", (Time.get_ticks_usec() - input["client_timestamp"]) - initial_tick_diff, " input buff: ", client_inputs.size())
+				##if character_physics_state:
+					##character_physics_state.position = character_physics_state.position + add_random_movement(input["tick"])
+				#character_physics_state = client_character.compute_next_physics_state(character_physics_state, input["input"]) # client_character.handle_input_frame(input)
+				#messenger.send_message_to_client(client_id, {"state": character_physics_state, "tick": input["tick"]})

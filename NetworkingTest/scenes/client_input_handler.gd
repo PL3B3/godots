@@ -27,6 +27,7 @@ func record_input_for_tick(tick) -> Dictionary:
 		"yaw": _yaw, 
 		"pitch": _pitch, 
 		"is_jumping": Input.is_action_pressed("jump"),
+		"is_slow_walking": Input.is_action_pressed("slow"),
 		"direction": Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
 	}
 	input_per_tick[tick] = player_input

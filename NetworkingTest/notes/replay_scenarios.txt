@@ -1,0 +1,111 @@
+# character body kinematic
+var begin_state = { "velocity": Vector3(-3.253312, 1.662395, 12.52345), "position": Vector3(12.34433, 2.528003, -20.23211), "is_moving_along_floor": true }
+var inputs = [
+  { "yaw": 69.7000000000016, "pitch": -9.84999999999985, "is_jumping": false, "is_slow_walking": false, "direction": Vector2(-0.707107, -0.707107) },
+  { "yaw": 67.8000000000016, "pitch": -9.79999999999985, "is_jumping": true, "is_slow_walking": false, "direction": Vector2(-0.707107, -0.707107) },
+  { "yaw": 65.5500000000016, "pitch": -9.64999999999985, "is_jumping": true, "is_slow_walking": false, "direction": Vector2(-0.707107, -0.707107) },
+  { "yaw": 63.1000000000016, "pitch": -9.64999999999985, "is_jumping": true, "is_slow_walking": false, "direction": Vector2(-0.707107, -0.707107) },
+  { "yaw": 59.1000000000016, "pitch": -9.64999999999985, "is_jumping": true, "is_slow_walking": false, "direction": Vector2(0, -1) },
+  { "yaw": 56.2500000000016, "pitch": -9.64999999999985, "is_jumping": true, "is_slow_walking": false, "direction": Vector2(0, -1) },
+  { "yaw": 53.4000000000016, "pitch": -9.64999999999985, "is_jumping": true, "is_slow_walking": false, "direction": Vector2(0, -1) },
+  { "yaw": 50.6500000000016, "pitch": -9.64999999999985, "is_jumping": true, "is_slow_walking": false, "direction": Vector2(0.707107, -0.707107) },
+  { "yaw": 47.0500000000016, "pitch": -9.64999999999985, "is_jumping": true, "is_slow_walking": false, "direction": Vector2(0.707107, -0.707107) },
+  { "yaw": 44.9000000000016, "pitch": -9.84999999999985, "is_jumping": true, "is_slow_walking": false, "direction": Vector2(0.707107, -0.707107) },
+  { "yaw": 42.9500000000016, "pitch": -10.0499999999998, "is_jumping": true, "is_slow_walking": false, "direction": Vector2(0.707107, -0.707107) },
+  { "yaw": 41.3500000000016, "pitch": -10.2999999999998, "is_jumping": true, "is_slow_walking": false, "direction": Vector2(1, 0) }
+]
+var expected_state = { "velocity": Vector3(-14.42036, 16.52892, -2.170203), "position": Vector3(9.748902, 6.942193, -18.87782), "is_moving_along_floor": false }
+#var expected_state = { "velocity": Vector3(-15.45897, 16.52892, -2.512219), "position": Vector3(9.508314, 6.942262, -18.95387), "is_moving_along_floor": false }
+
+
+1703788450.803
+initial state: { "state": { "velocity": (0, 0, 0), "position": (28.00965, 2.496221, -30.34856) }, "floor": <null> }
+server  state: { "velocity": (0, 0, 0), "position": (28.00965, 2.496221, -30.34856) }
+simul   input: { "yaw": 359.15, "pitch": -4.54999999999999, "is_jumping": false, "is_slow_walking": true, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (28.01583, 2.496221, -30.76518) }
+simul   input: { "yaw": 359.2, "pitch": -4.54999999999999, "is_jumping": false, "is_slow_walking": true, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (28.02165, 2.496221, -31.1818) }
+simul   input: { "yaw": 359.25, "pitch": -4.54999999999999, "is_jumping": false, "is_slow_walking": true, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (28.0271, 2.496221, -31.59843) }
+simul   input: { "yaw": 359.3, "pitch": -4.54999999999999, "is_jumping": false, "is_slow_walking": true, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (28.03219, 2.496221, -32.01507) }
+simul   input: { "yaw": 359.35, "pitch": -4.54999999999999, "is_jumping": false, "is_slow_walking": true, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (28.03692, 2.496221, -32.43171) }
+simul   input: { "yaw": 359.4, "pitch": -4.59999999999999, "is_jumping": false, "is_slow_walking": true, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (28.04128, 2.496221, -32.84835) }
+simul   input: { "yaw": 359.8, "pitch": -4.64999999999999, "is_jumping": false, "is_slow_walking": true, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (28.04274, 2.496221, -33.26501) }
+simul   input: { "yaw": 0.20000000000022, "pitch": -4.64999999999999, "is_jumping": false, "is_slow_walking": true, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (28.04128, 2.496221, -33.68167) }
+simul   input: { "yaw": 0.70000000000022, "pitch": -4.69999999999999, "is_jumping": false, "is_slow_walking": true, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (28.03619, 2.496221, -34.09831) }
+simul   input: { "yaw": 1.70000000000022, "pitch": -4.79999999999999, "is_jumping": false, "is_slow_walking": true, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (28.02383, 2.496221, -34.51479) }
+simul   input: { "yaw": 2.50000000000022, "pitch": -4.79999999999999, "is_jumping": false, "is_slow_walking": true, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (28.00566, 2.496221, -34.93106) }
+simul   input: { "yaw": 3.35000000000022, "pitch": -4.79999999999999, "is_jumping": false, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (27.94114, 2.52438, -35.20797) }
+simul   input: { "yaw": 4.30000000000022, "pitch": -4.79999999999999, "is_jumping": false, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (27.88465, 2.557002, -35.47968) }
+current state: { "velocity": (0, 0, 0), "position": (27.71197, 2.656696, -35.47968) }
+error        : 0.19938723742962
+
+var begin_state = { "velocity": Vector3(0, 0, 0), "position": Vector3(28.00965, 2.496221, -30.34856) }
+var inputs = [
+  { "yaw": 359.15, "pitch": -4.54999999999999, "is_jumping": false, "is_slow_walking": true, "direction": Vector2(0, -1) },
+  { "yaw": 359.2, "pitch": -4.54999999999999, "is_jumping": false, "is_slow_walking": true, "direction": Vector2(0, -1) },
+  { "yaw": 359.25, "pitch": -4.54999999999999, "is_jumping": false, "is_slow_walking": true, "direction": Vector2(0, -1) },
+  { "yaw": 359.3, "pitch": -4.54999999999999, "is_jumping": false, "is_slow_walking": true, "direction": Vector2(0, -1) },
+  { "yaw": 359.35, "pitch": -4.54999999999999, "is_jumping": false, "is_slow_walking": true, "direction": Vector2(0, -1) },
+  { "yaw": 359.4, "pitch": -4.59999999999999, "is_jumping": false, "is_slow_walking": true, "direction": Vector2(0, -1) },
+  { "yaw": 359.8, "pitch": -4.64999999999999, "is_jumping": false, "is_slow_walking": true, "direction": Vector2(0, -1) },
+  { "yaw": 0.20000000000022, "pitch": -4.64999999999999, "is_jumping": false, "is_slow_walking": true, "direction": Vector2(0, -1) },
+  { "yaw": 0.70000000000022, "pitch": -4.69999999999999, "is_jumping": false, "is_slow_walking": true, "direction": Vector2(0, -1) },
+  { "yaw": 1.70000000000022, "pitch": -4.79999999999999, "is_jumping": false, "is_slow_walking": true, "direction": Vector2(0, -1) },
+  { "yaw": 2.50000000000022, "pitch": -4.79999999999999, "is_jumping": false, "is_slow_walking": true, "direction": Vector2(0, -1) },
+  { "yaw": 3.35000000000022, "pitch": -4.79999999999999, "is_jumping": false, "is_slow_walking": true, "direction": Vector2(-0.707107, -0.707107) },
+  { "yaw": 4.30000000000022, "pitch": -4.79999999999999, "is_jumping": false, "is_slow_walking": true, "direction": Vector2(-0.707107, -0.707107) }
+]
+var expected_state = { "velocity": Vector3(0, 0, 0), "position": Vector3(27.88465, 2.557002, -35.47968) }
+
+
+
+# kinematic target point v1
+# I suspect this is because of dropped / extra input? Not sure.
+# reason is: initial state = server state + 1 frame of simulation
+
+1703871292.834
+initial state: { "state": { "velocity": (0, 0, 0), "position": (12.26078, 9.077132, -26.48892) }, "floor": <null> }
+server  state: { "velocity": (0, 0, 0), "position": (12.39506, 8.62245, -26.48918) }
+simul   input: { "yaw": 42.1000000000025, "pitch": -11.4499999999999, "is_jumping": true, "is_slow_walking": false, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (12.26072, 9.077761, -26.48894) }
+simul   input: { "yaw": 42.6000000000025, "pitch": -11.4499999999999, "is_jumping": true, "is_slow_walking": false, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (12.10069, 9.558679, -26.56404) }
+simul   input: { "yaw": 43.6000000000025, "pitch": -11.4499999999999, "is_jumping": true, "is_slow_walking": false, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (11.87196, 10.0392, -26.66429) }
+simul   input: { "yaw": 44.2000000000025, "pitch": -11.4999999999999, "is_jumping": true, "is_slow_walking": false, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (11.66261, 10.53127, -26.83776) }
+current state: { "velocity": (0, 0, 0), "position": (11.40433, 11.00219, -27.02923) }
+error        : 0.57021236419678
+
+
+var begin_state = { "state": { "velocity": Vector3(0, 0, 0), "position": Vector3(12.26078, 9.077132, -26.48892) }, "floor": null }
+var inputs = [
+  { "yaw": 42.1000000000025, "pitch": -11.4499999999999, "is_jumping": true, "is_slow_walking": false, "direction": Vector2(0, -1) },
+  { "yaw": 42.6000000000025, "pitch": -11.4499999999999, "is_jumping": true, "is_slow_walking": false, "direction": Vector2(0, -1) },
+  { "yaw": 43.6000000000025, "pitch": -11.4499999999999, "is_jumping": true, "is_slow_walking": false, "direction": Vector2(0, -1) },
+  { "yaw": 44.2000000000025, "pitch": -11.4999999999999, "is_jumping": true, "is_slow_walking": false, "direction": Vector2(0, -1) }
+]
+
+var prior_simulated_state = { "velocity": Vector3(0, 0, 0), "position": Vector3(11.66261, 10.53127, -26.83776) }
+var prior_predicted_state = { "velocity": Vector3(0, 0, 0), "position": Vector3(11.40433, 11.00219, -27.02923) }
+
+state received from server has:
+- physics state after processing input of tick X
+- tick X
+
+From client side, the state corresponding to tick X is same: phys state after processing tick X input
+
+Hmm. In conclusion it does look like these > 0.1 errors relate to messages being dropped. Also explains why queue size shrinks
+This was very surprising, given client/server are on the same computer, communicating over loopback.
+Confirmed by switching from unreliable to reliable messaging, which fixes the issue

@@ -1,82 +1,71 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://bunpdm5jfoln7"]
 
-[ext_resource path="res://Materials/seamless_wood_tx.jpg" type="Texture" id=1]
-[ext_resource path="res://Common/gamer/Gamer.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Materials/StoneWallMaterial.tres" type="Material" id=3]
+[ext_resource type="PackedScene" path="res://Common/gamer/Gamer.tscn" id="2"]
+[ext_resource type="Material" path="res://Materials/StoneWallMaterial.tres" id="3"]
 
-[sub_resource type="CubeMesh" id=1]
+[sub_resource type="BoxMesh" id="1"]
+material = ExtResource("3")
 
-[sub_resource type="SpatialMaterial" id=2]
-flags_world_triplanar = true
-albedo_texture = ExtResource( 1 )
-uv1_scale = Vector3( 0.1, 0.1, 0.1 )
-uv1_triplanar = true
+[sub_resource type="BoxShape3D" id="3"]
 
-[sub_resource type="BoxShape" id=3]
+[node name="Goodwater" type="Node3D"]
 
-[node name="Goodwater" type="Spatial"]
-
-[node name="DirectionalLight" type="DirectionalLight" parent="."]
-transform = Transform( 1, 0, 0, 0, 0.884402, 0.466726, 0, -0.466726, 0.884402, 0, 8.36841, 0 )
-light_color = Color( 0.972549, 0.870588, 0.764706, 1 )
+[node name="DirectionalLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.884402, 0.466726, 0, -0.466726, 0.884402, 0, 8.36841, 0)
+light_color = Color(0.972549, 0.870588, 0.764706, 1)
 directional_shadow_mode = 0
 
-[node name="Gamer" parent="." instance=ExtResource( 2 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 8.58796, 5.45486, 0 )
+[node name="Gamer" parent="." instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.58796, 5.45486, 0)
 
-[node name="Bounds" type="Spatial" parent="."]
+[node name="Bounds" type="Node3D" parent="."]
 
-[node name="Floor" type="StaticBody" parent="Bounds"]
-transform = Transform( 100, 0, 0, 0, 1, 0, 0, 0, 100, 0, 0, 0 )
+[node name="Floor" type="StaticBody3D" parent="Bounds"]
+transform = Transform3D(100, 0, 0, 0, 1, 0, 0, 0, 100, 0, 0, 0)
 
-[node name="MeshInstance" type="MeshInstance" parent="Bounds/Floor"]
-mesh = SubResource( 1 )
-material/0 = SubResource( 2 )
+[node name="MeshInstance" type="MeshInstance3D" parent="Bounds/Floor"]
+mesh = SubResource("1")
 
-[node name="CollisionShape" type="CollisionShape" parent="Bounds/Floor"]
-shape = SubResource( 3 )
+[node name="CollisionShape" type="CollisionShape3D" parent="Bounds/Floor"]
+shape = SubResource("3")
 
-[node name="Ramps" type="Spatial" parent="."]
+[node name="Ramps" type="Node3D" parent="."]
 
-[node name="Floor2" type="StaticBody" parent="Ramps"]
-transform = Transform( 5.73148, -0.0527837, 0, 1.53574, 0.196991, 0, 0, 0, 5.93366, 8.91026, 2.34341, 0 )
+[node name="Floor2" type="StaticBody3D" parent="Ramps"]
+transform = Transform3D(5.73148, -0.0527837, 0, 1.53574, 0.196991, 0, 0, 0, 5.93366, 8.91026, 2.34341, 0)
 
-[node name="MeshInstance" type="MeshInstance" parent="Ramps/Floor2"]
-mesh = SubResource( 1 )
-material/0 = ExtResource( 3 )
+[node name="MeshInstance" type="MeshInstance3D" parent="Ramps/Floor2"]
+mesh = SubResource("1")
 
-[node name="CollisionShape" type="CollisionShape" parent="Ramps/Floor2"]
-shape = SubResource( 3 )
+[node name="CollisionShape" type="CollisionShape3D" parent="Ramps/Floor2"]
+shape = SubResource("3")
 
-[node name="Floor5" type="StaticBody" parent="Ramps"]
-transform = Transform( 5.93366, 0, 0, 0, 0.20394, 0, 0, 0, 5.93366, 22.0072, 3.30329, -2.98058 )
+[node name="Floor5" type="StaticBody3D" parent="Ramps"]
+transform = Transform3D(5.93366, 0, 0, 0, 0.20394, 0, 0, 0, 5.93366, 22.0072, 3.30329, -2.98058)
 
-[node name="MeshInstance" type="MeshInstance" parent="Ramps/Floor5"]
-mesh = SubResource( 1 )
-material/0 = ExtResource( 3 )
+[node name="MeshInstance" type="MeshInstance3D" parent="Ramps/Floor5"]
+mesh = SubResource("1")
 
-[node name="CollisionShape" type="CollisionShape" parent="Ramps/Floor5"]
-shape = SubResource( 3 )
+[node name="CollisionShape" type="CollisionShape3D" parent="Ramps/Floor5"]
+shape = SubResource("3")
 
-[node name="Floor3" type="StaticBody" parent="Ramps"]
-transform = Transform( 5.93366, 0, 0, 0, -8.91452e-09, -5.93366, 0, 0.20394, -2.59369e-07, 8.91026, 2.34341, 7.28769 )
+[node name="Floor3" type="StaticBody3D" parent="Ramps"]
+transform = Transform3D(5.93366, 0, 0, 0, -8.91452e-09, -5.93366, 0, 0.20394, -2.59369e-07, 8.91026, 2.34341, 7.28769)
 
-[node name="MeshInstance" type="MeshInstance" parent="Ramps/Floor3"]
-mesh = SubResource( 1 )
-material/0 = ExtResource( 3 )
+[node name="MeshInstance" type="MeshInstance3D" parent="Ramps/Floor3"]
+mesh = SubResource("1")
 
-[node name="CollisionShape" type="CollisionShape" parent="Ramps/Floor3"]
-shape = SubResource( 3 )
+[node name="CollisionShape" type="CollisionShape3D" parent="Ramps/Floor3"]
+shape = SubResource("3")
 
-[node name="Floor4" type="StaticBody" parent="Ramps"]
-transform = Transform( 5.17132, -0.100003, 1.27183e-07, 0, -8.91452e-09, -5.93366, 2.90961, 0.177739, -2.26045e-07, 0.0489269, 2.34341, 4.97069 )
+[node name="Floor4" type="StaticBody3D" parent="Ramps"]
+transform = Transform3D(5.17132, -0.100003, 1.27183e-07, 0, -8.91452e-09, -5.93366, 2.90961, 0.177739, -2.26045e-07, 0.0489269, 2.34341, 4.97069)
 
-[node name="MeshInstance" type="MeshInstance" parent="Ramps/Floor4"]
-mesh = SubResource( 1 )
-material/0 = ExtResource( 3 )
+[node name="MeshInstance" type="MeshInstance3D" parent="Ramps/Floor4"]
+mesh = SubResource("1")
 
-[node name="CollisionShape" type="CollisionShape" parent="Ramps/Floor4"]
-shape = SubResource( 3 )
+[node name="CollisionShape" type="CollisionShape3D" parent="Ramps/Floor4"]
+shape = SubResource("3")
 
-[node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 15.5168, 5.21725, 3.93418 )
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.5168, 5.21725, 3.93418)

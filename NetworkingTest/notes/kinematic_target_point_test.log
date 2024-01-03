@@ -1,0 +1,580 @@
+Godot Engine v4.2.1.stable.official.b09f793f5 - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 513.74 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3060 Laptop GPU
+ 
+USER ERROR: Couldn't create an ENet host.
+   at: _create (modules/enet/enet_connection.cpp:318)
+USER ERROR: Parent node is busy adding/removing children, `remove_child()` can't be called at this time. Consider usClient with id 440173101 connected
+recv_interval_msec: median: 17.000, mean: 16.766, std_dev: 8.502, min: 0.000, max: 56.000
+recv_interval_msec: median: 17.000, mean: 16.670, std_dev: 12.076, min: 0.000, max: 102.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 8.147, min: 0.000, max: 35.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.710, min: 12.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.670, std_dev: 0.690, min: 12.000, max: 20.000
+recv_interval_msec: median: 17.000, mean: 16.663, std_dev: 0.752, min: 13.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.958, min: 11.000, max: 23.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.691, min: 12.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.663, std_dev: 0.581, min: 15.000, max: 20.000
+recv_interval_msec: median: 17.000, mean: 16.670, std_dev: 0.618, min: 13.000, max: 20.000
+recv_interval_msec: median: 17.000, mean: 16.610, std_dev: 1.655, min: 0.000, max: 27.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.965, min: 8.000, max: 25.000
+sv_buffer_size: median: 12.000, mean: 11.983, std_dev: 0.922, min: 0.000, max: 13.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.790, min: 12.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.839, min: 12.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.760, min: 12.000, max: 20.000
+recv_interval_msec: median: 17.000, mean: 16.664, std_dev: 0.592, min: 15.000, max: 19.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.728, min: 11.000, max: 23.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.651, min: 12.000, max: 22.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.747, min: 13.000, max: 20.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.733, min: 12.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.799, min: 11.000, max: 22.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.538, min: 15.000, max: 18.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.630, min: 13.000, max: 20.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.681, min: 11.000, max: 22.000
+sv_buffer_size: median: 12.000, mean: 12.000, std_dev: 0.000, min: 12.000, max: 12.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.651, min: 12.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.619, min: 13.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.777, min: 12.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.641, min: 11.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.666, min: 13.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.799, min: 12.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.519, min: 15.000, max: 18.000
+recv_interval_msec: median: 17.000, mean: 16.610, std_dev: 6.135, min: 0.000, max: 82.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.347, min: 5.000, max: 33.000
+recv_interval_msec: median: 17.000, mean: 16.670, std_dev: 1.960, min: 0.000, max: 33.000
+recv_interval_msec: median: 17.000, mean: 16.663, std_dev: 0.598, min: 13.000, max: 20.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.671, min: 13.000, max: 20.000
+sv_buffer_size: median: 12.000, mean: 11.996, std_dev: 0.114, min: 8.000, max: 13.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.006, min: 7.000, max: 26.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.773, min: 13.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.608, min: 13.000, max: 20.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.635, min: 13.000, max: 20.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.532, min: 15.000, max: 18.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.619, min: 13.000, max: 20.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.630, min: 13.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.586, min: 14.000, max: 19.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.619, min: 13.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.651, min: 12.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.641, min: 12.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.663, std_dev: 0.769, min: 13.000, max: 21.000
+sv_buffer_size: median: 12.000, mean: 12.000, std_dev: 0.000, min: 12.000, max: 12.000
+recv_interval_msec: median: 17.000, mean: 16.670, std_dev: 0.531, min: 14.000, max: 19.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.719, min: 12.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.663, std_dev: 0.652, min: 13.000, max: 20.000
+recv_interval_msec: median: 17.000, mean: 16.670, std_dev: 0.618, min: 14.000, max: 19.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.557, min: 15.000, max: 19.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.580, min: 14.000, max: 20.000
+recv_interval_msec: median: 17.000, mean: 16.663, std_dev: 0.729, min: 12.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.603, min: 15.000, max: 18.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.710, min: 12.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.670, std_dev: 0.893, min: 11.000, max: 22.000
+recv_interval_msec: median: 17.000, mean: 16.663, std_dev: 0.575, min: 15.000, max: 18.000
+recv_interval_msec: median: 17.000, mean: 16.621, std_dev: 5.033, min: 0.000, max: 91.000
+sv_buffer_size: median: 12.000, mean: 12.003, std_dev: 0.097, min: 9.000, max: 14.000
+recv_interval_msec: median: 17.000, mean: 16.719, std_dev: 3.727, min: 0.000, max: 65.000
+recv_interval_msec: median: 17.000, mean: 16.660, std_dev: 0.845, min: 11.000, max: 22.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.700, min: 12.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.723, std_dev: 1.351, min: 13.000, max: 36.000
+recv_interval_msec: median: 17.000, mean: 16.697, std_dev: 0.796, min: 14.000, max: 26.000
+recv_interval_msec: median: 17.000, mean: 16.637, std_dev: 0.804, min: 7.000, max: 20.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.863, min: 10.000, max: 23.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.976, min: 10.000, max: 23.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.641, min: 12.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.794, min: 10.000, max: 23.000
+recv_interval_msec: median: 17.000, mean: 16.663, std_dev: 0.631, min: 13.000, max: 20.000
+recv_interval_msec: median: 17.000, mean: 16.657, std_dev: 3.506, min: 0.000, max: 64.000
+sv_buffer_size: median: 12.000, mean: 12.000, std_dev: 0.090, min: 9.000, max: 13.000
+recv_interval_msec: median: 17.000, mean: 16.623, std_dev: 3.617, min: 0.000, max: 66.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.728, min: 12.000, max: 20.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.545, min: 15.000, max: 19.000
+recv_interval_msec: median: 17.000, mean: 16.663, std_dev: 0.706, min: 12.000, max: 22.000
+recv_interval_msec: median: 17.000, mean: 16.670, std_dev: 0.562, min: 14.000, max: 19.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.239, min: 8.000, max: 25.000
+recv_interval_msec: median: 17.000, mean: 16.663, std_dev: 0.824, min: 12.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.670, std_dev: 0.732, min: 13.000, max: 20.000
+recv_interval_msec: median: 17.000, mean: 16.720, std_dev: 5.425, min: 0.000, max: 81.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.886, min: 11.000, max: 23.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.710, min: 12.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.896, min: 0.000, max: 34.000
+sv_buffer_size: median: 13.000, mean: 12.928, std_dev: 0.279, min: 9.000, max: 14.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.158, min: 4.000, max: 28.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.630, min: 13.000, max: 20.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.417, min: 4.000, max: 33.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.625, min: 13.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.760, min: 12.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.671, min: 13.000, max: 20.000
+recv_interval_msec: median: 17.000, mean: 16.670, std_dev: 0.704, min: 12.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.663, std_dev: 0.696, min: 13.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.764, min: 12.000, max: 21.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 3.718, min: 0.000, max: 65.000
+recv_interval_msec: median: 17.000, mean: 16.664, std_dev: 6.128, min: 0.000, max: 107.000
+recv_interval_msec: median: 17.000, mean: 17.186, std_dev: 7.045, min: 0.000, max: 82.000
+sv_buffer_size: median: 13.000, mean: 12.847, std_dev: 0.907, min: 3.000, max: 14.000
+recv_interval_msec: median: 17.000, mean: 16.667, std_dev: 9.316, min: 0.000, max: 35.000
+otion slide
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.589, min: 7.000, max: 26.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.441, min: 10.000, max: 24.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.670, std_dev: 1.216, min: 13.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+send_interval_msec: median: 17.000, mean: 16.663, std_dev: 1.323, min: 11.000, max: 22.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.002
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.241, min: 12.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.663, std_dev: 1.320, min: 10.000, max: 23.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.406, min: 11.000, max: 22.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.677, std_dev: 1.274, min: 11.000, max: 22.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.660, std_dev: 1.156, min: 13.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.663, std_dev: 1.284, min: 12.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.673, std_dev: 1.341, min: 12.000, max: 22.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.660, std_dev: 1.320, min: 12.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.670, std_dev: 1.312, min: 8.000, max: 24.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.003, min: 0.000, max: 0.030
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.001, min: 0.000, max: 0.006
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.475, min: 9.000, max: 24.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.332, min: 11.000, max: 22.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.001, min: 0.000, max: 0.006
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.441, min: 12.000, max: 22.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.436, min: 11.000, max: 22.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.417, min: 12.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.611, std_dev: 4.120, min: 0.000, max: 76.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.670, std_dev: 2.047, min: 5.000, max: 35.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.660, std_dev: 1.886, min: 4.000, max: 35.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.670, std_dev: 1.291, min: 12.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.663, std_dev: 1.320, min: 11.000, max: 22.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.770, min: 6.000, max: 27.000
+simulation_error: median: 0.000, mean: 0.001, std_dev: 0.008, min: 0.000, max: 0.053
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.394, min: 10.000, max: 24.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.347, min: 13.000, max: 20.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.002
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.001, min: 0.000, max: 0.004
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 0.972, min: 13.000, max: 20.000
+simulation_error: median: 0.000, mean: 0.001, std_dev: 0.004, min: 0.000, max: 0.017
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.355, min: 10.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.670, std_dev: 1.301, min: 11.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.002
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.230, min: 12.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.663, std_dev: 1.462, min: 12.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.663, std_dev: 1.473, min: 13.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+send_interval_msec: median: 17.000, mean: 16.670, std_dev: 1.362, min: 11.000, max: 24.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.002, min: 0.000, max: 0.025
+send_interval_msec: median: 17.000, mean: 16.670, std_dev: 1.347, min: 12.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.445, min: 10.000, max: 22.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.377, min: 12.000, max: 23.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+send_interval_msec: median: 17.000, mean: 16.663, std_dev: 1.010, min: 13.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.001, min: 0.000, max: 0.013
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.003, min: 0.000, max: 0.031
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.475, min: 12.000, max: 22.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.670, std_dev: 1.517, min: 10.000, max: 25.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.002
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.003
+send_interval_msec: median: 17.000, mean: 16.663, std_dev: 1.429, min: 12.000, max: 23.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.003
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.002, min: 0.000, max: 0.014
+send_interval_msec: median: 17.000, mean: 16.663, std_dev: 1.149, min: 12.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.001, std_dev: 0.004, min: 0.000, max: 0.022
+simulation_error: median: 0.000, mean: 0.001, std_dev: 0.007, min: 0.000, max: 0.055
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.670, std_dev: 1.680, min: 11.000, max: 22.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.005
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.431, min: 12.000, max: 22.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.003
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.670, std_dev: 1.486, min: 11.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.673, std_dev: 1.428, min: 11.000, max: 23.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.660, std_dev: 1.489, min: 9.000, max: 24.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.657, std_dev: 1.467, min: 12.000, max: 22.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 3.845, min: 0.000, max: 72.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+send_interval_msec: median: 17.000, mean: 16.670, std_dev: 1.337, min: 11.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.670, std_dev: 1.214, min: 12.000, max: 20.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.723, std_dev: 1.646, min: 11.000, max: 35.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.618, min: 9.000, max: 24.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.663, std_dev: 1.192, min: 12.000, max: 22.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.670, std_dev: 1.491, min: 10.000, max: 23.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.670, std_dev: 1.526, min: 10.000, max: 23.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.660, std_dev: 0.833, min: 11.000, max: 22.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.002
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.183, min: 10.000, max: 23.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.002
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.023, min: 13.000, max: 20.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.663, std_dev: 0.980, min: 12.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.613, std_dev: 3.172, min: 0.000, max: 60.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.217, min: 9.000, max: 23.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.042, min: 12.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.003
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.149, min: 11.000, max: 22.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+send_interval_msec: median: 17.000, mean: 16.663, std_dev: 0.856, min: 13.000, max: 20.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.670, std_dev: 1.440, min: 8.000, max: 25.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.660, std_dev: 1.040, min: 12.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.002, min: 0.000, max: 0.011
+send_interval_msec: median: 17.000, mean: 16.673, std_dev: 0.981, min: 12.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+send_interval_msec: median: 17.000, mean: 16.722, std_dev: 4.176, min: 0.000, max: 71.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+send_interval_msec: median: 17.000, mean: 16.663, std_dev: 1.214, min: 11.000, max: 24.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.003
+send_interval_msec: median: 17.000, mean: 16.673, std_dev: 1.034, min: 12.000, max: 22.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.663, std_dev: 1.305, min: 5.000, max: 30.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.663, std_dev: 1.312, min: 4.000, max: 27.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.045, min: 12.000, max: 21.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.001, min: 0.000, max: 0.005
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.873, min: 4.000, max: 31.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.673, std_dev: 1.395, min: 12.000, max: 22.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.004
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.660, std_dev: 1.598, min: 9.000, max: 25.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 1.473, min: 10.000, max: 24.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.670, std_dev: 1.522, min: 11.000, max: 22.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.001, min: 0.000, max: 0.006
+send_interval_msec: median: 17.000, mean: 16.663, std_dev: 1.367, min: 8.000, max: 24.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.670, std_dev: 1.417, min: 11.000, max: 22.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.001
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.667, std_dev: 4.270, min: 0.000, max: 77.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.680, std_dev: 1.964, min: 11.000, max: 24.000
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+simulation_error: median: 0.000, mean: 0.001, std_dev: 0.003, min: 0.000, max: 0.017
+1703871292.053
+initial state: { "state": { "velocity": (0, 0, 0), "position": (16.35767, 3.33309, -26.49392) }, "floor": <null> }
+server  state: { "velocity": (0, 0, 0), "position": (16.17927, 2.916423, -26.49392) }
+simul   input: { "yaw": 15.8500000000025, "pitch": -11.65, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (16.38223, 3.33309, -26.49393) }
+simul   input: { "yaw": 15.5500000000025, "pitch": -11.65, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (16.58709, 3.749757, -26.49394) }
+simul   input: { "yaw": 15.6000000000025, "pitch": -11.65, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (16.79164, 4.166423, -26.49394) }
+simul   input: { "yaw": 16.9000000000025, "pitch": -12, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (16.98789, 4.58309, -26.49393) }
+simul   input: { "yaw": 18.4500000000025, "pitch": -12.45, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (17.17413, 4.999756, -26.49391) }
+simul   input: { "yaw": 19.6500000000025, "pitch": -12.9, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (17.35253, 5.416423, -26.4939) }
+simul   input: { "yaw": 20.8500000000025, "pitch": -13.35, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (17.52299, 5.833089, -26.49389) }
+simul   input: { "yaw": 21.8500000000025, "pitch": -13.8, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (17.69851, 6.270029, -26.53006) }
+simul   input: { "yaw": 22.3500000000025, "pitch": -14, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (17.88804, 6.73705, -26.71644) }
+simul   input: { "yaw": 22.8500000000025, "pitch": -14.2, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (18.06474, 7.187671, -27.03649) }
+simul   input: { "yaw": 23.2500000000025, "pitch": -14.35, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (18.21914, 7.604338, -27.4235) }
+simul   input: { "yaw": 23.8500000000025, "pitch": -14.5, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (18.36948, 8.021005, -27.8121) }
+current state: { "velocity": (0, 0, 0), "position": (18.54699, 8.436134, -28.20643) }
+error        : 0.59945219755173
+1703871292.125
+initial state: { "state": { "velocity": (0, 0, 0), "position": (17.35253, 5.416423, -26.49391) }, "floor": <null> }
+server  state: { "velocity": (0, 0, 0), "position": (16.97788, 4.58309, -26.49391) }
+simul   input: { "yaw": 19.6500000000025, "pitch": -12.9, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (17.15627, 4.999756, -26.4939) }
+simul   input: { "yaw": 20.8500000000025, "pitch": -13.35, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (17.32674, 5.416423, -26.49389) }
+simul   input: { "yaw": 21.8500000000025, "pitch": -13.8, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (17.49055, 5.833089, -26.49388) }
+simul   input: { "yaw": 22.3500000000025, "pitch": -14, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (17.66166, 6.268204, -26.52558) }
+simul   input: { "yaw": 22.8500000000025, "pitch": -14.2, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (17.84813, 6.735745, -26.70879) }
+simul   input: { "yaw": 23.2500000000025, "pitch": -14.35, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (18.02465, 7.190735, -27.01833) }
+simul   input: { "yaw": 23.8500000000025, "pitch": -14.5, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (18.17499, 7.607401, -27.40693) }
+simul   input: { "yaw": 24.8500000000025, "pitch": -14.65, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (18.31853, 8.024068, -27.79809) }
+simul   input: { "yaw": 25.9500000000025, "pitch": -14.75, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (18.45452, 8.440735, -28.19194) }
+simul   input: { "yaw": 27.1000000000025, "pitch": -14.75, "is_jumping": true, "is_slow_walking": false, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (18.26471, 8.857402, -28.56286) }
+simul   input: { "yaw": 28.5500000000025, "pitch": -14.8, "is_jumping": true, "is_slow_walking": false, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (18.06558, 9.274069, -28.92886) }
+current state: { "velocity": (0, 0, 0), "position": (18.26007, 9.687673, -29.33403) }
+error        : 0.61078202724457
+1703871292.169
+initial state: { "state": { "velocity": (0, 0, 0), "position": (18.24225, 7.602801, -27.43083) }, "floor": <null> }
+server  state: { "velocity": (0, 0, 0), "position": (17.65497, 6.268244, -26.5253) }
+simul   input: { "yaw": 23.2500000000025, "pitch": -14.35, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (17.8387, 6.7357, -26.70403) }
+simul   input: { "yaw": 23.8500000000025, "pitch": -14.5, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (18.01042, 7.189414, -27.02048) }
+simul   input: { "yaw": 24.8500000000025, "pitch": -14.65, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (18.15396, 7.60608, -27.41164) }
+simul   input: { "yaw": 25.9500000000025, "pitch": -14.75, "is_jumping": true, "is_slow_walking": false, "direction": (0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (18.28995, 8.022747, -27.80549) }
+simul   input: { "yaw": 27.1000000000025, "pitch": -14.75, "is_jumping": true, "is_slow_walking": false, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (18.10014, 8.439414, -28.17641) }
+simul   input: { "yaw": 28.5500000000025, "pitch": -14.8, "is_jumping": true, "is_slow_walking": false, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (17.90101, 8.856081, -28.54241) }
+simul   input: { "yaw": 31.4000000000025, "pitch": -14.8, "is_jumping": true, "is_slow_walking": false, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (17.49603, 9.272748, -28.64039) }
+simul   input: { "yaw": 33.5000000000025, "pitch": -14.8, "is_jumping": true, "is_slow_walking": false, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (17.08772, 9.689415, -28.72346) }
+simul   input: { "yaw": 35.7000000000025, "pitch": -14.8, "is_jumping": true, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (16.67653, 9.689415, -28.7908) }
+current state: { "velocity": (0, 0, 0), "position": (16.8411, 10.1074, -29.17725) }
+error        : 0.59257107973099
+1703871292.218
+initial state: { "state": { "velocity": (0, 0, 0), "position": (18.64901, 8.854339, -28.59711) }, "floor": <null> }
+server  state: { "velocity": (0, 0, 0), "position": (18.14642, 7.60608, -27.41433) }
+simul   input: { "yaw": 27.1000000000025, "pitch": -14.75, "is_jumping": true, "is_slow_walking": false, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (17.95661, 8.022747, -27.78525) }
+simul   input: { "yaw": 28.5500000000025, "pitch": -14.8, "is_jumping": true, "is_slow_walking": false, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (17.75747, 8.439414, -28.15125) }
+simul   input: { "yaw": 31.4000000000025, "pitch": -14.8, "is_jumping": true, "is_slow_walking": false, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (17.35249, 8.856081, -28.24923) }
+simul   input: { "yaw": 33.5000000000025, "pitch": -14.8, "is_jumping": true, "is_slow_walking": false, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (16.94419, 9.272748, -28.3323) }
+simul   input: { "yaw": 35.7000000000025, "pitch": -14.8, "is_jumping": true, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (16.533, 9.272748, -28.39963) }
+simul   input: { "yaw": 37.9000000000025, "pitch": -14.75, "is_jumping": true, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (16.1225, 9.277889, -28.44982) }
+simul   input: { "yaw": 39.7000000000025, "pitch": -14.65, "is_jumping": true, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (15.8111, 9.457135, -28.44236) }
+simul   input: { "yaw": 41.4000000000025, "pitch": -14.5, "is_jumping": false, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (15.66882, 9.514303, -28.34486) }
+current state: { "velocity": (0, 0, 0), "position": (15.63677, 9.626838, -28.89026) }
+error        : 0.55781322717667
+1703871292.351
+initial state: { "state": { "velocity": (0, 0, 0), "position": (15.51987, 9.560333, -28.22325) }, "floor": <null> }
+server  state: { "velocity": (0, 0, 0), "position": (15.66817, 9.513609, -28.34073) }
+simul   input: { "yaw": 42.1500000000025, "pitch": -14.3, "is_jumping": false, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (15.5187, 9.558847, -28.21721) }
+simul   input: { "yaw": 42.1500000000025, "pitch": -14.3, "is_jumping": false, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (15.36115, 9.590088, -28.06903) }
+simul   input: { "yaw": 42.1500000000025, "pitch": -14.3, "is_jumping": false, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (15.19189, 9.601045, -27.89314) }
+simul   input: { "yaw": 42.2000000000025, "pitch": -14.3, "is_jumping": false, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (15.00583, 9.582946, -27.68757) }
+simul   input: { "yaw": 42.5000000000025, "pitch": -14.3, "is_jumping": false, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (14.79584, 9.523562, -27.45238) }
+simul   input: { "yaw": 43.1500000000025, "pitch": -14.3, "is_jumping": false, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (14.55281, 9.407266, -27.19336) }
+simul   input: { "yaw": 44.0000000000025, "pitch": -14.3, "is_jumping": false, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (14.26664, 9.216514, -26.92679) }
+current state: { "velocity": (0, 0, 0), "position": (13.94794, 8.968115, -26.70128) }
+error        : 0.46273371577263
+1703871292.572
+initial state: { "state": { "velocity": (0, 0, 0), "position": (12.50622, 6.495845, -26.43848) }, "floor": <null> }
+server  state: { "velocity": (0, 0, 0), "position": (12.50622, 6.912512, -26.44539) }
+simul   input: { "yaw": 40.8000000000025, "pitch": -12, "is_jumping": false, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (12.50622, 6.495845, -26.4759) }
+simul   input: { "yaw": 37.8000000000025, "pitch": -11.4, "is_jumping": false, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (12.50975, 6.079179, -26.49127) }
+simul   input: { "yaw": 33.6500000000025, "pitch": -10.7, "is_jumping": false, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (12.50973, 5.662512, -26.49097) }
+simul   input: { "yaw": 32.0000000000025, "pitch": -10.55, "is_jumping": false, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (12.50972, 5.245846, -26.49091) }
+simul   input: { "yaw": 31.4500000000025, "pitch": -10.5, "is_jumping": false, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (12.50972, 4.829179, -26.49088) }
+simul   input: { "yaw": 31.4500000000025, "pitch": -10.5, "is_jumping": false, "is_slow_walking": true, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (12.50916, 4.412513, -26.49042) }
+current state: { "velocity": (0, 0, 0), "position": (12.50916, 3.995846, -26.49042) }
+error        : 0.41666698455811
+1703871292.701
+initial state: { "state": { "velocity": (0, 0, 0), "position": (12.5092, 5.662512, -26.49045) }, "floor": <null> }
+server  state: { "velocity": (0, 0, 0), "position": (12.5092, 5.245846, -26.49045) }
+simul   input: { "yaw": 35.0500000000025, "pitch": -11.35, "is_jumping": true, "is_slow_walking": false, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (12.50918, 5.662512, -26.49047) }
+simul   input: { "yaw": 36.3000000000025, "pitch": -11.5, "is_jumping": true, "is_slow_walking": false, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (12.50809, 6.079179, -26.49048) }
+simul   input: { "yaw": 38.3000000000025, "pitch": -11.6, "is_jumping": true, "is_slow_walking": false, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (12.50727, 6.495846, -26.49051) }
+simul   input: { "yaw": 39.2000000000025, "pitch": -11.6, "is_jumping": true, "is_slow_walking": false, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (12.50929, 6.912512, -26.49052) }
+simul   input: { "yaw": 40.0000000000025, "pitch": -11.6, "is_jumping": true, "is_slow_walking": false, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (12.50811, 7.329179, -26.49053) }
+current state: { "velocity": (0, 0, 0), "position": (12.50667, 7.745845, -26.49053) }
+error        : 0.41666850447655
+1703871292.834
+initial state: { "state": { "velocity": (0, 0, 0), "position": (12.26078, 9.077132, -26.48892) }, "floor": <null> }
+server  state: { "velocity": (0, 0, 0), "position": (12.39506, 8.62245, -26.48918) }
+simul   input: { "yaw": 42.1000000000025, "pitch": -11.4499999999999, "is_jumping": true, "is_slow_walking": false, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (12.26072, 9.077761, -26.48894) }
+simul   input: { "yaw": 42.6000000000025, "pitch": -11.4499999999999, "is_jumping": true, "is_slow_walking": false, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (12.10069, 9.558679, -26.56404) }
+simul   input: { "yaw": 43.6000000000025, "pitch": -11.4499999999999, "is_jumping": true, "is_slow_walking": false, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (11.87196, 10.0392, -26.66429) }
+simul   input: { "yaw": 44.2000000000025, "pitch": -11.4999999999999, "is_jumping": true, "is_slow_walking": false, "direction": (0, -1) }
+simul   state: { "velocity": (0, 0, 0), "position": (11.66261, 10.53127, -26.83776) }
+current state: { "velocity": (0, 0, 0), "position": (11.40433, 11.00219, -27.02923) }
+error        : 0.57021236419678
+send_interval_msec: median: 17.000, mean: 16.703, std_dev: 4.140, min: 0.000, max: 76.000
+simulation_error: median: 0.000, mean: 0.037, std_dev: 0.138, min: 0.000, max: 0.611
+1703871293.05
+initial state: { "state": { "velocity": (0, 0, 0), "position": (7.65727, 13.92135, -27.1327) }, "floor": <null> }
+server  state: { "velocity": (0, 0, 0), "position": (8.072351, 13.92135, -27.09638) }
+simul   input: { "yaw": 37.3500000000025, "pitch": -12.8499999999999, "is_jumping": true, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (7.659393, 13.92135, -27.15185) }
+simul   input: { "yaw": 36.5500000000025, "pitch": -13.0499999999999, "is_jumping": false, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (7.24725, 13.50468, -27.21308) }
+simul   input: { "yaw": 36.5000000000025, "pitch": -13.0499999999999, "is_jumping": false, "is_slow_walking": true, "direction": (-0.707107, -0.707107) }
+simul   state: { "velocity": (0, 0, 0), "position": (6.83516, 13.08801, -27.27467) }
+current state: { "velocity": (0, 0, 0), "position": (6.420079, 13.08801, -27.31098) }
+error        : 0.41666650772095
+simulation_error: median: 0.000, mean: 0.003, std_dev: 0.038, min: 0.000, max: 0.417
+simulation_error: median: 0.000, mean: 0.000, std_dev: 0.000, min: 0.000, max: 0.000
+send_interval_msec: median: 17.000, mean: 16.663, std_dev: 0.923, min: 12.000, max: 22.000

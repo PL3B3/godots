@@ -11,6 +11,7 @@
 albedo_texture = ExtResource("1_s0mua")
 metallic = 0.5
 roughness = 0.7
+uv1_scale = Vector3(0.1, 0.1, 0.1)
 uv1_triplanar = true
 
 [node name="Block" type="Node3D"]

@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://7wl1ckrgvwte"]
+
+[ext_resource type="Script" path="res://scenes/character/third_person_display.gd" id="1_vx73h"]
+[ext_resource type="PackedScene" uid="uid://dkyru6hvschwy" path="res://assets/CubicPig.glb" id="1_y2r7a"]
+
+[node name="ThirdPersonDisplay" type="Node3D"]
+top_level = true
+script = ExtResource("1_vx73h")
+
+[node name="CubicPig" parent="." instance=ExtResource("1_y2r7a")]
+transform = Transform3D(-1.25, 0, -1.09278e-07, 0, 1.25, 0, 1.09278e-07, 0, -1.25, 0, 0, 0)

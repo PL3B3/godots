@@ -1,0 +1,114 @@
+[gd_scene load_steps=12 format=3 uid="uid://761xbykfvwo6"]
+
+[ext_resource type="Environment" uid="uid://cwjnu3fulwik2" path="res://assets/environment_bright.tres" id="1_mdafn"]
+[ext_resource type="Texture2D" uid="uid://dx2ex6b2855uv" path="res://assets/overhang_fence_planks.png" id="2_11hry"]
+[ext_resource type="Texture2D" uid="uid://bsirf7l4ljuot" path="res://addons/Pixel Textures Pack 2/Bricks/HerringboneBricksNormalMap.png" id="3_oqarb"]
+[ext_resource type="PackedScene" uid="uid://f8b0rlfdw0bm" path="res://scenes/block.tscn" id="4_m0jij"]
+[ext_resource type="PackedScene" uid="uid://dltio1maqii4i" path="res://scenes/debug_sphere.tscn" id="5_npfxi"]
+[ext_resource type="PackedScene" uid="uid://dkyru6hvschwy" path="res://assets/CubicPig.glb" id="6_123b8"]
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_tyg1n"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uan86"]
+albedo_texture = ExtResource("2_11hry")
+metallic_specular = 0.3
+roughness = 0.8
+normal_scale = 8.0
+normal_texture = ExtResource("3_oqarb")
+clearcoat = 0.09
+clearcoat_roughness = 0.62
+uv1_scale = Vector3(0.05, 0.05, 0.05)
+uv1_triplanar = true
+texture_filter = 0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_2rb4i"]
+material = SubResource("StandardMaterial3D_uan86")
+size = Vector2(500, 500)
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_1dcql"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_eobyi"]
+radius = 2.5
+height = 5.0
+radial_segments = 256
+rings = 128
+
+[node name="LargeTestMap" type="Node3D"]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.965926, -0.183013, -0.183013, 0.25, 0.476727, 0.842752, -0.0669873, -0.859789, 0.506236, 0, 4, 0)
+light_energy = 1.2
+shadow_enabled = true
+shadow_opacity = 0.6
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("1_mdafn")
+
+[node name="Bounds" type="Node3D" parent="."]
+
+[node name="Floor" type="StaticBody3D" parent="Bounds"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bounds/Floor"]
+shape = SubResource("WorldBoundaryShape3D_tyg1n")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Bounds/Floor"]
+mesh = SubResource("PlaneMesh_2rb4i")
+
+[node name="Wall" type="StaticBody3D" parent="Bounds"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 250, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bounds/Wall"]
+shape = SubResource("WorldBoundaryShape3D_1dcql")
+
+[node name="Wall2" type="StaticBody3D" parent="Bounds"]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, -250, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bounds/Wall2"]
+shape = SubResource("WorldBoundaryShape3D_1dcql")
+
+[node name="Wall3" type="StaticBody3D" parent="Bounds"]
+transform = Transform3D(1.91069e-15, -4.37114e-08, 1, -1, -4.37114e-08, 0, 4.37114e-08, -1, -4.37114e-08, 0, 0, 250)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bounds/Wall3"]
+shape = SubResource("WorldBoundaryShape3D_1dcql")
+
+[node name="Wall4" type="StaticBody3D" parent="Bounds"]
+transform = Transform3D(-5.73206e-15, 1.31134e-07, -1, -1, -4.37114e-08, 0, -4.37114e-08, 1, 1.31134e-07, 0, 0, -250)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bounds/Wall4"]
+shape = SubResource("WorldBoundaryShape3D_1dcql")
+
+[node name="Obstacles" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -39)
+
+[node name="Block" parent="Obstacles" instance=ExtResource("4_m0jij")]
+transform = Transform3D(20, 0, 0, 0, 20, 0, 0, 0, 20, 0, 0, 0)
+
+[node name="Block4" parent="Obstacles" instance=ExtResource("4_m0jij")]
+transform = Transform3D(10, -8.66025, 0, 17.3205, 5, 0, 0, 0, 20, -10.8606, -0.275018, -0.0257168)
+
+[node name="Block3" parent="Obstacles" instance=ExtResource("4_m0jij")]
+transform = Transform3D(20, 0, 0, 0, 7.07107, -14.1421, 0, 7.07107, 14.1421, 0.01, -0.606, 13.535)
+
+[node name="Block2" parent="Obstacles" instance=ExtResource("4_m0jij")]
+transform = Transform3D(17.3205, 5, 0, -10, 8.66025, 0, 0, 0, 20, 16.16, 0.67, 0.01)
+
+[node name="Block5" parent="Obstacles" instance=ExtResource("4_m0jij")]
+transform = Transform3D(20, 0, 0, 0, 5, -17.3205, 0, 8.66025, 10, 0.16, 5.67, -12.99)
+
+[node name="Block6" parent="Obstacles" instance=ExtResource("4_m0jij")]
+transform = Transform3D(20, 0, 0, 0, 10, 0, 0, 0, 20, 0.16, -4.33, -45.99)
+
+[node name="Block7" parent="Obstacles" instance=ExtResource("4_m0jij")]
+transform = Transform3D(20, 0, 0, 0, 10, 0, 0, 0, 20, 34.16, 13.67, -26.99)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.358, 2.51, -26.792)
+visible = false
+mesh = SubResource("SphereMesh_eobyi")
+
+[node name="DebugSphere" parent="." instance=ExtResource("5_npfxi")]
+transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 24.845, 1.429, -28.99)
+
+[node name="CubicPig" parent="." instance=ExtResource("6_123b8")]
+transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 30, 2.5, -27)

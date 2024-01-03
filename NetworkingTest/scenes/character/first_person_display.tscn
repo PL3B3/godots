@@ -1,0 +1,42 @@
+[gd_scene load_steps=3 format=3 uid="uid://dv0eg5h6yggl6"]
+
+[ext_resource type="Script" path="res://scenes/character/first_person_display.gd" id="1_aljo4"]
+[ext_resource type="Texture2D" uid="uid://b7g6q3dcwtppr" path="res://assets/crosshair.png" id="1_ytqke"]
+
+[node name="FirstPersonDisplay" type="Node3D"]
+top_level = true
+script = ExtResource("1_aljo4")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+current = true
+fov = 90.0
+
+[node name="DebugLabels" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="DebugLabel0" type="Label" parent="DebugLabels"]
+layout_mode = 0
+offset_right = 92.0
+offset_bottom = 26.0
+theme_override_colors/font_color = Color(0.92549, 0, 0.54902, 1)
+theme_override_font_sizes/font_size = 50
+text = "CHARACTER"
+
+[node name="Crosshair" type="TextureRect" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -512.0
+offset_top = -512.0
+offset_right = 512.0
+offset_bottom = 512.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.05, 0.05)
+pivot_offset = Vector2(512, 512)
+texture = ExtResource("1_ytqke")

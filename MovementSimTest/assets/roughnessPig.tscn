@@ -142,6 +142,7 @@ mesh = SubResource("ArrayMesh_x4ul0")
 surface_material_override/0 = ExtResource("3_53v35")
 
 [node name="Feet" parent="Body" index="1"]
+visible = false
 surface_material_override/0 = ExtResource("3_53v35")
 
 [node name="Nose" parent="Body" index="2"]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://ltcaiaybb0hf"]
+[gd_scene load_steps=41 format=3 uid="uid://ltcaiaybb0hf"]
 
 [ext_resource type="Environment" uid="uid://cwjnu3fulwik2" path="res://environment.tres" id="1_bb7b6"]
 [ext_resource type="Texture2D" uid="uid://3qdoneodpcyp" path="res://assets/s2 Grass 02 Green 2.png" id="2_o3qj0"]
@@ -23,6 +23,8 @@
 [ext_resource type="PackedScene" path="res://assets/buildings/Details/column_damaged.tscn" id="18_yv8ju"]
 [ext_resource type="PackedScene" path="res://assets/buildings/Details/detail_barrel.tscn" id="19_gggso"]
 [ext_resource type="PackedScene" path="res://assets/buildings/Details/overhang_round.tscn" id="21_gg8g7"]
+[ext_resource type="PackedScene" uid="uid://dlxgan48r680d" path="res://assets/CubicPig.glb" id="24_q2t04"]
+[ext_resource type="PackedScene" uid="uid://cy5ea7jq84qg" path="res://scenes/debug_sphere.tscn" id="25_jjvev"]
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_1tfag"]
 
@@ -68,6 +70,34 @@ uv1_triplanar = true
 [sub_resource type="BoxMesh" id="BoxMesh_eppr2"]
 material = SubResource("StandardMaterial3D_00si5")
 size = Vector3(5, 5, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2rh6m"]
+transparency = 1
+albedo_color = Color(0.898039, 0.321569, 0, 0.494118)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_yr6iu"]
+material = SubResource("StandardMaterial3D_2rh6m")
+radius = 2.5
+height = 6.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pooni"]
+transparency = 1
+albedo_color = Color(0.27451, 0.505882, 0.690196, 0.615686)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ij1gf"]
+material = SubResource("StandardMaterial3D_pooni")
+size = Vector3(3.5, 5.25, 3.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7pb2w"]
+albedo_color = Color(0.858824, 0.4, 0.568627, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_vt708"]
+material = SubResource("StandardMaterial3D_7pb2w")
+size = Vector3(1.5, 2, 1.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_e47i3"]
+material = SubResource("StandardMaterial3D_pooni")
+size = Vector3(3.5, 4.25, 3.5)
 
 [node name="KothMap1" type="Node3D"]
 
@@ -135,6 +165,7 @@ mesh = SubResource("PlaneMesh_2jynt")
 
 [node name="Base" type="Node3D" parent="."]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, -182.4)
+visible = false
 
 [node name="Tower" type="Node3D" parent="Base"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -135, 0, 0)
@@ -1352,3 +1383,35 @@ shape = SubResource("BoxShape3D_h8h35")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Cube"]
 mesh = SubResource("BoxMesh_eppr2")
+
+[node name="CubicPig" type="Node3D" parent="."]
+transform = Transform3D(-5.46392e-08, 0, -1.25, 0, 1.25, 0, 1.25, 0, -5.46392e-08, 69.3055, 2.50448, 148.204)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CubicPig"]
+transform = Transform3D(-2.49779e-08, 0, 0.571428, 0, 0.571428, 0, -0.571428, 0, -2.49779e-08, -0.00614929, -0.292236, 0.00111008)
+visible = false
+mesh = SubResource("CapsuleMesh_yr6iu")
+skeleton = NodePath("../..")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="CubicPig"]
+transform = Transform3D(-2.49779e-08, 0, 0.571429, 0, 0.571429, 0, -0.571429, 0, -2.49779e-08, -0.00721741, -0.49307, -0.00827789)
+visible = false
+mesh = SubResource("BoxMesh_ij1gf")
+skeleton = NodePath("../..")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="CubicPig"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -0.00720978, 0.231, -0.00827789)
+visible = false
+mesh = SubResource("BoxMesh_vt708")
+skeleton = NodePath("../..")
+
+[node name="CubicPig" parent="CubicPig" instance=ExtResource("24_q2t04")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00832438, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 69.3055, 2.15149, 146.586)
+visible = false
+mesh = SubResource("BoxMesh_e47i3")
+
+[node name="DebugSphere" parent="." instance=ExtResource("25_jjvev")]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 69.305, 3.25, 146.592)
