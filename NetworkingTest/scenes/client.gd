@@ -18,7 +18,7 @@ const NO_SERVER_STATE = {"tick": -1}
 @onready var messenger: NetworkMessenger = $NetworkMessenger
 
 var puppets: Dictionary = {}
-var client_character: CharacterMovementKinematicBody = null
+var client_character: Character = null
 var character_physics_state: Dictionary = {}
 var physics_state_per_tick: Dictionary = {}
 var tick = 0
@@ -56,7 +56,8 @@ func _physics_process(delta):
 	if is_replay_enabled_:
 		replay()
 		return
-	character_physics_state = reconcile_server_state(last_received_server_state.duplicate(true), delta)
+	client_character.reconcile_server_state(last_received_server_state.duplicate(true), delta)
+	#character_physics_state = reconcile_server_state(last_received_server_state.duplicate(true), delta)
 	var player_input: Dictionary = input_handler.record_input_for_tick(tick)
 	messenger.send_message_to_server({"input": player_input, "tick": tick})
 	character_physics_state = client_character.compute_next_physics_state(character_physics_state, player_input)
@@ -233,8 +234,7 @@ func _handle_server_message(message: Dictionary):
 		Network.MessageType.RESIZE:
 			resize_window(message["resize"])
 		Network.MessageType.PLAYER_STATE:
-			if message["tick"] > latest_handled_tick:
-				last_received_server_state = message
+			last_received_server_state = message
 		Network.MessageType.PUPPET_STATE:
 			puppets[message.puppet_id].add_state(message)
 
